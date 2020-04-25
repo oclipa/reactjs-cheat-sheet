@@ -28,7 +28,7 @@
 3. Create a new app: 
    * `create-react-app [app-name] [--scripts-version version]`
    * This will create a new sub-directory of the current directory called `app-name`.
-   * `--scripts-version version` is optional; if not used, the latest version will be used.
+   * `--scripts-version version` is optional; if not used, the latest version of create-react-app will be used.
 4. In the new app directory, start the development server: 
    * `npm start"
    * This actually calls a bespoke command defined in package.json.
