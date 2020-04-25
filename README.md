@@ -6,7 +6,7 @@
 ## ReactJS
 
 <div>
-<a class="link" href="http://oclipa.github.io/toolbox.html">&lt; toolbox</a>
+<button type="button" class="collapsible">+ Setup Basic Environment</button>
 <div class="content" style="display: none;" markdown="1">
 
 1. Install NodeJs: 
