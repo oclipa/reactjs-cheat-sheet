@@ -2,7 +2,7 @@
   background-color: #eee;
   color: #444;
   cursor: pointer;
-  padding: 18px;
+  padding: 0px 18px 18px 0px;
   width: 100%;
   border: 5px;
   text-align: left;
@@ -10,6 +10,8 @@
   font-family: Roboto, Verdana, Candara, sans-serif;
   font-size: 16px;
   font-weight: bold;
+  position: relative;
+  top: 20px;
 }
 
 /* Style the button that is used to open and close the collapsible content */
