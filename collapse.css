@@ -11,7 +11,8 @@
   font-size: 16px;
   font-weight: bold;
   position: relative;
-  top: -20px;
+  top: -30px;
+  left: -5px;
 }
 
 /* Style the button that is used to open and close the collapsible content */
