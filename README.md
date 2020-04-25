@@ -215,8 +215,6 @@ Cons:
     * You cannot use lifecycle hooks in a functional component.
        * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
        * useEffect() allows you to perform an action after render() has been called.
-</div>
-</div>
 
 ### Class Component
 
