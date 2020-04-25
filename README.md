@@ -236,10 +236,91 @@ class Welcome extends React.Component {
 <button type="button" class="collapsible">+ Arrow Functions</button>   
 <div class="content" style="display: none;" markdown="1">
 
-See: https://medium.com/@jacobworrel/es6-arrow-functions-what-not-to-do-c28c96b4f396
+* See: https://medium.com/@jacobworrel/es6-arrow-functions-what-not-to-do-c28c96b4f396
+* See lecture 14
 
 </div>
 </div>
+<div>
+<button type="button" class="collapsible">+ let, const and var</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* See lecture 13
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Spread and Rest Operators</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* See lecture 18
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Destructuring</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* See lecture 19
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Array Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* map()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+* find()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+* findIndex()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
+* filter()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
+* reduce()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce?v=b
+* concat()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat?v=b
+* slice()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
+* splice()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice
+
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Iterating Over Lists</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* map()
+* Spread Operator
+
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Props & State</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* props
+* setState()
+* useState() - see lecture 44
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Two-Way Binding</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* See lecture 47
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Styling</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* Inline - lecture 49
+* Stylesheets - lecture 48
+* Dynamic - lecture 66 and 67
+* Radium
+   * `npm install radium`
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Using Conditionals</button>   
+<div class="content" style="display: none;" markdown="1">
+  
+* See lecture 53
+</div>
+</div>
+
 
 
 
