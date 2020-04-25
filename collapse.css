@@ -2,7 +2,8 @@
   background-color: initial;
   color: #444;
   font-family: Roboto, Verdana, Candara, sans-serif;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* Style the button that is used to open and close the collapsible content */
