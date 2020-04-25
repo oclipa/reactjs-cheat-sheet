@@ -1,5 +1,5 @@
-<div class="link">
-<a href="http://oclipa.github.io/">&lt; Toolbox</a>
+<div>
+<a class="link" href="http://oclipa.github.io/">&lt; Toolbox</a>
 </div>
 
 ## ReactJS
