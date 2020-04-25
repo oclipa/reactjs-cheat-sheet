@@ -1,4 +1,4 @@
-<div class="home">
+<div class="link">
 <a href="http://oclipa.github.io/">&lt; Toolbox</a>
 </div>
 
