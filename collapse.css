@@ -1,8 +1,8 @@
 .home {
-  background-color: rgb(46, 44, 39);
+  background-color: initial;
   color: #444;
   font-family: Roboto, Verdana, Candara, sans-serif;
-  font-size: 24px;
+  font-size: 18px;
 }
 
 /* Style the button that is used to open and close the collapsible content */
