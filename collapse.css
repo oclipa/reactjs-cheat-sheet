@@ -1,5 +1,8 @@
 .home {
   background-color: initial;
+}
+
+.home a {
   color: #444;
   font-family: Roboto, Verdana, Candara, sans-serif;
   font-size: 16px;
