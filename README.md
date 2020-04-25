@@ -203,18 +203,21 @@ const Welcome = (props) => {
   return <h1>Hello, {props.name}</h1>;
 }
 ```
+
 Pros:
-    * Functional components are generally considered easier to read and test.
-    * Code tends to be smaller.
-    * It is easier to separate container and presentational components.
-    * There may be a performance boost in future React versions.
+
+* Functional components are generally considered easier to read and test.
+* Code tends to be smaller.
+* It is easier to separate container and presentational components.
+* There may be a performance boost in future React versions.
 
 Cons:
-    * You cannot call setState() in a functional component.
-       * As of React 16.8, you can use useState() but this only allows you to overwrite the state, rather than merging updates into the existing state.
-    * You cannot use lifecycle hooks in a functional component.
-       * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
-       * useEffect() allows you to perform an action after render() has been called.
+
+* You cannot call setState() in a functional component.
+   * As of React 16.8, you can use useState() but this only allows you to overwrite the state, rather than merging updates into the existing state.
+* You cannot use lifecycle hooks in a functional component.
+   * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
+   * useEffect() allows you to perform an action after render() has been called.
 
 ### Class Component
 
