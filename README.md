@@ -1,7 +1,5 @@
 <div>
-    
-<button type="button" class="collapsible">+ Setup Basic Environment</button>
-    
+<button type="button" class="collapsible">+ Setup Basic Environment</button>   
 <div class="content" style="display: none;" markdown="1">
 
 1. Install NodeJs: 
@@ -19,8 +17,7 @@
 </div>
 </div>
 <div>  
-<button type="button" class="collapsible">+ Example of a Simple App</button>
-    
+<button type="button" class="collapsible">+ Example of a Simple App</button> 
 <div class="content" style="display: none;" markdown="1">
 
 ### index.js 
@@ -189,6 +186,63 @@ export default calculator;
 ```
 </div>
 </div>
+<div>
+<button type="button" class="collapsible">+ Functional vs Class Components</button>   
+<div class="content" style="display: none;" markdown="1">
+
+### Functional Component
+
+```jsx
+// ES5
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+// ES6
+const Welcome = (props) => {
+  return <h1>Hello, {props.name}</h1>;
+}
+```
+Pros:
+    * Functional components are generally considered easier to read and test.
+    * Code tends to be smaller.
+    * It is easier to separate container and presentational components.
+    * There may be a performance boost in future React versions.
+
+Cons:
+    * You cannot call setState() in a functional component.
+       * As of React 16.8, you can use useState() but this only allows you to overwrite the state, rather than merging updates into the existing state.
+    * You cannot use lifecycle hooks in a functional component.
+       * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
+       * useEffect() allows you to perform an action after render() has been called.
+</div>
+</div>
+
+### Class Component
+
+```jsx
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}</h1>;
+  }
+}
+```
+* As a general of thumb, class components are preferred if you need fine-grained control of state, or of actions performed outside of render().
+
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Arrow Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+See: https://medium.com/@jacobworrel/es6-arrow-functions-what-not-to-do-c28c96b4f396
+
+</div>
+</div>
+
+
+
+
 
 <script type="text/javascript">
 
