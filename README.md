@@ -1,6 +1,7 @@
 <div class="home">
   
-  [<< Home](http://oclipa.github.io/)
+  [&lt;&lt; Home](http://oclipa.github.io/)
+  
 </div>
 
 ## ReactJS
