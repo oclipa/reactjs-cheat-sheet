@@ -1,7 +1,5 @@
 <div class="home">
-
-[&lt;&lt; Home](http://oclipa.github.io/)
-  
+<a href="http://oclipa.github.io/">&lt;&lt; Toolbox<a/>
 </div>
 
 ## ReactJS
