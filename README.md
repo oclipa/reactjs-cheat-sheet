@@ -1,11 +1,12 @@
-<div>
+<div style="display: inline-block;">
+<a class="link" href="http://oclipa.github.io/">&lt; home</a>
 <a class="link" href="http://oclipa.github.io/toolbox.html">&lt; toolbox</a>
 </div> 
 
 ## ReactJS
 
 <div>
-<button type="button" class="collapsible">+ Setup Basic Environment</button>   
+<a class="link" href="http://oclipa.github.io/toolbox.html">&lt; toolbox</a>
 <div class="content" style="display: none;" markdown="1">
 
 1. Install NodeJs: 
