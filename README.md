@@ -337,11 +337,90 @@ class Welcome extends React.Component {
 * See lecture 53
 </div>
 </div>
+<div>
+<button type="button" class="collapsible">+ Debugging</button>   
+<div class="content" style="display: none;" markdown="1">
 
+* Simplest: Use Chrome Developer Tools (OPTION + CMD + i)
+   * Can combine with React Developer Tools Extension: [https://chrome.google.com/webstore/search/react%20developer%20tools?hl=en](https://chrome.google.com/webstore/search/react%20developer%20tools?hl=en)
+* Alternatively, use the "Debugger for Chrome" extension in Visual Studio Code.
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Error Handling</button>   
+<div class="content" style="display: none;" markdown="1">
 
+Use the ErrorBoundary component to catch errors thrown by components.
+   * Caveat: ErrorBoundary does not work in event handlers; in this case use try/catch
 
+```
+import React, { Component } from 'react';
 
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasError: false,
+      errorMessage: ''  
+    }
+  }
 
+  // can be used for both client- and server-side
+  // is called in "render phase" when the DOM has not yet been updated
+  // should be used for rendering a fallback UI
+  static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+  
+  // can only be used on the client-side
+  // is called during the "commit phase" when the DOM has already been updated
+  // should be used for something like error reporting
+  componentDidCatch = (error, errorInfo) => {
+    this.setState({hasError: true, errorMessage: error});
+    //logComponentStackToMyService(errorInfo.componentStack);
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return <h1>{this.state.errorMessage}</h1>;
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;
+```
+
+Usage:
+
+```
+<ErrorBoundary>
+  <MyWidget />
+</ErrorBoundary>
+```
+
+For imperative code, use try/catch:
+
+```
+try {
+  showButton();
+} catch (error) {
+  // ...
+}
+```
+</div>
+</div>
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+------
+**Move along; nothing to see here...**
 
 <script type="text/javascript">
 
@@ -354,9 +433,9 @@ class Welcome extends React.Component {
        document.head.appendChild(file);
     }
 
-   //just call a function to load your CSS
-   //this path should be relative your HTML location
-   loadCSS("../collapse.css");
+    //just call a function to load your CSS
+    //this path should be relative your HTML location
+    loadCSS("../collapse.css");
 
     var coll = document.getElementsByClassName("collapsible");
     var i;
