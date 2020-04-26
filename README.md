@@ -356,7 +356,7 @@ class Welcome extends React.Component {
 
    //just call a function to load your CSS
    //this path should be relative your HTML location
-   loadCSS("collapse.css");
+   loadCSS("../collapse.css");
 
     var coll = document.getElementsByClassName("collapsible");
     var i;
