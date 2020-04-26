@@ -6,6 +6,24 @@
 ## ReactJS
 
 <div>
+<button type="button" class="collapsible">+ React Philosophy</button>
+<div class="content" style="display: none;" markdown="1">
+
+https://reactjs.org/docs/thinking-in-react.html
+
+https://reactjs.org/docs/design-principles.html
+
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ React Patterns</button>
+<div class="content" style="display: none;" markdown="1">
+
+https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State
+
+</div>
+</div>
+<div>
 <button type="button" class="collapsible">+ Setup Basic Environment</button>
 <div class="content" style="display: none;" markdown="1">
 
