@@ -339,15 +339,51 @@ class Welcome extends React.Component {
 &copy; Dan Abramov: [https://overreacted.io/](https://overreacted.io/)
 <br/>[Interactive Version](http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 
-* constructor()
-* getDerivedStateFromProps()
-* getSnapshotBeforeUpdate()
+* Mounting
+   * constructor()
+      * Call super(props)
+      * Use to set up state
+      * Don't cause Side-Effects
+   * getDerivedStateFromProps(props, state)
+      * Sync state with props
+      * Very niche case
+      * Don't cause Side-Effects
+   * render()
+      * Prepare and Structure your JSX code
+      * Don't do any actions that will block the rendering process.
+      * Only completes after render() has been called for all children.
+   * componentDidMount() &lgt-- Commonly used
+      * Very common 
+      * Can cause Side-Effects (e.g. send http requests)
+      * Don't update state (at least, not synchronously)
+   * componentWillMount()
+      * Available but deprecated
+      * Do not use
+
+* Mounting
+   * getDerivedStateFromProps(props, state)
+      * See above
+   * componentWillReceiveProps(props)
+      * Available but deprecated
+      * Do not use
+   * shouldComponentUpdate(nextProps, nextState); &lgt-- Commonly used
+      * Used to cancel update process
+      * Typically used for performance reasons (if used carefully)
+   * render()
+      * See above
+   * getSnapshotBeforeUpdate(prevProps, prevState)
+      * Another niche method
+      * Last minute DOM operations (e.g. getting current scrolling position of user)
+      * Don't cause Side-Effects
+   * componentWillUpdate()
+      * Available but deprecated
+      * Do not use
+   * componentDidUpdate() &lgt-- Commonly used
+      * Can cause Side-Effects (e.g. send http requests)
+      * Don't update state (at least, not synchronously)
+
 * componentDidCatch()
 * componentWillUnmount()
-* shouldComponentUpdate()
-* componentDidUpdate()
-* componentDidMount()
-* render()
 
 </div>
 </div>
