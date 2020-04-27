@@ -285,6 +285,8 @@ export default calculator;
 <button type="button" class="collapsible">+ Functional vs Class Components</button>   
 <div class="content" style="display: none;" markdown="1">
 
+**Both Function and Class components should start with an uppercase letter**
+
 ### Functional Component
 
 ```jsx
@@ -314,6 +316,21 @@ Cons:
 * You cannot use lifecycle hooks in a functional component.
    * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
    * useEffect() allows you to perform an action after render() has been called.
+
+**useEffect**
+
+* `import React, {useEffect} from 'react';`
+* Takes a function that will run for every render cycle.
+  * `useEffect( () => { somefunction; }); )`
+* Essentially, componentDidMount and componentDidUpdate combined in one effect (see below).
+* Controlled by passing an object (or array of objects) into the method and the method only reacts if the object has changed:
+  * `useEffect( () => { somefunction; }, [props.somedata] ); )`
+  * To have the method run only the first time an object is rendered, pass an empty array.
+* Can have multiple calls to useEffect in the same function (e.g. each reacting to different object).
+* To perform clean-up using useEffect, return a function:
+  * `useEffect( () => { somefunction; }, [props.somedata] ); return () => { cleanupfunction } )`
+  * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
+
 
 ### Class Component
 
@@ -360,7 +377,7 @@ class Welcome extends React.Component {
       * Available but deprecated
       * Do not use
 
-* Mounting
+* Updating
    * getDerivedStateFromProps(props, state)
       * See above
    * componentWillReceiveProps(props)
@@ -382,8 +399,11 @@ class Welcome extends React.Component {
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
 
+* Unmounting (clean-up)
+   * componentWillUnmount()
+   
+   
 * componentDidCatch()
-* componentWillUnmount()
 
 </div>
 </div>
