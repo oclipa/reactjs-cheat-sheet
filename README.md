@@ -300,6 +300,7 @@ const Welcome = (props) => {
   return <h1>Hello, {props.name}</h1>;
 }
 ```
+
 * Functional components does not access props via `this`(e.g. `props.XY`).
 
 Pros:
@@ -341,6 +342,7 @@ class Welcome extends React.Component {
   }
 } 
 ```
+
 * Class components must access state and props using `this`(e.g. `this.state.XY`).
 
 * As a general of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
@@ -369,7 +371,7 @@ class Welcome extends React.Component {
       * Prepare and Structure your JSX code
       * Don't do any actions that will block the rendering process.
       * Only completes after render() has been called for all children.
-   * componentDidMount() &lgt-- Commonly used
+   * componentDidMount() &lt;-- Commonly used
       * Very common 
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
@@ -383,7 +385,7 @@ class Welcome extends React.Component {
    * componentWillReceiveProps(props)
       * Available but deprecated
       * Do not use
-   * shouldComponentUpdate(nextProps, nextState); &lgt-- Commonly used
+   * shouldComponentUpdate(nextProps, nextState); &lt;-- Commonly used
       * Used to cancel update process
       * Typically used for performance reasons (if used carefully)
    * render()
@@ -395,7 +397,7 @@ class Welcome extends React.Component {
    * componentWillUpdate()
       * Available but deprecated
       * Do not use
-   * componentDidUpdate() &lgt-- Commonly used
+   * componentDidUpdate() &lt;-- Commonly used
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
 
