@@ -9,7 +9,7 @@
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
 <div class="content" style="display: none;" markdown="1">
 
-### Based on: [https://reactjs.org/docs/thinking-in-react.html](https://reactjs.org/docs/thinking-in-react.html)
+**Based on: [https://reactjs.org/docs/thinking-in-react.html](https://reactjs.org/docs/thinking-in-react.html)**
 
 1. Break data model into components that (ideally) only do one thing.
    * [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle)
@@ -45,7 +45,7 @@
 <button type="button" class="collapsible">+ React Design Principles</button>
 <div class="content" style="display: none;" markdown="1">
 
-### Based on: [https://reactjs.org/docs/design-principles.html](https://reactjs.org/docs/design-principles.html)
+**Based on: [https://reactjs.org/docs/design-principles.html](https://reactjs.org/docs/design-principles.html)**
 
 1. The key feature of React is composition of components.
    * Components should be able to be changed without affecting the rest of the codebase.
