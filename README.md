@@ -36,6 +36,7 @@
       * Either the common owner or another component higher up in the hierarchy should own the state.
       * If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common owner component.
    * The owner of the `state` will pass it to components that need it via `props`. 
+   * Components that mutate state should avoid UI rendering.
 1. Add inverse data flow (i.e. from lower hierarchy to higher).
    * Components should only update their own state.
    * Pass callbacks (e.g. `onChange` event) from higher components to lower components, which will fire when the state should be updated.  
