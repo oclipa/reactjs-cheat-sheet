@@ -89,6 +89,24 @@
 <button type="button" class="collapsible">+ React Patterns</button>
 <div class="content" style="display: none;" markdown="1">
 
+* Stateful Functions
+* Module Pattern
+* Default Props and Initial State
+   * Specify default values for `props` with `defaultProps`.
+```
+function Greeting(props) {
+  return <div>Hi {props.name}!</div>;
+}
+Greeting.defaultProps = {
+  name: "Guest"
+};
+```
+
+* Data-Down, Actions-Up
+* Higher-Order Component
+* Container Components
+* Callback Chaining
+* Async Sequence
 https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State
 
 </div>
@@ -437,6 +455,45 @@ class Welcome extends React.Component {
 <div class="content" style="display: none;" markdown="1">
 
 * See lecture 19
+
+The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) syntax is a JavaScript expression that makes it possible to unpack values from arrays, or properties from objects, into distinct variables.
+
+```
+let a, b, rest;
+[a, b] = [10, 20];
+
+console.log(a);
+// expected output: 10
+
+console.log(b);
+// expected output: 20
+
+[a, b, ...rest] = [10, 20, 30, 40, 50];
+
+console.log(rest);
+// expected output: Array [30,40,50]
+```
+
+The following component declarations are equivalent:
+
+```
+function Greeting(props) {
+  return <div>Hi {props.name}!</div>;
+}
+
+function Greeting({ name }) {
+  return <div>Hi {name}!</div>;
+}
+```
+
+The following is an example [Rest Parameter Syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters), which collects remaining props into an object:
+
+```
+function Greeting({ name, ...restProps }) {
+  return <div>Hi {name}!</div>;
+}
+```
+
 </div>
 </div>
 <div>
@@ -468,6 +525,7 @@ class Welcome extends React.Component {
 <div class="content" style="display: none;" markdown="1">
 
 * props
+   * props are read-only
 * setState()
    * [Beware: React setState is asynchronous!](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3)
    * https://reactjs.org/docs/react-component.html#setstate
@@ -582,6 +640,39 @@ try {
   // ...
 }
 ```
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Best Practices List</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Taken from [https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a](https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a)**
+
+* When using ReduxJS, split your Reducer code into smaller methods to avoid huge JSON within your Reducer.
+* Consider using TypeScript in your apps if you do not do it already.
+* Use the create-react-app generator to bootstrap your ReactJS app.
+* Keep your code DRY. Don’t Repeat Yourself, but keep in mind code duplicate is NOT always a bad thing.
+* Avoid having large classes, methods or components, including Reducers.
+* Use more robust managers to manage application state, such as Redux.
+* Use event synchronizer, such as Redux-Thunk, for interactions with your back end API.
+* Avoid passing too many attributes or arguments. Limit yourself to five props that you pass into your component.
+* Use ReactJS defaultProps and ReactJS propTypes.
+* Use linter, break up lines that are too long.
+* Keep your own jslint configuration file.
+* Always use a dependency manager with a lock file, such as NPM or yarn.
+* Test your commonly accessed code, code that is complex and prone to bugs.
+* Write more tests that give more test coverage for your code with a little effort and test code to ensure its proper functioning.
+* Every time you find a bug, make sure you write a test first.
+* Use function-based components by starting to use React Hooks, a new ReactJS way to create state-full components.
+* Use ES6 de-structuring for your props.
+* Use conditional rendering.
+* User `map()` to collect and render collections of components.
+* Use partial components, such as `<>` … `</>`
+* Name your event handlers with handle prefixes, such as `handleClick()` or `handleUpdate()`.
+* Use `onChange` to control your inputs, such as `onChange={this.handleInputChange}`.
+* Use JEST to test your ReactJS code.
+
 </div>
 </div>
 
