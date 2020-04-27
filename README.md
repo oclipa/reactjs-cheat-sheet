@@ -333,6 +333,14 @@ class Welcome extends React.Component {
 1. This is only available to Class components.
 1. Lifecycle Hooks have nothing to do with React Hooks!
 
+[]
+<img src="assets/reactjs-component-lifecycle.png" />
+
+<br/>[Original Image](https://twitter.com/dan_abramov/status/981712092611989509/photo/1)
+&copy; Dan Abramov: [https://overreacted.io/](https://overreacted.io/)
+
+<br/>[Interactive Version](http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
+
 * constructor()
 * getDerivedStateFromProps()
 * getSnapshotBeforeUpdate()
