@@ -12,7 +12,7 @@
 ### Based on: [https://reactjs.org/docs/thinking-in-react.html](https://reactjs.org/docs/thinking-in-react.html)
 
 1. Break data model into components that (ideally) only do one thing.
-   * [https://en.wikipedia.org/wiki/Single-responsibility_principle](Single Responsibility Principle)
+   * [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle)
 1. Break down UI into components, where each component matches one piece of the data model.
 1. Arranage UI components into a hierarchy.
 1. Build a static version of the hierarchy in React.
@@ -21,7 +21,7 @@
    * Generally, build bottom-up (i.e. low level of heirarchy first) and write tests as you build.
    * Data will be input as a `prop` into the top of the hierarchy.
 1. Identify the minimum set of mutable (i.e. changeable) state required by the app.
-   * [https://en.wikipedia.org/wiki/Don%27t_repeat_yourself](Don't Repeat Yourself Principle)
+   * [Don't Repeat Yourself Principle](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
    * e.g. it is good for state to reference an array, but not the number of items in the array.
    * Three questions:
       * Is it passed in from a parent via props? If so, it probably isn’t state.
@@ -67,7 +67,7 @@
    * Allows React to schedule and split work.
 1. Be renderer-agnostic
    * Don't assume the app will only run in a browser.
-   * e.g. [https://reactnative.dev/](React Native)
+   * e.g. [https://reactnative.dev](React Native)
 1. Aim for elegant APIs but prefer ugly APIs if they avoid work for the client.
    * Correct, performant and a good developer experience are more important than elegant.
 1. Prefer boring code to clever code.
