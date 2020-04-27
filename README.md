@@ -5,6 +5,8 @@
 
 ## ReactJS
 
+**Recommended Course: [React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/course/react-the-complete-guide-incl-redux/)**
+
 <div>
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
 <div class="content" style="display: none;" markdown="1">
