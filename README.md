@@ -19,9 +19,10 @@
 1. Arranage UI components into a hierarchy.
 1. Build a static version of the hierarchy in React.
    * At this stage, use `props` rather than `state` (see "[What is the difference between state and props](https://reactjs.org/docs/faq-state.html#what-is-the-difference-between-state-and-props)").
-   * Each componenets should only have a render() method (since it is static).
+   * Each component should only have a render() method (since it is static).
    * Generally, build bottom-up (i.e. low level of heirarchy first) and write tests as you build.
-   * Data will be input as a `prop` into the top of the hierarchy.
+   * Data will be input as a `prop` into the top of the hierarchy, e.g. in index.js:
+      * `ReactDOM.render(<App data="dataSource" />, document.getElementById('root'));`
 1. Identify the minimum set of mutable (i.e. changeable) state required by the app.
    * [Don't Repeat Yourself Principle](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
    * e.g. it is good for state to reference an array, but not the number of items in the array.
@@ -297,6 +298,7 @@ const Welcome = (props) => {
   return <h1>Hello, {props.name}</h1>;
 }
 ```
+* Functional components does not access props via `this`(e.g. `props.XY`).
 
 Pros:
 
@@ -320,9 +322,26 @@ class Welcome extends React.Component {
   render() {
     return <h1>Hello, {this.props.name}</h1>;
   }
-}
+} 
 ```
-* As a general of thumb, class components are preferred if you need fine-grained control of state, or of actions performed outside of render().
+* Class components must access state and props using `this`(e.g. `this.state.XY`).
+
+* As a general of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
+
+**Component LifeCycle**
+
+1. This is only available to Class components.
+1. Lifecycle Hooks have nothing to do with React Hooks!
+
+* constructor()
+* getDerivedStateFromProps()
+* getSnapshotBeforeUpdate()
+* componentDidCatch()
+* componentWillUnmount()
+* shouldComponentUpdate()
+* componentDidUpdate()
+* componentDidMount()
+* render()
 
 </div>
 </div>
