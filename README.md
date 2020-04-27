@@ -6,12 +6,78 @@
 ## ReactJS
 
 <div>
-<button type="button" class="collapsible">+ React Philosophy</button>
+<button type="button" class="collapsible">+ How To Approach Building An App In React</button>
 <div class="content" style="display: none;" markdown="1">
 
-https://reactjs.org/docs/thinking-in-react.html
+### Based on: [https://reactjs.org/docs/thinking-in-react.html](https://reactjs.org/docs/thinking-in-react.html)
 
-https://reactjs.org/docs/design-principles.html
+1. Break data model into components that (ideally) only do one thing.
+   * [https://en.wikipedia.org/wiki/Single-responsibility_principle](Single Responsibility Principle)
+1. Break down UI into components, where each component matches one piece of the data model.
+1. Arranage UI components into a hierarchy.
+1. Build a static version of the hierarchy in React.
+   * At this stage, use `props` rather than `state` (see "[What is the difference between state and props](https://reactjs.org/docs/faq-state.html#what-is-the-difference-between-state-and-props)").
+   * Each componenets should only have a render() method (since it is static).
+   * Generally, build bottom-up (i.e. low level of heirarchy first) and write tests as you build.
+   * Data will be input as a `prop` into the top of the hierarchy.
+1. Identify the minimum set of mutable (i.e. changeable) state required by the app.
+   * [https://en.wikipedia.org/wiki/Don%27t_repeat_yourself](Don't Repeat Yourself Principle)
+   * e.g. it is good for state to reference an array, but not the number of items in the array.
+   * Three questions:
+      * Is it passed in from a parent via props? If so, it probably isn’t state.
+      * Does it remain unchanged over time? If so, it probably isn’t state.
+      * Can you compute it based on any other state or props in your component? If so, it isn’t state.
+1. Identify which component mutates, or owns, the state.
+   * For each piece of state in your application:
+      * Identify every component that renders something based on that state.
+      * Find a common owner component (a single component above all the components that need the state in the hierarchy).
+      * Either the common owner or another component higher up in the hierarchy should own the state.
+      * If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common owner component.
+   * The owner of the `state` will pass it to components that need it via `props`. 
+1. Add inverse data flow (i.e. from lower hierarchy to higher).
+   * Components should only update their own state.
+   * Pass callbacks (e.g. `onChange` event) from higher components to lower components, which will fire when the state should be updated.  
+   * The callbacks will call `setState()`.
+
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ React Design Principles</button>
+<div class="content" style="display: none;" markdown="1">
+
+### Based on: [https://reactjs.org/docs/design-principles.html](https://reactjs.org/docs/design-principles.html)
+
+1. The key feature of React is composition of components.
+   * Components should be able to be changed without affecting the rest of the codebase.
+   * Components describe any composable behaviour, which includes rendering, lifecycle and state.
+1. Resist adding features that can be implemented by clients.
+   * [Minimal API Surface Area](https://www.youtube.com/watch?v=4anAwXYqLG8)
+   * Only add out-of-scope features if it will avoid clients producing multiple solutions to the same problem.
+1. Before deprecating a feature, always consider all use cases and communicate reasons and alternatives to clients.
+1. If some pattern is hard to express in a declarative way, provide an imperative API.
+1. If you can't identify a perfect API, provide a temporary subpar API (but it must be temporary).
+1. Value API stability.
+   * When something changes, there should be a clear (and preferably automated) migration path.
+   * Deprecate APIs internally first, before deprecating them for clients (to allow validation).
+   * Add deprecation warnings in the current major version and change the behaviour in the following major release.
+   * Consider using [codemod](https://www.youtube.com/watch?v=d0pOgY8__JM) scripts for changes that require a lot of repetitive manual work.
+1. Value interoperability.
+   * Enable gradual adoption by allowing existing functionality to be wrapped by new functionality.
+1. Perform the minimum amount of work before returning to React.
+   * Allows React to schedule and split work.
+1. Be renderer-agnostic
+   * Don't assume the app will only run in a browser.
+   * e.g. [https://reactnative.dev/](React Native)
+1. Aim for elegant APIs but prefer ugly APIs if they avoid work for the client.
+   * Correct, performant and a good developer experience are more important than elegant.
+1. Prefer boring code to clever code.
+   * Avoid new internal abstractions.
+   * Verbose code is easier to move around and change.
+1. Use verbose name for APIs.
+   * Make points of interaction highly visible and distinct.
+   * Optimize for search (makes automated updates easier).
+1. [Eat Your Own Dog Food](https://en.wikipedia.org/wiki/Eating_your_own_dog_food)
+   * But be open to the idea that external clients may have other use cases.
 
 </div>
 </div>
@@ -317,6 +383,8 @@ class Welcome extends React.Component {
 
 * props
 * setState()
+   * [Beware: React setState is asynchronous!](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3)
+   * https://reactjs.org/docs/react-component.html#setstate
 * useState() - see lecture 44
 </div>
 </div>
@@ -371,7 +439,7 @@ class Welcome extends React.Component {
 Use the ErrorBoundary component to catch errors thrown by components.
    * Caveat: ErrorBoundary does not work in event handlers; in this case use try/catch
 
-```
+```jsx
 import React, { Component } from 'react';
 
 class ErrorBoundary extends Component {
@@ -421,7 +489,7 @@ Usage:
 
 For imperative code, use try/catch:
 
-```
+```jsx
 try {
   showButton();
 } catch (error) {
