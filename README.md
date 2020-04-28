@@ -1061,6 +1061,7 @@ class App extends Component {
         }
       </div>
     );
+  };
 }
 ```
 
@@ -1092,6 +1093,7 @@ class App extends Component {
         {persons}
       </div>
     );
+  };
 }
 ```
 
@@ -1166,7 +1168,7 @@ export default ErrorBoundary;
 
 Usage:
 
-```
+```jsx
 <ErrorBoundary>
   <MyWidget />
 </ErrorBoundary>
@@ -1181,6 +1183,92 @@ try {
   // ...
 }
 ```
+</div>
+</div>
+
+-----
+
+<div>
+<button type="button" class="collapsible">+ Addendum: Semi-Colons!</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Summarized from [https://news.codecademy.com/your-guide-to-semicolons-in-javascript/](https://news.codecademy.com/your-guide-to-semicolons-in-javascript/).
+
+Javascript is pretty flexible when it comes to the presence (or lack) or semi-colons, but there are some pitfalls.  If you following these guidelines, you shouldn't encounter any issues:
+
+**Required**
+
+Always put semi-colons after statements:
+
+```jsx
+var i;                        // variable declaration
+i = 5;                        // value assignment
+i = i + 1;                    // value assignment
+i++;                          // same as above
+var x = 9;                    // declaration & assignment
+var fun = function() {...};   // var decl., assignmt, and func. defin.
+alert("hi");                  // function call
+```
+
+Strictly speaking, semi-colons are not required in these cases unless the statements are on the same line (e.g. `var i = 0; i++`), but it is good practice to include them.
+
+**Not Required**
+
+Don't need to put semi-colons after a curly bracket *unless* something is being assigned (e.g. `var obj = {};`):
+
+```jsx
+if  (...) {...} else {...}
+for (...) {...}
+while (...) {...}
+
+// function statement; no assignment so no semi-colon required: 
+function (arg) { /*do this*/ }
+```
+
+In these cases, adding a semi-colon is harmless, but it is good practice to leave them out.
+
+**Avoid**
+
+After the closing parenthensis of an `if`, `for`, `while` or `switch` statement:
+
+```jsx
+if (0 === 1); { alert("hi") }
+
+// equivalent to:
+
+if (0 === 1) /*do nothing*/ ;
+alert ("hi");
+```
+
+**Exceptions**
+
+* The closing parenthensis of a `do...while` loop must be terminated with a semi-colon:
+
+`do {...} while (...);`
+
+* The closing parenthensis of a Self-Executing Function:
+
+```jsx
+(function (parameters) {
+    // Function body
+})(parameters);
+```
+
+* Inside the `()` of a `for` loop, semicolons only go after the first and second statement, never after the third:
+
+```jsx
+for (var i=0; i < 10; i++)  {/*actions*/}       // correct
+for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
+```
+
+
+**Digression: What is a Self-Executing Function?**
+
+A Self-Executing Function (a.k.a Immediately Invoked Function Expressions) are functions which are invoked immediately after being defined, i.e. they don't need to be explicitly called elsewhere in the code.
+
+The general form is `(function(){ })()`.  
+   * The parentheses around the function are to ensure that the code within the function is contained in the private scope of the function.
+   * The parentheses at the end of the function are what invokes the function.
 </div>
 </div>
 
