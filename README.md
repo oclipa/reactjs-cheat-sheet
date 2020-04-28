@@ -979,6 +979,7 @@ console.log(months);
 </div>
 </div>
 <div>
+  
 <button type="button" class="collapsible">+ Lists</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1010,34 +1011,6 @@ render() {
 </div>
 </div>
 
-<div>
-<button type="button" class="collapsible">+ Two-Way Binding (WIP)</button>   
-<div class="content" style="display: none;" markdown="1">
-
-* See lecture 47
-</div>
-</div>
-<div>
-<button type="button" class="collapsible">+ Styling (WIP)</button>   
-<div class="content" style="display: none;" markdown="1">
-
-* Inline - lecture 49
-* Stylesheets - lecture 48
-* Dynamic - lecture 66 and 67
-* Radium - lecture 68 and 69
-   * `npm install radium`
-* styled-components - lecture 70, 71 and 72
-   * https://styled-components.com/
-   * `npm install styled-components`
-   * `import styled from 'styled-components'`
-   * ```const Button = styled.button`[css]` ```
-      * tagged template literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates 
-   * All styled methods return a React component
-* CSS modules
-   * See lecture 73, 74 and 75
-   * Also: https://stackoverflow.com/questions/50234890/how-to-use-css-modules-with-create-react-app
-</div>
-</div>
 <div>
 <button type="button" class="collapsible">+ Using Conditionals</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -1105,6 +1078,36 @@ class App extends Component {
 
 </div>
 </div>
+
+<div>
+<button type="button" class="collapsible">+ Two-Way Binding (WIP)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* See lecture 47
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Styling (WIP)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* Inline - lecture 49
+* Stylesheets - lecture 48
+* Dynamic - lecture 66 and 67
+* Radium - lecture 68 and 69
+   * `npm install radium`
+* styled-components - lecture 70, 71 and 72
+   * https://styled-components.com/
+   * `npm install styled-components`
+   * `import styled from 'styled-components'`
+   * ```const Button = styled.button`[css]` ```
+      * tagged template literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates 
+   * All styled methods return a React component
+* CSS modules
+   * See lecture 73, 74 and 75
+   * Also: https://stackoverflow.com/questions/50234890/how-to-use-css-modules-with-create-react-app
+</div>
+</div>
+
 <div>
 <button type="button" class="collapsible">+ Debugging</button>   
 <div class="content" style="display: none;" markdown="1">
