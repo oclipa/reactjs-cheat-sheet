@@ -5,7 +5,8 @@
 
 ## ReactJS
 
-**Recommended Course: [React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/course/react-the-complete-guide-incl-redux/)**
+**Recommended Course: 
+   * [React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/course/react-the-complete-guide-incl-redux/)**
 
 <div>
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
@@ -111,6 +112,9 @@ https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State
 
 </div>
 </div>
+
+-------
+
 <div>
 <button type="button" class="collapsible">+ Setup Basic Environment</button>
 <div class="content" style="display: none;" markdown="1">
@@ -303,7 +307,7 @@ export default calculator;
 <button type="button" class="collapsible">+ Functional vs Class Components</button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Both Function and Class components should start with an uppercase letter**
+**Both Functional and Class components should start with an uppercase letter**
 
 ### Functional Component
 
@@ -319,7 +323,7 @@ const Welcome = (props) => {
 }
 ```
 
-* Functional components does not access props via `this`(e.g. `props.XY`).
+* Functional components do not access props via `this`(e.g. `props.XY`).
 
 Pros:
 
@@ -341,11 +345,11 @@ Cons:
 * `import React, {useEffect} from 'react';`
 * Takes a function that will run for every render cycle.
   * `useEffect( () => { somefunction; }); )`
+* Can have multiple calls to useEffect in the same function (e.g. each reacting to different object).
 * Essentially, componentDidMount and componentDidUpdate combined in one effect (see below).
 * Controlled by passing an object (or array of objects) into the method and the method only reacts if the object has changed:
   * `useEffect( () => { somefunction; }, [props.somedata] ); )`
   * To have the method run only the first time an object is rendered, pass an empty array.
-* Can have multiple calls to useEffect in the same function (e.g. each reacting to different object).
 * To perform clean-up using useEffect, return a function:
   * `useEffect( () => { somefunction; }, [props.somedata] ); return () => { cleanupfunction } )`
   * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
@@ -365,7 +369,7 @@ class Welcome extends React.Component {
 
 * As a general of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
 
-**Component LifeCycle**
+**Class Component LifeCycle**
 
 1. This is only available to Class components.
 1. Lifecycle Hooks have nothing to do with React Hooks!
@@ -377,53 +381,53 @@ class Welcome extends React.Component {
 <br/>[Interactive Version](http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 
 * Mounting
-   * constructor()
+   1. `constructor()`
       * Call super(props)
       * Use to set up state
       * Don't cause Side-Effects
-   * getDerivedStateFromProps(props, state)
+   1. `getDerivedStateFromProps(props, state)`
       * Sync state with props
       * Very niche case
       * Don't cause Side-Effects
-   * render()
+   1. `render()`
       * Prepare and Structure your JSX code
       * Don't do any actions that will block the rendering process.
       * Only completes after render() has been called for all children.
-   * componentDidMount() &lt;-- Commonly used
+   1. `componentDidMount()` &lt;-- Commonly used
       * Very common 
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
-   * componentWillMount()
+   1. `componentWillMount()`
       * Available but deprecated
       * Do not use
 
 * Updating
-   * getDerivedStateFromProps(props, state)
+   1. `getDerivedStateFromProps(props, state)`
       * See above
-   * componentWillReceiveProps(props)
+   1. `componentWillReceiveProps(props)`
       * Available but deprecated
       * Do not use
-   * shouldComponentUpdate(nextProps, nextState); &lt;-- Commonly used
+   1. `shouldComponentUpdate(nextProps, nextState)` &lt;-- Commonly used
       * Used to cancel update process
       * Typically used for performance reasons (if used carefully)
-   * render()
+   1. `render()`
       * See above
-   * getSnapshotBeforeUpdate(prevProps, prevState)
+   1. `getSnapshotBeforeUpdate(prevProps, prevState)`
       * Another niche method
       * Last minute DOM operations (e.g. getting current scrolling position of user)
       * Don't cause Side-Effects
-   * componentWillUpdate()
+   1. `componentWillUpdate()`
       * Available but deprecated
       * Do not use
-   * componentDidUpdate() &lt;-- Commonly used
+   1. `componentDidUpdate()` &lt;-- Commonly used
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
 
 * Unmounting (clean-up)
-   * componentWillUnmount()
+   * `componentWillUnmount()
    
-   
-* componentDidCatch()
+* Other 
+   * componentDidCatch()
 
 </div>
 </div>
