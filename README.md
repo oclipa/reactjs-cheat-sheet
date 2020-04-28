@@ -704,7 +704,7 @@ For those coming from languages such as C#, it may be useful to think of functio
 </div>
 
 <div>
-<button type="button" class="collapsible">+ Spread and Rest Operators</button>   
+<button type="button" class="collapsible">+ Spread and Rest Operators (...)</button>   
 <div class="content" style="display: none;" markdown="1">
 
 Both Spread and Rest use the same operator: `...`
@@ -760,7 +760,7 @@ function sortArgs(...args) {
 </div>
 </div>
 <div>
-<button type="button" class="collapsible">+ Destructuring</button>   
+<button type="button" class="collapsible">+ Destructuring ([a, b] = [x, y])</button>   
 <div class="content" style="display: none;" markdown="1">
 
 The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) syntax is a JavaScript expression that makes it possible to unpack values from arrays, or properties from objects, into distinct variables.
@@ -808,7 +808,7 @@ function Greeting({name, ...restProps}) {
 </div>
 </div>
 <div>
-<button type="button" class="collapsible">+ Array Functions</button>   
+<button type="button" class="collapsible">+ Array Functions (=>)</button>   
 <div class="content" style="display: none;" markdown="1">
 
 **[`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)**
@@ -1177,7 +1177,7 @@ export default ErrorBoundary;
 
 Usage:
 
-```jsx
+```html
 <ErrorBoundary>
   <MyWidget />
 </ErrorBoundary>
@@ -1204,7 +1204,7 @@ try {
 Summarized from:
 * [https://news.codecademy.com/your-guide-to-semicolons-in-javascript/](https://news.codecademy.com/your-guide-to-semicolons-in-javascript/).
 
-Javascript is pretty flexible when it comes to the presence (or lack) or semi-colons, but there are some pitfalls.  If you following these guidelines, you shouldn't encounter any issues:
+Javascript is pretty flexible when it comes to the presence (or lack) of semi-colons, but there are some pitfalls.  If you following these guidelines, you shouldn't encounter any issues:
 
 **Required**
 
@@ -1220,7 +1220,7 @@ var fun = function() {...};   // var decl., assignmt, func. defin.
 alert("hi");                  // function call
 ```
 
-Strictly speaking, semi-colons are not required in these cases unless the statements are on the same line (e.g. `var i = 0; i++`), but it is good practice to include them.
+Strictly speaking, semi-colons are not required in these cases unless the statements are on the same line (e.g. `var i = 0; i++;`), but it is good practice to include them.
 
 **Not Required**
 
@@ -1283,7 +1283,7 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 
 A Self-Executing Function (a.k.a Immediately Invoked Function Expressions) are functions which are invoked immediately after being defined, i.e. they don't need to be explicitly called elsewhere in the code.
 
-The general form is `(function(){ })()`.  
+The general form is `(function(){ })();`.  
    * The parentheses around the function are to ensure that the code within the function is contained in the private scope of the function.
    * The parentheses at the end of the function are what invokes the function.
 </div>
