@@ -458,10 +458,10 @@ class Welcome extends React.Component {
       * Don't update state (at least, not synchronously)
 
 * Unmounting (clean-up)
-   * `componentWillUnmount()
+   * `componentWillUnmount()`
    
 * Other 
-   * componentDidCatch()
+   * `componentDidCatch()
 
 </div>
 </div>
@@ -521,16 +521,16 @@ e.g.
 ```
     var object = {
       myMethod: function() {
-        console.log("Am I still a method?");
+        console.log("What am I?");
       }
     };
     
-    object.myMethod();          // this is a method call
+    object.myMethod(); // method call
     
     var myFunc = object.myMethod; 
-    myFunc();                   // this is now a function call
+    myFunc();          // function call
 ```
-For those coming from languages such as C#, it may be better to think of functions as private and methods as public.
+For those coming from languages such as C#, it may be useful to think of functions as private and methods as public.
 </div>
 </div>
 
@@ -544,15 +544,19 @@ Both Spread and Rest use the same operator: `...`
    * Used to split up (i.e. spread) array elements OR object properties.
 
 ```
-// create new array by splitting the old array 
-// and adding objects a and b
+// create new array by splitting the old 
+// array and adding objects a and b
+
 const newArray = [...oldArray, a, b];
 
-// create new object by splitting up the old object 
-// into properties and adding a new property (newProp).
-// If oldObject already contains newProp, the old 
-// value will be overwritten.
-const newObject = { ...oldObject, newProp: 5 }
+// create new object by splitting up the 
+// old object into properties and adding 
+// a new property (newProp).
+// If oldObject already contains newProp, 
+// the old value will be overwritten.
+
+const newObject = ({ ...oldObject, 
+                           newProp: 5 })
 ```
 
 **Rest:**
@@ -562,17 +566,20 @@ const newObject = { ...oldObject, newProp: 5 }
 An example of the general case is:
 
 ```
-var dogPrefs = ["Dogs" , "Like" , "Bones"];
-const [animal , ...preference] = dogPrefs;
+var dogPref = ["Dogs" , "Like" , "Bones"];
+const [animal , ...pref] = dogPref;
 console.log(animal); // Dogs
-console.log(preference); // [ "Like" , "Bones"]
+console.log(pref); // [ "Like", "Bones"]
 ```
 
 A more common case is for handling arguments passed to a function:
 
 ```
-// args can be an unlimited list of arguments
-// the rest operator merges all of the arguments into an array
+// args can be an unlimited list of 
+// arguments.
+// The rest operator merges all of the 
+// arguments into an array.
+
 function sortArgs(...args) {
    return args.sort();
 }
@@ -588,41 +595,42 @@ The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/Java
 For arrays:
 
 ```
-    let a, b, rest;
-    [a, b] = [10, 20];
+let a, b, rest;
+[a, b] = [10, 20];
 
-    console.log(a);
-    // expected output: 10
+console.log(a);
+// expected output: 10
 
-    console.log(b);
-    // expected output: 20
+console.log(b);
+// expected output: 20
 
-    [a, b, ...rest] = [10, 20, 30, 40, 50];
+[a, b, ...rest] = [10, 20, 30, 40, 50];
 
-    console.log(rest);
-    // expected output: Array [30,40,50]
+console.log(rest);
+// expected output: Array [30,40,50]
 ```
 
 There is a similar syntax for objects (simply replaces `[]` with `{}`): 
 
 ```
-    {name} = {name:'Max', age: 28};
-    console.log(name); // Max
-    console.log(age); // undefined
+{name} = {name:'Max', age: 28};
+console.log(name); // Max
+console.log(age); // undefined
 
-    // The following component declarations are equivalent:
-    
-    function Greeting(props) {
-      return <div>Hi {props.name}!</div>;
-    }
+// The following component declarations 
+// are equivalent:
 
-    function Greeting({ name }) {
-      return <div>Hi {name}!</div>;
-    }
-    
-    function Greeting({ name, ...restProps }) {
-      return <div>Hi {name}!</div>;
-    }
+function Greeting(props) {
+  return <div>Hi {props.name}!</div>;
+}
+
+function Greeting({name}) {
+  return <div>Hi {name}!</div>;
+}
+
+function Greeting({name, ...restProps}) {
+  return <div>Hi {name}!</div>;
+}
 ```
 </div>
 </div>
@@ -635,13 +643,13 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Applies a function to each element in an array and returns a new array with the result.
 
 ```
-    const array1 = [1, 4, 9, 16];
+const array1 = [1, 4, 9, 16];
 
-    // pass a function to map
-    const map1 = array1.map(x => x * 2);
+// pass a function to map
+const map1 = array1.map(x => x * 2);
 
-    console.log(map1);
-    // expected output: Array [2, 8, 18, 32]
+console.log(map1);
+// expected output: Array [2, 8, 18, 32]
 ```
 
 -----
@@ -651,12 +659,13 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Returns the **first** element in an array that matches the testing function. 
 
 ```
-    const array1 = [5, 12, 8, 130, 44];
+const array1 = [5, 12, 8, 130, 44];
 
-    const found = array1.find(element => element > 10);
+const res = array1.find(element => 
+                          element > 10);
 
-    console.log(found);
-    // expected output: 12
+console.log(res);
+// expected output: 12
 ```
 
 -----
@@ -666,12 +675,13 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Returns the index of the **first** element in an array that matches the testing function. 
 
 ```
-    const array1 = [5, 12, 8, 130, 44];
+const array1 = [5, 12, 8, 130, 44];
 
-    const isLargeNumber = (element) => element > 13;
+const isLarge = (element) => 
+                    element > 13;
 
-    console.log(array1.findIndex(isLargeNumber));
-    // expected output: 3
+console.log(array1.findIndex(isLarge));
+// expected output: 3
 ```
 
 -----
@@ -681,12 +691,16 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Returns a new array that only contains elements of the input array that match the testing function. 
 
 ```
-    const words = ['spray', 'limit', 'elite', 'exuberant', 'destruction', 'present'];
+const words = ['spray', 'limit', 'elite', 
+                'enflame', 'dutiful', 
+                'present'];
 
-    const result = words.filter(word => word.length > 6);
+const res = words.filter(word => 
+                          word.length > 6);
 
-    console.log(result);
-    // expected output: Array ["exuberant", "destruction", "present"]
+console.log(res);
+// expected output: 
+// Array ["enflame", "dutiful", "present"]
 ```
 
 -----
@@ -696,17 +710,17 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Applies a [reducer](https://www.robinwieruch.de/javascript-reducer) function to each element of an array, resulting in a single output value.
 
 ```
-    const array1 = [1, 2, 3, 4];
-    const reducer = (accumulator, currentValue) => 
-                          accumulator + currentValue;
+const array1 = [1, 2, 3, 4];
+const reducer = (total, currentValue) => 
+                      total + currentValue;
 
-    // 1 + 2 + 3 + 4
-    console.log(array1.reduce(reducer));
-    // expected output: 10
+// 1 + 2 + 3 + 4
+console.log(array1.reduce(reducer));
+// expected output: 10
 
-    // 5 + 1 + 2 + 3 + 4
-    console.log(array1.reduce(reducer, 5));
-    // expected output: 15
+// 5 + 1 + 2 + 3 + 4
+console.log(array1.reduce(reducer, 5));
+// expected output: 15
 ```
 
 -----
@@ -729,12 +743,12 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Syntax 2: `array1.concat[value1[, value2[, ...[, valueN]]]]`
 
 ```
-    const letters = ['a', 'b', 'c'];
+const letters = ['a', 'b', 'c'];
 
-    const alphaNumeric = letters.concat(1, [2, 3]);
+const result = letters.concat(1, [2, 3]);
 
-    console.log(alphaNumeric); 
-    // results in ['a', 'b', 'c', 1, 2, 3]
+console.log(result); 
+// results in ['a', 'b', 'c', 1, 2, 3]
 ```
 
 -----
@@ -745,17 +759,21 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Syntax: `slice[inclusive begin, exclusive end]`
 
 ```
-    const animals = ['ant', 'bison', 'camel', 'duck', 'elephant'];
+const animals = ['ant', 'bison', 
+                  'camel', 'duck', 
+                  'elephant'];
 
-    console.log(animals.slice(2));
-    // expected output: Array ["camel", "duck", "elephant"]
+console.log(animals.slice(2));
+// expected output: 
+// Array ["camel", "duck", "elephant"]
 
-    // slice[inclusive begin, exclusive end]
-    console.log(animals.slice(2, 4));
-    // expected output: Array ["camel", "duck"]
+console.log(animals.slice(2, 4));
+// expected output: 
+// Array ["camel", "duck"]
 
-    console.log(animals.slice(1, 5));
-    // expected output: Array ["bison", "camel", "duck", "elephant"]
+console.log(animals.slice(1, 5));
+// expected output: 
+// Array ["bison", "camel", "duck", "elephant"]
 ```
 
 -----
@@ -766,16 +784,23 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 * Syntax: `let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])`
 
 ```
-    const months = ['Jan', 'March', 'April', 'June'];
+    const months = ['Jan', 'March', 
+                    'April', 'June'];
     months.splice(1, 0, 'Feb');
     // inserts at index 1
+    
     console.log(months);
-    // expected output: Array ["Jan", "Feb", "March", "April", "June"]
+    // expected output: 
+    // Array ["Jan", "Feb", "March", 
+    //          "April", "June"]
 
     months.splice(4, 1, 'May');
     // replaces 1 element at index 4
+    
     console.log(months);
-    // expected output: Array ["Jan", "Feb", "March", "April", "May"]
+    // expected output: 
+    // Array ["Jan", "Feb", "March", 
+    //          "April", "May"]
 ```
 
 </div>
@@ -860,29 +885,40 @@ class ErrorBoundary extends Component {
     super(props);
     this.state = {
       hasError: false,
-      errorMessage: ''  
+      message: ''  
     }
   }
 
-  // can be used for both client- and server-side
-  // is called in "render phase" when the DOM has not yet been updated
-  // should be used for rendering a fallback UI
+  // Can be used for both client- and 
+  // server-side.
+  // Is called in "render phase" when the 
+  // DOM has not yet been updated.
+  // Should be used for rendering a 
+  // fallback UI.
   static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
+    // Update state so the next render will 
+    // show the fallback UI.
     return { hasError: true };
   }
   
-  // can only be used on the client-side
-  // is called during the "commit phase" when the DOM has already been updated
-  // should be used for something like error reporting
-  componentDidCatch = (error, errorInfo) => {
-    this.setState({hasError: true, errorMessage: error});
-    //logComponentStackToMyService(errorInfo.componentStack);
+  // Can only be used on the client-side.
+  // Is called during the "commit phase" when 
+  // the DOM has already been updated.
+  // Should be used for something like 
+  // error reporting.
+  componentDidCatch = (error, info) => {
+    this.setState(
+      {
+        hasError: true, 
+        message: error
+      }
+    );
+    //logStackToService(info.componentStack);
   }
   
   render() {
     if (this.state.hasError) {
-      return <h1>{this.state.errorMessage}</h1>;
+      return <h1>{this.state.message}</h1>;
     }
 
     return this.props.children;
