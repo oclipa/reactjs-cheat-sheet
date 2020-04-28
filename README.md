@@ -5,8 +5,10 @@
 
 ## ReactJS
 
-**Recommended Course: 
-   * [React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/course/react-the-complete-guide-incl-redux/)**
+**Recommended Course:**
+   * **[React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/course/react-the-complete-guide-incl-redux/)**
+
+-------
 
 <div>
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
@@ -109,6 +111,38 @@ Greeting.defaultProps = {
 * Callback Chaining
 * Async Sequence
 https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State
+
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Best Practices List</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Taken from [https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a](https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a)**
+
+* When using ReduxJS, split your Reducer code into smaller methods to avoid huge JSON within your Reducer.
+* Consider using TypeScript in your apps if you do not do it already.
+* Use the create-react-app generator to bootstrap your ReactJS app.
+* Keep your code DRY. Don’t Repeat Yourself, but keep in mind code duplicate is NOT always a bad thing.
+* Avoid having large classes, methods or components, including Reducers.
+* Use more robust managers to manage application state, such as Redux.
+* Use event synchronizer, such as Redux-Thunk, for interactions with your back end API.
+* Avoid passing too many attributes or arguments. Limit yourself to five props that you pass into your component.
+* Use ReactJS defaultProps and ReactJS propTypes.
+* Use linter, break up lines that are too long.
+* Keep your own jslint configuration file.
+* Always use a dependency manager with a lock file, such as NPM or yarn.
+* Test your commonly accessed code, code that is complex and prone to bugs.
+* Write more tests that give more test coverage for your code with a little effort and test code to ensure its proper functioning.
+* Every time you find a bug, make sure you write a test first.
+* Use function-based components by starting to use React Hooks, a new ReactJS way to create state-full components.
+* Use ES6 de-structuring for your props.
+* Use conditional rendering.
+* User `map()` to collect and render collections of components.
+* Use partial components, such as `<>` … `</>`
+* Name your event handlers with handle prefixes, such as `handleClick()` or `handleUpdate()`.
+* Use `onChange` to control your inputs, such as `onChange={this.handleInputChange}`.
+* Use JEST to test your ReactJS code.
 
 </div>
 </div>
@@ -431,15 +465,7 @@ class Welcome extends React.Component {
 
 </div>
 </div>
-<div>
-<button type="button" class="collapsible">+ Arrow Functions</button>   
-<div class="content" style="display: none;" markdown="1">
 
-* See: https://medium.com/@jacobworrel/es6-arrow-functions-what-not-to-do-c28c96b4f396
-* See lecture 14
-
-</div>
-</div>
 <div>
 <button type="button" class="collapsible">+ let, const and var</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -447,6 +473,52 @@ class Welcome extends React.Component {
 * See lecture 13
 </div>
 </div>
+
+<div>
+<button type="button" class="collapsible">+ Arrow Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+"Traditional" Function (ES5):
+'''
+function myFunc() {
+  console.log(arguments);
+  return ...
+}
+'''
+
+Arrow Function (ES6):
+'''
+const myFunc = (args) => ({
+  console.log(args);
+  ...
+})
+'''
+
+Differences:
+* Arrow functions avoid problems with `this` keyword (always refers to the enclosing context).
+* Arrow functions have an implict return, so the `return` keyword does not need to be used, however the the function block must be wrapped in parantheses (if nothing is being returned, the parantheses can be left out).
+* Arrow functions cannot be [hoisted](https://www.w3schools.com/js/js_hoisting.asp), unlike the ES5 function.
+* Arguments must be explicitly passed into arrow functions (the `arguments` object is only available to ES5 functions).
+* Cannot use arrow functions as constructors or methods.
+
+Digression:
+The difference between a method and a function (in javascript) is: 
+   * functions are called in isolation (e.g. someFunction())
+   * methods are only called from other objects (e.g. someObject.someFunction())
+e.g.
+```
+    var object = {
+      myMethod: function() {
+        console.log("Am I still a method?");
+      }
+    };
+    object.myMethod();          // this is a method call
+    var myFunc = object.myMethod; 
+    myFunc();                   // this is now a function call
+```
+</div>
+</div>
+
 <div>
 <button type="button" class="collapsible">+ Spread and Rest Operators</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -644,39 +716,6 @@ try {
   // ...
 }
 ```
-</div>
-</div>
-
-<div>
-<button type="button" class="collapsible">+ Best Practices List</button>   
-<div class="content" style="display: none;" markdown="1">
-
-**Taken from [https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a](https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a)**
-
-* When using ReduxJS, split your Reducer code into smaller methods to avoid huge JSON within your Reducer.
-* Consider using TypeScript in your apps if you do not do it already.
-* Use the create-react-app generator to bootstrap your ReactJS app.
-* Keep your code DRY. Don’t Repeat Yourself, but keep in mind code duplicate is NOT always a bad thing.
-* Avoid having large classes, methods or components, including Reducers.
-* Use more robust managers to manage application state, such as Redux.
-* Use event synchronizer, such as Redux-Thunk, for interactions with your back end API.
-* Avoid passing too many attributes or arguments. Limit yourself to five props that you pass into your component.
-* Use ReactJS defaultProps and ReactJS propTypes.
-* Use linter, break up lines that are too long.
-* Keep your own jslint configuration file.
-* Always use a dependency manager with a lock file, such as NPM or yarn.
-* Test your commonly accessed code, code that is complex and prone to bugs.
-* Write more tests that give more test coverage for your code with a little effort and test code to ensure its proper functioning.
-* Every time you find a bug, make sure you write a test first.
-* Use function-based components by starting to use React Hooks, a new ReactJS way to create state-full components.
-* Use ES6 de-structuring for your props.
-* Use conditional rendering.
-* User `map()` to collect and render collections of components.
-* Use partial components, such as `<>` … `</>`
-* Name your event handlers with handle prefixes, such as `handleClick()` or `handleUpdate()`.
-* Use `onChange` to control your inputs, such as `onChange={this.handleInputChange}`.
-* Use JEST to test your ReactJS code.
-
 </div>
 </div>
 
