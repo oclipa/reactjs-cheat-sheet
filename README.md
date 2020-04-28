@@ -1037,8 +1037,64 @@ render() {
 <div>
 <button type="button" class="collapsible">+ Using Conditionals</button>   
 <div class="content" style="display: none;" markdown="1">
-  
-* See lecture 53
+
+* Conditional statements take advantage of the fact that you can inject javascript into jsx using single curly braces `{}`.
+* Having said that, inside jsx, only ternary expressions are available (`test ? a : b`).
+
+```jsx
+import React, { Component } from 'react';
+import Town from 'Town';
+
+class App extends Component {
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    this.setState({showPersons: !doesShow});
+  }
+
+  render() {
+    return (
+      <div>
+        { this.state.showPersons ? 
+          <div>
+            ...
+          </div> : null
+        }
+      </div>
+    );
+}
+```
+
+* Alternatively, the following is a more elegant (and recommended) approach:
+
+```jsx
+import React, { Component } from 'react';
+import Town from 'Town';
+
+class App extends Component {
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    this.setState({showPersons: !doesShow});
+  }
+
+  render() {
+    let persons = null;
+    
+    if (this.state.showPersons) {
+      persons = (
+          <div>
+            ...
+          </div> 
+      )
+    }
+    
+    return (
+      <div>
+        {persons}
+      </div>
+    );
+}
+```
+
 </div>
 </div>
 <div>
