@@ -630,7 +630,7 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 <button type="button" class="collapsible">+ Array Functions</button>   
 <div class="content" style="display: none;" markdown="1">
 
-[`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) 
+**[`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)**
 
 * Applies a function to each element in an array and returns a new array with the result.
 
@@ -644,7 +644,9 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // expected output: Array [2, 8, 18, 32]
 ```
 
-[`find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) 
+-----
+
+**[`find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)** 
 
 * Returns the **first** element in an array that matches the testing function. 
 
@@ -657,7 +659,9 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // expected output: 12
 ```
 
-[`findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)
+-----
+
+**[`findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)**
 
 * Returns the index of the **first** element in an array that matches the testing function. 
 
@@ -670,7 +674,9 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // expected output: 3
 ```
 
-[`filter()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) 
+-----
+
+**[`filter()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)** 
 
 * Returns a new array that only contains elements of the input array that match the testing function. 
 
@@ -683,7 +689,9 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // expected output: Array ["exuberant", "destruction", "present"]
 ```
 
-[`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce) 
+-----
+
+**[`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)** 
 
 * Applies a [reducer](https://www.robinwieruch.de/javascript-reducer) function to each element of an array, resulting in a single output value.
 
@@ -701,7 +709,9 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // expected output: 15
 ```
 
-[`concat()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) 
+-----
+
+**[`concat()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)** 
 
 * Returns a new array that is a concatenation of two or more arrays (using a shallow copy).
 * Syntax 1: `array1.concat[array2, array3, ...arrayN]`
@@ -714,6 +724,8 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // result in ['a', 'b', 'c', 1, 2, 3]
 ```
 
+&nbsp;
+
 * Syntax 2: `array1.concat[value1[, value2[, ...[, valueN]]]]`
 
 ```
@@ -725,7 +737,9 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // results in ['a', 'b', 'c', 1, 2, 3]
 ```
 
-[`slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) 
+-----
+
+**[`slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)** 
 
 * Returns a new array containing a shallow copy of the selected elements of an array.
 * Syntax: `slice[inclusive begin, exclusive end]`
@@ -744,10 +758,12 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
     // expected output: Array ["bison", "camel", "duck", "elephant"]
 ```
 
-[`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice) 
+-----
+
+**[`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)** 
 
 * Changes the contents of an array by removing or replacing existing elements and/or adding new elements [in place](https://en.wikipedia.org/wiki/In-place_algorithm) (i.e. it does not create a new array).
-* Syntax: let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])
+* Syntax: `let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])`
 
 ```
     const months = ['Jan', 'March', 'April', 'June'];
