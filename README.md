@@ -583,46 +583,47 @@ function sortArgs(...args) {
 <button type="button" class="collapsible">+ Destructuring</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* See lecture 19
-
 The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) syntax is a JavaScript expression that makes it possible to unpack values from arrays, or properties from objects, into distinct variables.
 
-```
-let a, b, rest;
-[a, b] = [10, 20];
-
-console.log(a);
-// expected output: 10
-
-console.log(b);
-// expected output: 20
-
-[a, b, ...rest] = [10, 20, 30, 40, 50];
-
-console.log(rest);
-// expected output: Array [30,40,50]
-```
-
-The following component declarations are equivalent:
+For arrays:
 
 ```
-function Greeting(props) {
-  return <div>Hi {props.name}!</div>;
-}
+    let a, b, rest;
+    [a, b] = [10, 20];
 
-function Greeting({ name }) {
-  return <div>Hi {name}!</div>;
-}
+    console.log(a);
+    // expected output: 10
+
+    console.log(b);
+    // expected output: 20
+
+    [a, b, ...rest] = [10, 20, 30, 40, 50];
+
+    console.log(rest);
+    // expected output: Array [30,40,50]
 ```
 
-The following is an example [Rest Parameter Syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters), which collects remaining props into an object:
+There is a similar syntax for objects (simply replaces `[]` with `{}`): 
 
 ```
-function Greeting({ name, ...restProps }) {
-  return <div>Hi {name}!</div>;
-}
-```
+    {name} = {name:'Max', age: 28};
+    console.log(name); // Max
+    console.log(age); // undefined
 
+    // The following component declarations are equivalent:
+    
+    function Greeting(props) {
+      return <div>Hi {props.name}!</div>;
+    }
+
+    function Greeting({ name }) {
+      return <div>Hi {name}!</div>;
+    }
+    
+    function Greeting({ name, ...restProps }) {
+      return <div>Hi {name}!</div>;
+    }
+```
 </div>
 </div>
 <div>
