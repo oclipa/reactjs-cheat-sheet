@@ -96,7 +96,8 @@
 * Module Pattern
 * Default Props and Initial State
    * Specify default values for `props` with `defaultProps`.
-```
+
+```jsx
 function Greeting(props) {
   return <div>Hi {props.name}!</div>;
 }
@@ -487,7 +488,7 @@ With the release of ES6, avoid using `var`.
 
 "Traditional" Function (ES5):
 
-```
+```jsx
 function myFunc() {
   console.log(arguments);
   return ...
@@ -496,7 +497,7 @@ function myFunc() {
 
 Arrow Function (ES6):
 
-```
+```jsx
 const myFunc = (args) => ({
   console.log(args);
   ...
@@ -518,7 +519,7 @@ The difference between a method and a function (in javascript) is that:
 
 e.g.
 
-```
+```jsx
     var object = {
       myMethod: function() {
         console.log("What am I?");
@@ -543,7 +544,7 @@ Both Spread and Rest use the same operator: `...`
 **Spread:**
    * Used to split up (i.e. spread) array elements OR object properties.
 
-```
+```jsx
 // create new array by splitting the old 
 // array and adding objects a and b
 
@@ -565,7 +566,7 @@ const newObject = ({ ...oldObject,
 
 An example of the general case is:
 
-```
+```jsx
 var dogPref = ["Dogs" , "Like" , "Bones"];
 const [animal , ...pref] = dogPref;
 console.log(animal); // Dogs
@@ -574,7 +575,7 @@ console.log(pref); // [ "Like", "Bones"]
 
 A more common case is for handling arguments passed to a function:
 
-```
+```jsx
 // args can be an unlimited list of 
 // arguments.
 // The rest operator merges all of the 
@@ -594,7 +595,7 @@ The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/Java
 
 For arrays:
 
-```
+```jsx
 let a, b, rest;
 [a, b] = [10, 20];
 
@@ -612,7 +613,7 @@ console.log(rest);
 
 There is a similar syntax for objects (simply replaces `[]` with `{}`): 
 
-```
+```jsx
 {name} = {name:'Max', age: 28};
 console.log(name); // Max
 console.log(age); // undefined
@@ -642,7 +643,7 @@ function Greeting({name, ...restProps}) {
 
 * Applies a function to each element in an array and returns a new array with the result.
 
-```
+```jsx
 const array1 = [1, 4, 9, 16];
 
 // pass a function to map
@@ -658,7 +659,7 @@ console.log(map1);
 
 * Returns the **first** element in an array that matches the testing function. 
 
-```
+```jsx
 const array1 = [5, 12, 8, 130, 44];
 
 const res = array1.find(element => 
@@ -674,7 +675,7 @@ console.log(res);
 
 * Returns the index of the **first** element in an array that matches the testing function. 
 
-```
+```jsx
 const array1 = [5, 12, 8, 130, 44];
 
 const isLarge = (element) => 
@@ -690,7 +691,7 @@ console.log(array1.findIndex(isLarge));
 
 * Returns a new array that only contains elements of the input array that match the testing function. 
 
-```
+```jsx
 const words = ['spray', 'limit', 'elite', 
                 'enflame', 'dutiful', 
                 'present'];
@@ -709,7 +710,7 @@ console.log(res);
 
 * Applies a [reducer](https://www.robinwieruch.de/javascript-reducer) function to each element of an array, resulting in a single output value.
 
-```
+```jsx
 const array1 = [1, 2, 3, 4];
 const reducer = (total, currentValue) => 
                       total + currentValue;
@@ -730,19 +731,19 @@ console.log(array1.reduce(reducer, 5));
 * Returns a new array that is a concatenation of two or more arrays (using a shallow copy).
 * Syntax 1: `array1.concat[array2, array3, ...arrayN]`
 
-```
-    const letters = ['a', 'b', 'c'];
-    const numbers = [1, 2, 3];
+```jsx
+const letters = ['a', 'b', 'c'];
+const numbers = [1, 2, 3];
 
-    letters.concat(numbers);
-    // result in ['a', 'b', 'c', 1, 2, 3]
+letters.concat(numbers);
+// result in ['a', 'b', 'c', 1, 2, 3]
 ```
 
 &nbsp;
 
 * Syntax 2: `array1.concat[value1[, value2[, ...[, valueN]]]]`
 
-```
+```jsx
 const letters = ['a', 'b', 'c'];
 
 const result = letters.concat(1, [2, 3]);
@@ -758,7 +759,7 @@ console.log(result);
 * Returns a new array containing a shallow copy of the selected elements of an array.
 * Syntax: `slice[inclusive begin, exclusive end]`
 
-```
+```jsx
 const animals = ['ant', 'bison', 
                   'camel', 'duck', 
                   'elephant'];
@@ -783,34 +784,55 @@ console.log(animals.slice(1, 5));
 * Changes the contents of an array by removing or replacing existing elements and/or adding new elements [in place](https://en.wikipedia.org/wiki/In-place_algorithm) (i.e. it does not create a new array).
 * Syntax: `let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])`
 
-```
-    const months = ['Jan', 'March', 
-                    'April', 'June'];
-    months.splice(1, 0, 'Feb');
-    // inserts at index 1
-    
-    console.log(months);
-    // expected output: 
-    // Array ["Jan", "Feb", "March", 
-    //          "April", "June"]
+```jsx
+const months = ['Jan', 'March', 
+                'April', 'June'];
+months.splice(1, 0, 'Feb');
+// inserts at index 1
 
-    months.splice(4, 1, 'May');
-    // replaces 1 element at index 4
-    
-    console.log(months);
-    // expected output: 
-    // Array ["Jan", "Feb", "March", 
-    //          "April", "May"]
+console.log(months);
+// expected output: 
+// Array ["Jan", "Feb", "March", 
+//          "April", "June"]
+
+months.splice(4, 1, 'May');
+// replaces 1 element at index 4
+
+console.log(months);
+// expected output: 
+// Array ["Jan", "Feb", "March", 
+//          "April", "May"]
 ```
 
 </div>
 </div>
 <div>
-<button type="button" class="collapsible">+ Iterating Over Lists</button>   
+<button type="button" class="collapsible">+ Lists</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* map()
-* Spread Operator
+List items must always have a `key` property.  Note that using `index` as the `key` is not recommended, since it is an intrinsic part of the list, rather than part of the objects in the list.
+
+```jsx
+deleteHandler = (personIndex) => {
+  // create copy of array 
+  // before manipulating it.
+  const persons = [...this.state.persons];
+  persons.splice(personIndex, 1);
+  this.setState({persons: persons});
+}
+
+render() {
+  return this.state.persons.map(
+    (person, index) => {
+      return <Person 
+        click={() => this.deleteHandler(index)}
+        name={person.name} 
+        age={person.age}
+        key={person.id} />
+    }
+  );
+}
+```
 
 </div>
 </div>
@@ -823,6 +845,7 @@ console.log(animals.slice(1, 5));
 * setState()
    * [Beware: React setState is asynchronous!](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3)
    * https://reactjs.org/docs/react-component.html#setstate
+   * Should only change state immutably, i.e. never change the source object, always create a copy and then overwrite the original with the copy.
 * useState() - see lecture 44
 </div>
 </div>
