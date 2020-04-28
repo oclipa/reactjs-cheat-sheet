@@ -505,23 +505,28 @@ const myFunc = (args) => ({
 
 Differences:
 * Arrow functions avoid problems with `this` keyword (always refers to the enclosing context).
-* Arrow functions have an implict return, so the `return` keyword does not need to be used, however the the function block must be wrapped in parantheses (if nothing is being returned, the parantheses can be left out).
+* Arrow functions have an implicit return, so the `return` keyword does not need to be used, however the function block must be wrapped in parantheses (if nothing is being returned, the parantheses can be left out).
 * Arrow functions cannot be [hoisted](https://www.w3schools.com/js/js_hoisting.asp), unlike the ES5 function.
 * Arguments must be explicitly passed into arrow functions (the `arguments` object is only available to ES5 functions).
 * Cannot use arrow functions as constructors or methods (see below).
 
 Digression: **What is the difference between a method and a function?**
+
 The difference between a method and a function (in javascript) is that: 
    * functions are called in isolation (e.g. `someFunction()`)
    * methods are only called from other objects (e.g. `someObject.someFunction()`)
+
 e.g.
+
 ```
     var object = {
       myMethod: function() {
         console.log("Am I still a method?");
       }
     };
+    
     object.myMethod();          // this is a method call
+    
     var myFunc = object.myMethod; 
     myFunc();                   // this is now a function call
 ```
@@ -533,7 +538,41 @@ For those coming from languages such as C#, it may be better to think of functio
 <button type="button" class="collapsible">+ Spread and Rest Operators</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* See lecture 18
+Both Spread and Rest use the same operator: `...`
+
+**Spread:**
+   * Used to split up (i.e. spread) array elements OR object properties.
+
+```
+// create new array by splitting the old array and adding objects a and b
+const newArray = [...oldArray, a, b];
+
+// create new object by splitting up the old object into properties and adding a new property (newProp)
+// if oldObject already contains newProp, the old value will be overwritten.
+const newObject = { ...oldObject, newProp: 5 }
+```
+
+**Rest:**
+   * Used to merge a list of elements into an array.
+   * Name comes from ability to merge "the rest of the elements" into an array.
+
+An example of the general case is:
+
+```
+var dogPrefs = ["Dogs" , "Like" , "Bones"];
+const [animal , ...preference] = dogPrefs;
+console.log(animal); // Dogs
+console.log(preference); // [ "Like" , "Bones"]
+```
+
+A more common case is for handling arguments passed to a function:
+
+```
+// args can be an unlimited list of arguments; the rest operator merges all of the arguments into an array
+function sortArgs(...args) {
+   return args.sort();
+}
+```
 </div>
 </div>
 <div>
