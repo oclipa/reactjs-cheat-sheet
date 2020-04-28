@@ -342,7 +342,9 @@ export default calculator;
 <button type="button" class="collapsible">+ Functional vs Class Components</button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Both Functional and Class components should start with an uppercase letter**
+**Both Functional and Class components should start with an uppercase letter.**
+
+-------
 
 ### Functional Component
 
@@ -375,6 +377,8 @@ Cons:
    * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
    * useEffect() allows you to perform an action after render() has been called.
 
+-------
+
 **useEffect()**
 
 * `import React, {useEffect} from 'react';`
@@ -389,6 +393,7 @@ Cons:
   * `useEffect( () => { somefunction; }, [props.somedata] ); return () => { cleanupfunction } )`
   * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
 
+-------
 
 ### Class Component
 
@@ -404,6 +409,8 @@ class Welcome extends React.Component {
 
 * As a general of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
 
+-------
+
 **Class Component LifeCycle**
 
 1. This is only available to Class components.
@@ -415,7 +422,7 @@ class Welcome extends React.Component {
 &copy; Dan Abramov: [https://overreacted.io/](https://overreacted.io/)
 <br/>[Interactive Version](http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 
-* Mounting
+* **Mounting**
    1. `constructor()`
       * Call super(props)
       * Use to set up state
@@ -436,7 +443,7 @@ class Welcome extends React.Component {
       * Available but deprecated
       * Do not use
 
-* Updating
+* **Updating**
    1. `getDerivedStateFromProps(props, state)`
       * See above
    1. `componentWillReceiveProps(props)`
@@ -458,10 +465,10 @@ class Welcome extends React.Component {
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
 
-* Unmounting (clean-up)
+* **Unmounting (clean-up)**
    * `componentWillUnmount()`
    
-* Other 
+* **Other**
    * `componentDidCatch()
 
 </div>
@@ -474,6 +481,8 @@ class Welcome extends React.Component {
 There are two approaches to handling application state:
    * `state`
    * `props`
+
+-------
 
 **state**
 
@@ -528,6 +537,8 @@ deleteOldestHandler = () => {
 }
 ```
 
+-------
+
 **props**
 
 * Unlike `state`, both Class components and Functional components can access the `props` object.
@@ -553,6 +564,8 @@ const Town = (props) => {
 
 export default Town;
 ```
+
+-------
 
 **useState()**
 
@@ -660,7 +673,9 @@ Differences:
 * Arguments must be explicitly passed into arrow functions (the `arguments` object is only available to ES5 functions).
 * Cannot use arrow functions as constructors or methods (see below).
 
-Digression: **What is the difference between a method and a function?**
+-----
+
+**Digression: What is the difference between a method and a function?**
 
 The difference between a method and a function (in javascript) is that: 
    * functions are called in isolation (e.g. `someFunction()`)
@@ -690,6 +705,8 @@ For those coming from languages such as C#, it may be useful to think of functio
 
 Both Spread and Rest use the same operator: `...`
 
+-----
+
 **Spread:**
    * Used to split up (i.e. spread) array elements OR object properties.
 
@@ -708,6 +725,8 @@ const newArray = [...oldArray, a, b];
 const newObject = ({ ...oldObject, 
                            newProp: 5 })
 ```
+
+-----
 
 **Rest:**
    * Used to merge a list of elements into an array.
