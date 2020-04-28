@@ -375,7 +375,7 @@ Cons:
    * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
    * useEffect() allows you to perform an action after render() has been called.
 
-**useEffect**
+**useEffect()**
 
 * `import React, {useEffect} from 'react';`
 * Takes a function that will run for every render cycle.
@@ -464,6 +464,152 @@ class Welcome extends React.Component {
 * Other 
    * `componentDidCatch()
 
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Props & State</button>   
+<div class="content" style="display: none;" markdown="1">
+
+There are two approaches to handling application state:
+   * `state`
+   * `props`
+
+**state**
+
+* `state`, as the name suggests, records the current state of a **class** component.
+* Not all components need to have state (it can be maintained by a parent component).
+* The `state`object is defined at the top of the class definition:
+
+```jsx
+import React, { Component } from 'react';
+import Town from 'Town';
+
+class App extends Component {
+  state = {
+    persons: [
+      { name: 'Fred', age: 40 },
+      { name: 'Wilma', age: 35 },
+      { name: 'Barney', age: 38 },
+    ],
+    location: 'Bedrock'
+  };
+  
+  ...
+  
+  render() {
+    return (
+      <Town
+        name={this.state.location}
+        persons={this.state.persons}
+        clicked={this.deleteOldestHandler}
+      />
+    );
+  }
+}
+```
+
+* In class components, state should be updated using the [`setState()`](https://reactjs.org/docs/react-component.html#setstate) function; it should never be updated directly (e.g. do not use `this.state.name = newName`).
+* Be aware that `setState()` is [asynchronous](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3).  Calling `setState()` should be considered a request that React may ignore.  This is particularly true if `setState()` is called multiple times in the same update cycle; later calls may overwrite earlier ones. 
+* In addition, it is good practice to only ever change state properties immutably.  This can be achieved by making a copy of the property to be updated, updating the copy and then overwriting the original property, e.g.
+
+```jsx
+deleteOldestHandler = () => {
+  // create a copy of the person array
+  // using the spread operator
+  const persons = [...this.state.persons];
+
+  // sort the array by increasing age and 
+  // remove the last person
+  persons.sort((a, b) => a.age - b.age).pop();
+  
+  // overwrite the old array with the new one.
+  this.setState({persons: persons});
+}
+```
+
+**props**
+
+* Functional components do not maintain their own state, but inherit it via the `props` object, which is a read-only object passed in via the function parameters.
+* Since props cannot be updated, the only way to update the state is via callbacks passed via the `props` object.  In this way, the parent object both owns the state and is responsible for updating it.
+
+```jsx
+import React from 'react';
+
+const Town = (props) => { 
+  return (
+    <div>
+      <h1>Name: {props.name}</h1>
+      <h1>Occupants: {props.persons.length}</h1>
+      <button onClick={props.clicked}>
+        Remove Oldest Person
+      </button>
+    </div>
+  );
+}
+
+export default Town;
+```
+
+**useState()**
+
+* The one important caveat to the above is that, since React 16.8, functional components can call `useState()` to update the state.
+* This method only allow the entire state to be overwritten; it does not allow specific properties to be updated.
+* However, can have multiple calls to `useState` in the same functional class.
+* `useState` returns an array with exactly two elements.
+   * The first element is the current state.
+   * The second element will always be a function that allows the state to be updated.
+
+```
+import React, { useState } from 'react';
+
+const App = props => {
+  const [pState, setPState] = useState({
+    persons: [
+      { name: 'Fred', age: 40 },
+      { name: 'Wilma', age: 35 },
+      { name: 'Barney', age: 38 },
+    ]  
+  });
+  
+  // add location separately
+  const [lState, setLState] 
+          = useState(
+              {
+                location: 'Bedrock'
+              }
+            );
+  
+  // add some other random object
+  useState('another value');
+
+  // function within a function
+  const nameHandler = () => {
+    setPState({
+      persons: [
+        { name: 'Betty', age: 34 },
+        { name: 'Wilma', age: 35 },
+        { name: 'Barney', age: 38 },
+      ]
+    });
+  }
+  
+  setLState(
+    {location: 'Granitetown'}
+  );
+  
+  return (
+    <div>
+      <h1>
+        Hi {pState.persons[0].name}
+      </h1>
+      <button onClick={nameHandler}>
+        Switch Name
+      </button>
+    </div>
+  )
+}
+```
 </div>
 </div>
 
@@ -822,6 +968,7 @@ deleteHandler = (personIndex) => {
 }
 
 render() {
+  // create list of persons using map()
   return this.state.persons.map(
     (person, index) => {
       return <Person 
@@ -836,19 +983,7 @@ render() {
 
 </div>
 </div>
-<div>
-<button type="button" class="collapsible">+ Props & State</button>   
-<div class="content" style="display: none;" markdown="1">
 
-* props
-   * props are read-only
-* setState()
-   * [Beware: React setState is asynchronous!](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3)
-   * https://reactjs.org/docs/react-component.html#setstate
-   * Should only change state immutably, i.e. never change the source object, always create a copy and then overwrite the original with the copy.
-* useState() - see lecture 44
-</div>
-</div>
 <div>
 <button type="button" class="collapsible">+ Two-Way Binding</button>   
 <div class="content" style="display: none;" markdown="1">
