@@ -89,7 +89,7 @@
 </div>
 </div>
 <div>
-<button type="button" class="collapsible">+ React Patterns</button>
+<button type="button" class="collapsible">+ React Patterns (WIP)</button>
 <div class="content" style="display: none;" markdown="1">
 
 * Stateful Functions
@@ -116,7 +116,7 @@ https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State
 </div>
 </div>
 <div>
-<button type="button" class="collapsible">+ Best Practices List</button>   
+<button type="button" class="collapsible">+ Best Practices List (WIP)</button>   
 <div class="content" style="display: none;" markdown="1">
 
 **Taken from [https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a](https://medium.com/@konstankino/2019-reactjs-best-practices-design-patterns-516e1c3ca06a)**
@@ -360,6 +360,8 @@ const Welcome = (props) => {
 }
 ```
 
+&nbsp;
+
 * Functional components do not access props via `this`(e.g. `props.XY`).
 
 Pros:
@@ -517,6 +519,8 @@ class App extends Component {
   }
 }
 ```
+
+&nbsp;
 
 * In class components, state should be updated using the [`setState()`](https://reactjs.org/docs/react-component.html#setstate) function; it should never be updated directly (e.g. do not use `this.state.name = newName`).
 * Be aware that `setState()` is [asynchronous](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3).  Calling `setState()` should be considered a request that React may ignore.  This is particularly true if `setState()` is called multiple times in the same update cycle; later calls may overwrite earlier ones. 
@@ -1007,14 +1011,14 @@ render() {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ Two-Way Binding</button>   
+<button type="button" class="collapsible">+ Two-Way Binding (WIP)</button>   
 <div class="content" style="display: none;" markdown="1">
 
 * See lecture 47
 </div>
 </div>
 <div>
-<button type="button" class="collapsible">+ Styling</button>   
+<button type="button" class="collapsible">+ Styling (WIP)</button>   
 <div class="content" style="display: none;" markdown="1">
 
 * Inline - lecture 49
@@ -1064,6 +1068,8 @@ class App extends Component {
   };
 }
 ```
+
+&nbsp;
 
 * Alternatively, the following is a more elegant (and recommended) approach:
 
@@ -1192,7 +1198,8 @@ try {
 <button type="button" class="collapsible">+ Addendum: Semi-Colons!</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Summarized from [https://news.codecademy.com/your-guide-to-semicolons-in-javascript/](https://news.codecademy.com/your-guide-to-semicolons-in-javascript/).
+Summarized from:
+* [https://news.codecademy.com/your-guide-to-semicolons-in-javascript/](https://news.codecademy.com/your-guide-to-semicolons-in-javascript/).
 
 Javascript is pretty flexible when it comes to the presence (or lack) or semi-colons, but there are some pitfalls.  If you following these guidelines, you shouldn't encounter any issues:
 
@@ -1206,7 +1213,7 @@ i = 5;                        // value assignment
 i = i + 1;                    // value assignment
 i++;                          // same as above
 var x = 9;                    // declaration & assignment
-var fun = function() {...};   // var decl., assignmt, and func. defin.
+var fun = function() {...};   // var decl., assignmt, func. defin.
 alert("hi");                  // function call
 ```
 
@@ -1240,6 +1247,8 @@ if (0 === 1) /*do nothing*/ ;
 alert ("hi");
 ```
 
+&nbsp;
+
 **Exceptions**
 
 * The closing parenthensis of a `do...while` loop must be terminated with a semi-colon:
@@ -1254,6 +1263,8 @@ alert ("hi");
 })(parameters);
 ```
 
+&nbsp;
+
 * Inside the `()` of a `for` loop, semicolons only go after the first and second statement, never after the third:
 
 ```jsx
@@ -1261,6 +1272,9 @@ for (var i=0; i < 10; i++)  {/*actions*/}       // correct
 for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 ```
 
+&nbsp;
+
+&nbsp;
 
 **Digression: What is a Self-Executing Function?**
 
