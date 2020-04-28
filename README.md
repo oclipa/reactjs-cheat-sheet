@@ -467,10 +467,17 @@ class Welcome extends React.Component {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ let, const and var</button>   
+<button type="button" class="collapsible">+ var, let and const</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* See lecture 13
+`var`- creates a variable; doesn't differentiate between variables and constants.
+
+`let`- is basically the same as `var`; use this if a variable is actually variable.
+
+`const`- use this if a variable never changes (i.e. is constant).
+
+With the release of ES6, avoid using `var`.
+
 </div>
 </div>
 
@@ -479,32 +486,34 @@ class Welcome extends React.Component {
 <div class="content" style="display: none;" markdown="1">
 
 "Traditional" Function (ES5):
-'''
+
+```
 function myFunc() {
   console.log(arguments);
   return ...
 }
-'''
+```
 
 Arrow Function (ES6):
-'''
+
+```
 const myFunc = (args) => ({
   console.log(args);
   ...
 })
-'''
+```
 
 Differences:
 * Arrow functions avoid problems with `this` keyword (always refers to the enclosing context).
 * Arrow functions have an implict return, so the `return` keyword does not need to be used, however the the function block must be wrapped in parantheses (if nothing is being returned, the parantheses can be left out).
 * Arrow functions cannot be [hoisted](https://www.w3schools.com/js/js_hoisting.asp), unlike the ES5 function.
 * Arguments must be explicitly passed into arrow functions (the `arguments` object is only available to ES5 functions).
-* Cannot use arrow functions as constructors or methods.
+* Cannot use arrow functions as constructors or methods (see below).
 
-Digression:
-The difference between a method and a function (in javascript) is: 
-   * functions are called in isolation (e.g. someFunction())
-   * methods are only called from other objects (e.g. someObject.someFunction())
+Digression: **What is the difference between a method and a function?**
+The difference between a method and a function (in javascript) is that: 
+   * functions are called in isolation (e.g. `someFunction()`)
+   * methods are only called from other objects (e.g. `someObject.someFunction()`)
 e.g.
 ```
     var object = {
@@ -516,6 +525,7 @@ e.g.
     var myFunc = object.myMethod; 
     myFunc();                   // this is now a function call
 ```
+For those coming from languages such as C#, it may be better to think of functions as private and methods as public.
 </div>
 </div>
 
