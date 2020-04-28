@@ -530,7 +530,10 @@ deleteOldestHandler = () => {
 
 **props**
 
-* Functional components do not maintain their own state, but inherit it via the `props` object, which is a read-only object passed in via the function parameters.
+* Unlike `state`, both Class components and Functional components can access the `props` object.
+   * For Class components, this is done use the `this` keyword: `persons = this.props.persons;`.
+   * For Functional components, the `props` object is passed in as a function parameter: `const Town = (props) => { persons = props.persons; }`
+* The `props` object is read-only.  It is created from the tag parameters for the component: `<Town persons={persons} />`.
 * Since props cannot be updated, the only way to update the state is via callbacks passed via the `props` object.  In this way, the parent object both owns the state and is responsible for updating it.
 
 ```jsx
@@ -560,7 +563,7 @@ export default Town;
    * The first element is the current state.
    * The second element will always be a function that allows the state to be updated.
 
-```
+```jsx
 import React, { useState } from 'react';
 
 const App = props => {
