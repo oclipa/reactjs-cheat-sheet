@@ -630,14 +630,137 @@ There is a similar syntax for objects (simply replaces `[]` with `{}`):
 <button type="button" class="collapsible">+ Array Functions</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* map()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
-* find()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-* findIndex()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
-* filter()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-* reduce()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce?v=b
-* concat()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat?v=b
-* slice()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
-* splice()  => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice
+[`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) 
+
+* Applies a function to each element in an array and returns a new array with the result.
+
+```
+    const array1 = [1, 4, 9, 16];
+
+    // pass a function to map
+    const map1 = array1.map(x => x * 2);
+
+    console.log(map1);
+    // expected output: Array [2, 8, 18, 32]
+```
+
+[`find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) 
+
+* Returns the **first** element in an array that matches the testing function. 
+
+```
+    const array1 = [5, 12, 8, 130, 44];
+
+    const found = array1.find(element => element > 10);
+
+    console.log(found);
+    // expected output: 12
+```
+
+[`findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)
+
+* Returns the index of the **first** element in an array that matches the testing function. 
+
+```
+    const array1 = [5, 12, 8, 130, 44];
+
+    const isLargeNumber = (element) => element > 13;
+
+    console.log(array1.findIndex(isLargeNumber));
+    // expected output: 3
+```
+
+[`filter()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) 
+
+* Returns a new array that only contains elements of the input array that match the testing function. 
+
+```
+    const words = ['spray', 'limit', 'elite', 'exuberant', 'destruction', 'present'];
+
+    const result = words.filter(word => word.length > 6);
+
+    console.log(result);
+    // expected output: Array ["exuberant", "destruction", "present"]
+```
+
+[`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce) 
+
+* Applies a [reducer](https://www.robinwieruch.de/javascript-reducer) function to each element of an array, resulting in a single output value.
+
+```
+    const array1 = [1, 2, 3, 4];
+    const reducer = (accumulator, currentValue) => 
+                          accumulator + currentValue;
+
+    // 1 + 2 + 3 + 4
+    console.log(array1.reduce(reducer));
+    // expected output: 10
+
+    // 5 + 1 + 2 + 3 + 4
+    console.log(array1.reduce(reducer, 5));
+    // expected output: 15
+```
+
+[`concat()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) 
+
+* Returns a new array that is a concatenation of two or more arrays (using a shallow copy).
+* Syntax 1: `array1.concat[array2, array3, ...arrayN]`
+
+```
+    const letters = ['a', 'b', 'c'];
+    const numbers = [1, 2, 3];
+
+    letters.concat(numbers);
+    // result in ['a', 'b', 'c', 1, 2, 3]
+```
+
+* Syntax 2: `array1.concat[value1[, value2[, ...[, valueN]]]]`
+
+```
+    const letters = ['a', 'b', 'c'];
+
+    const alphaNumeric = letters.concat(1, [2, 3]);
+
+    console.log(alphaNumeric); 
+    // results in ['a', 'b', 'c', 1, 2, 3]
+```
+
+[`slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) 
+
+* Returns a new array containing a shallow copy of the selected elements of an array.
+* Syntax: `slice[inclusive begin, exclusive end]`
+
+```
+    const animals = ['ant', 'bison', 'camel', 'duck', 'elephant'];
+
+    console.log(animals.slice(2));
+    // expected output: Array ["camel", "duck", "elephant"]
+
+    // slice[inclusive begin, exclusive end]
+    console.log(animals.slice(2, 4));
+    // expected output: Array ["camel", "duck"]
+
+    console.log(animals.slice(1, 5));
+    // expected output: Array ["bison", "camel", "duck", "elephant"]
+```
+
+[`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice) 
+
+* Changes the contents of an array by removing or replacing existing elements and/or adding new elements [in place](https://en.wikipedia.org/wiki/In-place_algorithm) (i.e. it does not create a new array).
+* Syntax: let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])
+
+```
+    const months = ['Jan', 'March', 'April', 'June'];
+    months.splice(1, 0, 'Feb');
+    // inserts at index 1
+    console.log(months);
+    // expected output: Array ["Jan", "Feb", "March", "April", "June"]
+
+    months.splice(4, 1, 'May');
+    // replaces 1 element at index 4
+    console.log(months);
+    // expected output: Array ["Jan", "Feb", "March", "April", "May"]
+```
 
 </div>
 </div>
