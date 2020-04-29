@@ -634,7 +634,7 @@ const App = props => {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ var, let and const</button>   
+<button type="button" class="collapsible">+ var, let &amp; const</button>   
 <div class="content" style="display: none;" markdown="1">
 
 `var`- creates a variable; doesn't differentiate between variables and constants.
@@ -1080,12 +1080,149 @@ class App extends Component {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ Two-Way Binding (WIP)</button>   
+<button type="button" class="collapsible">+ Events &amp; Binding</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* See lecture 47
+**Event Handlers**
+
+The following is an example of a basic implementation of an event handler:
+
+```
+class App extends Component {
+
+  // naming convention: 
+  // [verb] + [noun] + "Handler"
+  // ([noun] + [verb] + "Handler")
+  switchNameHandler = () => {
+    console.log('Was clicked!');
+  }
+  
+  render() {
+    return (
+      <button 
+        onClick={this.switchNameHandler}>
+          Switch Name
+      </button>
+    );
+  }
+}
+```
+Note that we only register a reference to the event handler (`this.switchNameHandler`) with the event, rather than registering it as a method (`this.switchNameHandler()`).  If it were registered as a method, it would be invoked immediately upon registration (due to the `()`), rather than waiting until the event is triggered.
+
+If you need to pass the event handler to a child component (which is a common use case), the handler is registered as a property of the child component:
+
+```
+  render() {
+    return (
+      <Person 
+        name={this.state.persons[1].name} 
+        age={this.state.persons[1].age} 
+        click={this.switchNameHandler} />
+    );
+  }
+```
+If you need to pass a value to the event handler, there are two approaches:
+   * The `bind()` method.
+   * An anonymous function.
+
+**`bind()` method**
+
+By calling the `bind()` method on the handler, a value can be passed as an argument.
+
+```
+  switchNameHandler = (newName) => {
+    this.setState( {
+      persons: [
+        { name: 'Fred', age: 40 },
+        { name: newName, age: 35 },
+        { name: 'Barney', age: 38 },
+      ],
+    } );
+  }
+  
+  render() {
+    return (
+      <button onClick={this.switchNameHandler.bind(this, 'Betty')}>Switch Name</button>
+    );
+  }
+```
+
+**Anonymous function**
+
+```
+  render() {
+    return (
+      <button onClick={() => this.switchNameHandler('Betty')}>Switch Name</button>
+    );
+  }
+```
+Note that in this case `()` must be added to the event handler, since we are registering a reference to the anonymous function, rather than the event handler itself.  This means that we can pass data to the event handler. 
+
+&nbsp;
+
+Of the two approaches, **the `bind()` method is generally the most efficient**, so it is recommended to use this rather than the anonymous function.
+
+-----
+
+**Two-Way Binding**
+
+Two-way binding means that when something in the browser changes something in the data store, that change is immediately reflected in the browser.
+
+To achieve this, in addition to passing an event handler to the child, which allows the child to trigger an update of the state, the child also receives the updated state via `props`.
+
+In the following example, the sequence of actions is:
+
+1. `App` renders `Person` while passing it the `state` (via `props`) and a `nameChangedHandler` event handler. 
+1. `Person` renders `props.name` and registers the `nameChangedHandler` event handler with the `onChange` event for the `<input>`field.
+1. The `<input>` field in `Person` is updated by the user, triggering the `onChange` event.
+1. The `nameChangedHandler` receives the updated element (i.e. `<input>`) via `event.target`, and updates the `state` with the value of `value`.
+1. `App` then renders `Person` again, passing it the updated `state`.
+1. `Person` renders the updated `props.name`.
+1. And the cycle repeats...
+
+*App.js*
+```
+class App extends Component {
+
+  nameChangedHandler = (event) => {
+    this.setState( {
+      persons: [
+        { name: 'Fred', age: 40 },
+        { name: event.target.value, age: 35 },
+        { name: 'Barney', age: 38 },
+      ],
+    } );
+  }
+  
+  render() {
+    return (
+      <Person 
+        name={this.state.persons[1].name} 
+        age={this.state.persons[1].age} 
+        click={this.switchNameHandler}
+        changed={this.nameChangedHandler} />
+    );
+  } 
+}
+```
+*Person.js*
+
+```
+const person = (props) => {
+  return (
+    <div>
+      <p>{props.name}</p>
+      <input 
+        type="text" 
+        onChange={props.changed} 
+        value={props.name}/>
+    </div>
+  )
+};
+```
 </div>
 </div>
+
 <div>
 <button type="button" class="collapsible">+ Styling (WIP)</button>   
 <div class="content" style="display: none;" markdown="1">
