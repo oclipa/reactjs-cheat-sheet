@@ -94,9 +94,11 @@
 
 There are many patterns that are considered important for React; certainly too many to list here.  
 
-Some good sources of information about React Patterns are:
-   * [https://reactpatterns.com/](https://reactpatterns.com/)
+A good sources of information about React Patterns is:
    * [https://vasanthk.gitbooks.io/react-bits/](https://vasanthk.gitbooks.io/react-bits/)
+
+Additional information can be found here:
+   * [https://reactpatterns.com/](https://reactpatterns.com/)
 
 Some examples of common patterns can be found here:
    * [https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State](https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State)
