@@ -1706,6 +1706,48 @@ The general form is `(function(){ })();`.
 </div>
 </div>
 
+-----
+
+<div>
+<button type="button" class="collapsible">+ Future Updates</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* Interacting With The Web
+* React Router
+* Form Validation
+* Redux
+* Authentication
+* Testing
+* Deploying To The Web
+* Webpack
+* Next.js
+* Animation
+* Redux-saga
+* Gatsby.js
+* React Native
+* Component Libraries
+* Preact
+
+
+* [Fragments](https://reactjs.org/docs/react-api.html#reactfragment)
+* [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
+* [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
+* [PureComponents](https://reactjs.org/docs/react-api.html#reactpurecomponent)
+* [React Hooks](https://reactjs.org/docs/hooks-overview.html)
+   * [Basic Hooks](https://reactjs.org/docs/hooks-reference.html#basic-hooks)
+   * [Additional Hooks](https://reactjs.org/docs/hooks-reference.html#additional-hooks)
+   * [Building Your Own Hooks](https://reactjs.org/docs/hooks-custom.html)
+* [Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
+* [React Top Level API](https://reactjs.org/docs/react-api.html)
+* [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
+* [componentDidCatch](https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html)
+* [Portals](https://reactjs.org/docs/portals.html)
+* [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
+* [PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html)
+
+
+</div>
+</div>
 &nbsp;
 
 &nbsp;
