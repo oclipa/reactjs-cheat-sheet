@@ -1232,24 +1232,304 @@ const person = (props) => {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ Styling (WIP)</button>   
+<button type="button" class="collapsible">+ Styling</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Inline - lecture 49
-* Stylesheets - lecture 48
-* Dynamic - lecture 66 and 67
-* Radium - lecture 68 and 69
-   * `npm install radium`
-* styled-components - lecture 70, 71 and 72
-   * https://styled-components.com/
-   * `npm install styled-components`
-   * `import styled from 'styled-components'`
-   * ```const Button = styled.button`[css]` ```
-      * tagged template literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates 
-   * All styled methods return a React component
-* CSS modules
-   * See lecture 73, 74 and 75
-   * Also: https://stackoverflow.com/questions/50234890/how-to-use-css-modules-with-create-react-app
+There are several approaches to styling React pages:
+   * Inline
+   * Stylesheets
+   * Dynamic
+   * Radium
+   * styled-components
+   * CSS modules
+
+&nbsp;
+
+-----
+
+**Inline**
+
+This means that the styles are added to tags in the `render()` method using the inline `style` property.  In this case, the styles are scoped to the component.
+
+```jsx
+class App extends Component {
+  render() {
+    const style = {
+      backgroundColor: '#fff',
+      width: '60%',
+      border: '1px solid #eee',
+      boxShadow: '0 px 3px #ccc',
+      cursor: 'pointer'
+    };
+    
+    return (
+      <div style={style}>
+        ...
+      </div> 
+    );
+  } 
+}
+```
+Note that there are 3 differences between this approach and standard CSS syntax:
+   * Hypenated names are not supported, so `background-color`becomes `backgroundColor`. 
+   * Properties are separated by commas, rather than semi-colons.
+   * Property values are enclosed in single quotes.
+
+Some CSS features are quite difficult to implement using this approach (e.g. `:hover`).
+
+&nbsp;
+
+-----
+
+**Stylesheets**
+
+There are two important things to be aware of when using an imported stylesheet in React:
+   * CSS class names for tags are identified using `className` not `class` (because "html" in React is actually JSX, where `class` already has a different meaning).
+   * Imported CSS is globally scoped, so implementing a style for `button`, for example, will affect every button in the app. 
+
+*Person.css*
+
+```css
+.Person {
+  background-color: #fff;
+  width: 60%;
+  border: 1px solid #eee;
+  box-shadow: 0 px 3px #ccc;
+  cursor: pointer;
+}
+```
+*Person.js*
+
+```jsx
+import './Person.css';
+
+const person = (props) => {
+  return (
+    <div className="Person">
+      ...
+    </div>
+  )
+};
+```
+
+&nbsp;
+
+-----
+
+**Dynamic**
+
+Dynamic-styling essentially means using JSX features to replace the style identifiers with variables that can be generated on the fly.
+
+*App.css*
+
+```css
+.App {
+  text-align: center;
+}
+
+.red {
+  color: red;
+}
+
+.bold {
+  font-weight: bold;
+}
+```
+*App.js*
+
+```jsx
+class App extends Component {
+  render() {
+    const style = {
+      backgroundColor: '#fff'
+    };
+    
+    // dynamically change backgroundColor
+    if (this.state.showPersons) {
+      style.backgroundColor: 'green';
+    }
+    
+    // dynamically change text
+    const classes = [];
+    if (this.state.persons.length <= 2) {
+      classes.push('red'); // classes = ['red']
+    }
+    if (this.state.persons.length <= 1) {
+      classes.push('bold'); // classes = ['red', 'bold']
+    }
+    
+    return (
+      <div className={classes.join(' ')}>
+        <button style={style}>Click Me!</button>
+        ...
+      </div> 
+    );
+  } 
+}
+```
+
+&nbsp;
+
+-----
+
+**Radium**
+
+Radium allows inline styles to be used with pseudo-selectors and media queries. It is an example of a Higher Order Component.
+
+* Install: `npm install radium;`
+* Import: `import Radium from 'radium';`
+
+To use Radium, wrap the component with Radium when exporting:
+
+`export default Radium(App);`
+
+And wrap the entire App with `<StyleRoot>` tags:
+
+*App.js*
+
+```jsx
+import Radium, { StyleRoot } from 'radium';
+
+class App extends Component {
+  render() {
+    return (
+      <StyleRoot>
+        <div>
+          <Person />
+          <Person />
+          <Person />
+        </div>
+      </StyleRoot>
+    )
+  }
+}
+```
+*Person.js*
+
+```jsx
+import Radium from 'radium';
+
+const person = (props) => {
+  const style= {
+    backgroundColor: 'green',
+    color: 'white',
+    cursor: 'pointer',
+    
+    // support for :hover and 
+    // @media enabled by Radium
+    
+    ':hover': {       
+      backgroundColor: 'lightgreen'
+      color: 'black'
+    },
+    '@media (min-width: 500px)': {
+      width: '450px';
+    }
+  };
+  
+  if (props.showPersons) {
+    style[':hover'] = {
+      backgroundColor: 'salmon'
+      color: 'black'
+    };
+  }
+  
+  return (
+    <div style={style}>
+      ...
+    </div>
+  )
+};
+
+export default Radium(Person);
+```
+
+&nbsp;
+
+-----
+
+**styled-components**
+
+See: [https://styled-components.com/](https://styled-components.com/)
+
+* Install: `npm install styled-components;`
+* Import: `import styled from 'styled-components';`
+
+* Syntax: ```const Button = styled.button`[css styles]`; ```
+
+This syntax is an example of using [tagged template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates).
+
+All styled methods return a React component.
+
+*Person.js*
+
+```jsx
+import styled from 'styled-components';
+
+const StyledDiv = styled.div``
+      background-color: ${props => props.alt ? 'red' : 'green'};
+      color: white;
+      cursor: pointer;
+      
+      &:hover {
+        background-color: lightgreen;
+        color: black;
+      }
+
+      @media (min-width: 500px) {
+        width: '450px';
+      }
+    ``
+
+const person = (props) => {
+  return (
+    <StyledDiv alt={props.showPersons}>
+      ...
+    </StyledDiv>
+  )
+};
+
+export default Person;
+```
+
+&nbsp;
+
+-----
+
+**CSS modules**
+
+The advantage of CSS modules is that they allow you to put styles in CSS files but ensure they are scoped to the current component.
+
+Assuming you are using v2 or higher of create-react-app, you basically just need to move your CSS to files with a `.module.css` extension and then import the styles as an object.
+
+When the `.module.css` file is imported into a component, the classes are assigned random names, which means that, as long as they are accessed from the styles object, they are only accessible in the current component.
+
+If you do want a CSS class with global scope, you can prefix it with `:global` (e.g. `:global .Post { ... }`) 
+
+*MyComponent.module.css*
+
+```css
+.myStyle {
+  color: #fff
+}
+```
+*MyComponent.js*
+
+```jsx
+import React from 'react'
+import styles from 'MyComponent.module.css'
+
+export default () => (
+  <div className={styles.myStyle}>
+    We are styled!
+  </div>)
+```
+For further details about enabling CSS modules, see here:
+* [https://stackoverflow.com/questions/50234890/how-to-use-css-modules-with-create-react-app](https://stackoverflow.com/questions/50234890/how-to-use-css-modules-with-create-react-app)
+
+For further details about CSS modules in general, see here:
+* [https://github.com/css-modules/css-modules](https://github.com/css-modules/css-modules)
+
 </div>
 </div>
 
