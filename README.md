@@ -163,7 +163,7 @@ https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State
    * This will create a new sub-directory of the current directory called `app-name`.
    * `--scripts-version version` is optional; if not used, the latest version of create-react-app will be used.
 4. In the new app directory, start the development server: 
-   * `npm start"
+   * `npm start`
    * This actually calls a bespoke command defined in package.json.
 
 </div>
@@ -1704,9 +1704,11 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 
 &nbsp;
 
+-----
+
 **Digression: What is a Self-Executing Function?**
 
-A Self-Executing Function (a.k.a Immediately Invoked Function Expressions) are functions which are invoked immediately after being defined, i.e. they don't need to be explicitly called elsewhere in the code.
+Self-Executing Functions (a.k.a Immediately Invoked Function Expressions) are functions which are invoked immediately after being defined, i.e. they don't need to be explicitly called elsewhere in the code.
 
 The general form is `(function(){ })();`.  
    * The parentheses around the function are to ensure that the code within the function is contained in the private scope of the function.
