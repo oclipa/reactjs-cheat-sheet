@@ -89,29 +89,17 @@
 </div>
 </div>
 <div>
-<button type="button" class="collapsible">+ React Patterns (WIP)</button>
+<button type="button" class="collapsible">+ React Patterns</button>
 <div class="content" style="display: none;" markdown="1">
 
-* Stateful Functions
-* Module Pattern
-* Default Props and Initial State
-   * Specify default values for `props` with `defaultProps`.
+There are many patterns that are considered important for React; certainly too many to list here.  
 
-```jsx
-function Greeting(props) {
-  return <div>Hi {props.name}!</div>;
-}
-Greeting.defaultProps = {
-  name: "Guest"
-};
-```
+Some good sources of information about React Patterns are:
+   * [https://reactpatterns.com/](https://reactpatterns.com/)
+   * [https://vasanthk.gitbooks.io/react-bits/](https://vasanthk.gitbooks.io/react-bits/)
 
-* Data-Down, Actions-Up
-* Higher-Order Component
-* Container Components
-* Callback Chaining
-* Async Sequence
-https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State
+Some examples of common patterns can be found here:
+   * [https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State](https://github.com/reactjs/react-future/tree/master/07%20-%20Returning%20State)
 
 </div>
 </div>
