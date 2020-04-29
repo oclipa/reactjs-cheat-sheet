@@ -1087,7 +1087,7 @@ class App extends Component {
 
 The following is an example of a basic implementation of an event handler:
 
-```
+```jsx
 class App extends Component {
 
   // naming convention: 
@@ -1111,7 +1111,7 @@ Note that we only register a reference to the event handler (`this.switchNameHan
 
 If you need to pass the event handler to a child component (which is a common use case), the handler is registered as a property of the child component:
 
-```
+```jsx
   render() {
     return (
       <Person 
@@ -1129,7 +1129,7 @@ If you need to pass a value to the event handler, there are two approaches:
 
 By calling the `bind()` method on the handler, a value can be passed as an argument.
 
-```
+```jsx
   switchNameHandler = (newName) => {
     this.setState( {
       persons: [
@@ -1142,17 +1142,23 @@ By calling the `bind()` method on the handler, a value can be passed as an argum
   
   render() {
     return (
-      <button onClick={this.switchNameHandler.bind(this, 'Betty')}>Switch Name</button>
+      <button 
+        onClick={
+          this.switchNameHandler.bind(this, 'Betty')
+        }>Switch Name</button>
     );
   }
 ```
 
 **Anonymous function**
 
-```
+```jsx
   render() {
     return (
-      <button onClick={() => this.switchNameHandler('Betty')}>Switch Name</button>
+      <button 
+        onClick={
+          () => this.switchNameHandler('Betty')
+        }>Switch Name</button>
     );
   }
 ```
@@ -1161,6 +1167,8 @@ Note that in this case `()` must be added to the event handler, since we are reg
 &nbsp;
 
 Of the two approaches, **the `bind()` method is generally the most efficient**, so it is recommended to use this rather than the anonymous function.
+
+&nbsp;
 
 -----
 
@@ -1181,7 +1189,7 @@ In the following example, the sequence of actions is:
 1. And the cycle repeats...
 
 *App.js*
-```
+```jsx
 class App extends Component {
 
   nameChangedHandler = (event) => {
@@ -1207,7 +1215,7 @@ class App extends Component {
 ```
 *Person.js*
 
-```
+```jsx
 const person = (props) => {
   return (
     <div>
