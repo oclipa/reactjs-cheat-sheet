@@ -1713,9 +1713,9 @@ The general form is `(function(){ })();`.
 <div class="content" style="display: none;" markdown="1">
 
 * Interacting With The Web
-* React Router
+* [React Router](https://devhints.io/react-router)
 * Form Validation
-* Redux
+* [Redux](https://devhints.io/redux)
 * Authentication
 * Testing
 * Deploying To The Web
@@ -1727,8 +1727,6 @@ The general form is `(function(){ })();`.
 * React Native
 * Component Libraries
 * Preact
-
-
 * [Fragments](https://reactjs.org/docs/react-api.html#reactfragment)
 * [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
 * [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
