@@ -2561,8 +2561,10 @@ The general form is `(function(){ })();`.
       
       toggleAll.setAttribute("value", isExpanded ? "none" : "block");
 
-      var buttonText = toggle.childNodes[0].nodeValue;
-      toggle.childNodes[0].nodeValue = buttonText.replace(currentGlyph, nextGlyph);
+      var childNode = toggleAll.childNodes[0];
+
+      var buttonText = childNode].nodeValue;
+      childNode.nodeValue = buttonText.replace(currentGlyph, nextGlyph);
       var sections = document.getElementsByClassName("collapsible");
       var i;
 
