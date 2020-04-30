@@ -2563,7 +2563,7 @@ The general form is `(function(){ })();`.
 
       var childNode = toggleAll.childNodes[0];
 
-      var buttonText = childNode].nodeValue;
+      var buttonText = childNode.nodeValue;
       childNode.nodeValue = buttonText.replace(currentGlyph, nextGlyph);
       var sections = document.getElementsByClassName("collapsible");
       var i;
