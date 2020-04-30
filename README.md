@@ -11,7 +11,7 @@
 &nbsp;
 
 
-<button type="button" id="toggle-all" value="block">Toggle All Sections</button>
+<button type="button" id="toggle-all" value="block">Toggle All Sections NNN</button>
 
 &nbsp;
 
@@ -2554,8 +2554,15 @@ The general form is `(function(){ })();`.
     toggleAll.addEventListener("click", function() {
 
       var toggle = toggleAll.value;
-      toggleAll.setAttribute("value", toggle === "block" ? "none" : "block");
+      
+      var isExpanded = toggle === "block";
+      var currentGlyph = isExpanded ? "YYY" : "NNN";
+      var nextGlyph = isExpanded ? "NNN" : "YYY";
+      
+      toggleAll.setAttribute("value", isExpanded ? "none" : "block");
 
+      var buttonText = toggle.childNodes[0].nodeValue;
+      toggle.childNodes[0].nodeValue = buttonText.replace(currentGlyph, nextGlyph);
       var sections = document.getElementsByClassName("collapsible");
       var i;
 
