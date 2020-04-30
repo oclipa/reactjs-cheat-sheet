@@ -382,7 +382,7 @@ Cons:
   * `useEffect( () => { somefunction; }, [props.somedata] ); )`
   * To have the method run only the first time an object is rendered, pass an empty array.
 * To perform clean-up using useEffect, return a function:
-  * `useEffect( () => { somefunction; }, [props.somedata] ); return () => { cleanupfunction } )`
+  * `useEffect( () => { somefunction; return () => { cleanupfunction }; }, [props.somedata] );`
   * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
 
 -------
