@@ -328,6 +328,17 @@ export default calculator;
 ```
 </div>
 </div>
+
+<div>
+<button type="button" class="collapsible">+ Virtual DOM</button>   
+<div class="content" style="display: none;" markdown="1">
+
+It is important to note that, when render() is called for an app (or a functional component returns), React creates a Virtual DOM ([Domain Object Model](https://www.w3schools.com/whatis/whatis_htmldom.asp)); it does not automatically update the real DOM (i.e. the UI).  This is for performance reasons (updating the real DOM is very expensive).
+
+Once generated, the new Virtual DOM is compared to the previous Virtual DOM to see if anything has changed.  In the event something has changed, the real DOM is updated with the changes in the new Virtual DOM, and the UI redrawn.  If nothing has changed, the UI is not updated (since this is potentially expensive).
+</div>
+</div>
+  
 <div>
 <button type="button" class="collapsible">+ Functional vs Class Components</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -384,6 +395,7 @@ Cons:
 * To perform clean-up using useEffect, return a function:
   * `useEffect( () => { somefunction; return () => { cleanupfunction }; }, [props.somedata] );`
   * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
+  * If an empty array is passed, the cleanup function will only run when the component is unmounted (destroyed).
 
 -------
 
@@ -442,8 +454,10 @@ class Welcome extends React.Component {
       * Available but deprecated
       * Do not use
    1. `shouldComponentUpdate(nextProps, nextState)` &lt;-- Commonly used
-      * Used to cancel update process
-      * Typically used for performance reasons (if used carefully)
+      * Used to cancel update process (even if Virtual DOM changes)
+      * Typically used for performance reasons, but needs to be used sparingly.
+      * e.g. `return nextProps.property !== this.props.property`
+      * For a functional equivalent to this, see [React.memo()](https://reactjs.org/docs/react-api.html#reactmemo).
    1. `render()`
       * See above
    1. `getSnapshotBeforeUpdate(prevProps, prevState)`
@@ -1731,6 +1745,8 @@ The general form is `(function(){ })();`.
 * [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
 * [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
 * [PureComponents](https://reactjs.org/docs/react-api.html#reactpurecomponent)
+   * Use if want to check if any props value changes (i.e. don't need to implement `shouldComponentUpdate()`)
+   * Note that all children must be PureComponents as well.
 * [React Hooks](https://reactjs.org/docs/hooks-overview.html)
    * [Basic Hooks](https://reactjs.org/docs/hooks-reference.html#basic-hooks)
    * [Additional Hooks](https://reactjs.org/docs/hooks-reference.html#additional-hooks)
