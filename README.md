@@ -11,7 +11,7 @@
 &nbsp;
 
 
-<button type="button" id="toggle-all" value="block">Expand All Sections</button>
+<button type="button" id="toggle-all" value="none">Expand All Sections</button>
 
 &nbsp;
 
@@ -2521,23 +2521,24 @@ The general form is `(function(){ })();`.
 
 <script type="text/javascript">
 
-    function loadCSS = (filename) => { 
+    const loadCSS = (filename) => { 
 
        var file = document.createElement("link");
        file.setAttribute("rel", "stylesheet");
        file.setAttribute("type", "text/css");
        file.setAttribute("href", filename);
        document.head.appendChild(file);
-    }
+    };
 
-    function addListenerToSections = () ==> {
+    const addListenerToSections = () => {
       var coll = document.getElementsByClassName("collapsible");
       var i;
 
       for (i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", () => {
-          this.classList.toggle("active");
-          var content = this.nextElementSibling;
+        coll[i].addEventListener("click", (event) => {
+          var section = event.target;
+          section.classList.toggle("active");
+          var content = section.nextElementSibling;
           if (content.style.display === "block") {
             content.style.display = "none";
           } else {
@@ -2545,22 +2546,36 @@ The general form is `(function(){ })();`.
           }
         });
       }
-    }
+    };
 
-    function addListenerToToggle = () => {
+    const addListenerToToggle = () => {
       var toggleAll = document.querySelector("#toggle-all");
 
-      toggleAll.addEventListener("click", () => {
+      toggleAll.addEventListener("click", (event) => {
 
-        var toggle = this.value;
+        var toggleButton = event.target;
 
-        var isExpanded = toggle !== "block";
+        var prevToggleValue = toggleButton.value;
+
+        // if currently expanded, current button value will be "block"
+        // if currently collapsed, current button value will be "none"
+        var isExpanded = prevToggleValue === "block";
+
+        // if currently isExpanded, this event will collapse the
+        // sections, so need to change the button so that the next
+        // option is to expand the sections.
+        // and vice versa.
         var currentGlyph = isExpanded ? "Collapse" : "Expand";
         var nextGlyph = isExpanded ? "Expand" : "Collapse";
 
-        this.setAttribute("value", isExpanded ? "none" : "block");
+        // if isExpanded, sections are being collapsed, so 
+        // need to set next toggle value to be "none"
+        // and vice versa.
+        var nextToggleValue = isExpanded ? "none" : "block";
 
-        var childNode = toggleAll.childNodes[0];
+        toggleButton.setAttribute("value", nextToggleValue);
+
+        var childNode = toggleButton.childNodes[0];
 
         var buttonText = childNode.nodeValue;
         childNode.nodeValue = buttonText.replace(currentGlyph, nextGlyph);
@@ -2571,10 +2586,10 @@ The general form is `(function(){ })();`.
           var section = sections[i];
           section.classList.toggle("active");
           var content = section.nextElementSibling;
-          content.style.display = toggle;
+          content.style.display = nextToggleValue;
         }
       });
-    }
+    };
     
     //just call a function to load your CSS
     //this path should be relative your HTML location
