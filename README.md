@@ -2555,7 +2555,7 @@ The general form is `(function(){ })();`.
 
       var toggle = toggleAll.value;
       
-      var isExpanded = toggle != "block";
+      var isExpanded = toggle !== "block";
       var currentGlyph = isExpanded ? "Collapse" : "Expand";
       var nextGlyph = isExpanded ? "Expand" : "Collapse";
       
