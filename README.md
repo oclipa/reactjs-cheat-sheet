@@ -1105,7 +1105,7 @@ The basic pattern is:
 
 The reason the ref must be called from `useEffect`is that it cannot be called before the functional component has been returned (since the elements of the component must be initialized).  Since `useEffect` is only called after the `return` method, this makes it an appropriate place to access the ref.
 
-```
+```jsx
 import React, { useEffect, useRef } from 'react';
 
 const Cockpit = (props) => {
@@ -1135,7 +1135,227 @@ const Cockpit = (props) => {
 -----
 
 For further information, see here:
-   * [Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
+   * [https://reactjs.org/docs/refs-and-the-dom.html](https://reactjs.org/docs/refs-and-the-dom.html)
+
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Context API</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The Context API is used to pass state between objects when intervening objects have no interest in the state (e.g. passing a property to a great-grandchild).
+
+First we create a globally available javascript object, e.g.:
+
+*context/auth-context.js*
+
+```jsx
+import Read from 'react';
+
+const authContext = React.createContext({
+  authenticated: false, 
+  login: () => {}
+});
+
+export default authContext;
+```
+
+Then, in the parent component, the components (or parents of the components) that need to receive the context are wrapped in a `<AuthContext.Provider />` tag,  in the `render()` method:
+
+*App.js*
+
+```jsx
+import AuthContext from 'context/auth-context';
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      persons: [
+        { id: 'asfa1', name: 'Max', age: 28 },
+        { id: 'vasdf1', name: 'Manu', age: 29 },
+        { id: 'asdf11', name: 'Stephanie', age: 26 }
+      ],
+      authenticated: false
+    }
+  }
+
+  loginHandler = () => {
+    this.setState( { authenticated: true } );
+  };
+
+  render() {
+  
+    persons = (
+      <Persons 
+        persons={this.state.persons}
+        isAuthenticated={this.state.authenticated}
+      />
+    );
+  
+    return (
+      <Aux>
+        { /* components not interested in 
+             context go outside tags */ }
+
+        <AuthContext.Provider 
+          value={{
+            authenticated: this.state.authenticated, 
+            login: this.loginHandler
+          }} 
+        >
+         { /* components interested in 
+              context go between tags */ }
+         
+         <Cockpit />
+         {persons}
+
+        </AuthContext.Provider>
+      </Aux>
+    );
+  }
+}
+
+```
+
+And finally, in the components that need to access the context, the relevant elements in the `render()` method are wrapped in a `<AuthContext.Consumer />` tag:
+
+*Person.js (inherits context from Persons.js)*
+
+```jsx
+import AuthContext from 'context/auth-context';
+
+class Person extends Component {
+
+  render() {
+    return (
+      <Aux>
+        <AuthContext.Consumer>
+          {(context) => 
+            context.authenticated ? 
+              <p>Authenticated!</p> : 
+              <p>Please log in</p>
+          }
+        </AuthContext.Consumer> 
+        
+        <p>{this.props.children}</p>
+      </Aux>
+    );
+  }
+}
+
+```
+
+*Cockpit.js*
+
+```jsx
+import AuthContext from 'context/auth-context';
+
+const Cockpit = (props) => {
+
+  render() {
+    return (
+      <Aux>
+        <h1>{props.title}</h1>
+      
+        <AuthContext.Consumer>
+          {(context) => 
+            <button onClick={context.login}>
+              Log in
+            </button>}
+        </AuthContext.Consumer>
+      </Aux>
+    );
+  }
+}
+
+```
+
+&nbsp;
+
+-----
+
+**contextType (class components only)**
+
+For class components, a more elegant approach, which also allows the context to be accessed outside of the `render()` method, can be used.
+
+By creating a static reference to the context called `contextType` this makes the context accessible anywhere within the class using `this.context`.
+
+*Person.js*
+
+```jsx
+import AuthContext from 'context/auth-context';
+
+class Person extends Component {
+
+  static contextType = AuthContext;
+  
+  componentDidMount() {
+    console.log(this.context.authenticated);
+    console.log(this.context.login);
+  }
+  
+  render() {
+    return (
+      <Aux>
+        {
+          this.context.authenticated ? 
+            <p>Authenticated!</p> : 
+            <p>Please log in</p>
+        }
+        
+        <p>{this.props.children}</p>
+      </Aux>
+    );
+  }
+```
+
+
+&nbsp;
+
+-----
+
+**useContext (functional components only)**
+
+For functional components, there is a React Hook that can be used: `useContext`. 
+
+By creating a const reference to the context, `useContext` makes the context accessible anywhere within the function..
+
+*Cockpit.js*
+
+```jsx
+import React, { useContext } from 'react';
+import AuthContext from 'context/auth-context';
+
+const Cockpit = (props) => {
+
+  const authContext = useContext(AuthContext);
+
+  console.log(authContext.authenticated);
+
+  render() {
+    return (
+      <Aux>
+        <h1>{props.title}</h1>
+      
+        <button onClick={authContext.login}>
+          Log in
+        </button>
+      </Aux>
+    );
+  }
+}
+
+```
+
+&nbsp;
+
+-----
+
+For further information, see here:
+   * [https://reactjs.org/docs/context.html](https://reactjs.org/docs/context.html)
 
 </div>
 </div>
