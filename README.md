@@ -11,7 +11,7 @@
 &nbsp;
 
 
-<button type="button" class="toggle-all" value="block">Toggle All Sections</button>
+<button type="button" id="toggle-all" value="block">Toggle All Sections</button>
 
 &nbsp;
 
@@ -2549,7 +2549,7 @@ The general form is `(function(){ })();`.
       });
     }
 
-    var toggleAll = document.querySelector(".toggle-all");
+    var toggleAll = document.querySelector("#toggle-all");
     var toggle = toggleAll.value;
     toggleAll.setAttribute("value", toggle === "block" ? "none" : "block");
     
@@ -2559,8 +2559,8 @@ The general form is `(function(){ })();`.
       var i;
 
       for (i = 0; i < sections.length; i++) {
-        this.classList.toggle("active");
-        var content = this.nextElementSibling;
+        sections[i].classList.toggle("active");
+        var content = sections[i].nextElementSibling;
         content.style.display = toggle;
       }
     });
