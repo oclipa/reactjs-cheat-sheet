@@ -1084,6 +1084,94 @@ class App extends Component {
 </div>
 
 <div>
+<button type="button" class="collapsible">+ Adjacent Elements</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The `render()` method does not allow adjacent elements (i.e. ones with the same root) to be returned, e.g.
+
+```
+return (
+    <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+    <p>{this.props.children}</p>
+    <input type="text" onChange={this.props.changed} value={this.props.name} />
+)
+```
+There are several ways around this:
+
+* Using a root element that wraps all other elements:
+```
+return (
+    <div>
+      <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+      <p>{this.props.children}</p>
+      <input type="text" onChange={this.props.changed} value={this.props.name} />
+    </div>
+)
+```
+
+* Using squares brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
+```
+return (
+    [
+      <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>,
+      <p key="i2">{this.props.children}</p>,
+      <input key="i3" type="text" onChange={this.props.changed} value={this.props.name} />
+    ]
+)
+```
+
+* Using an Aux funcion that wraps all other elements.
+   * Caveat: On Windows this needs to be called `Auxiliary` since `Aux` is a reserved word.
+
+**Aux.js**
+
+```
+import React from 'react';
+
+const aux = props => props.children;
+
+export default aux;
+```
+
+**Person.js**
+```
+import Aux from '../../../hoc/Aux';
+
+...
+
+render() {
+  return (
+      <Aux>
+        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+        <p>{this.props.children}</p>
+        <input type="text" onChange={this.props.changed} value={this.props.name} />
+      </Aux>
+  );
+}
+```
+
+* Using React.Fragment:
+
+Since React 16.8, there is a built-in version of `Aux` called `React.Fragment`:
+
+**Person.js**
+```
+import React, { Component, Fragment } from 'react';
+
+...
+
+render() {
+  return (
+      <Fragment>
+        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+        <p>{this.props.children}</p>
+        <input type="text" onChange={this.props.changed} value={this.props.name} />
+      </Fragment>
+  );
+}
+```
+
+<div>
 <button type="button" class="collapsible">+ Events &amp; Binding</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1741,7 +1829,6 @@ The general form is `(function(){ })();`.
 * React Native
 * Component Libraries
 * Preact
-* [Fragments](https://reactjs.org/docs/react-api.html#reactfragment)
 * [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
 * [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
 * [PureComponents](https://reactjs.org/docs/react-api.html#reactpurecomponent)
