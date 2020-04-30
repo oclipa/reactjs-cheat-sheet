@@ -739,7 +739,7 @@ import React from 'react';
 const withClass = (WrappedComponent, className) => {
   return props => (
     <div className={className}>
-      <WrappedComponent />}
+      <WrappedComponent {...props} />}
     </div>
   );
 };
@@ -790,7 +790,7 @@ There are two approaches to handling application state:
 
 * `state`, as the name suggests, records the current state of a **class** component.
 * Not all components need to have state (it can be maintained by a parent component).
-* The `state`object is defined at the top of the class definition:
+* The `state` object is defined at the top of the class definition:
 
 ```jsx
 import React, { Component } from 'react';
@@ -826,6 +826,8 @@ class App extends Component {
 * Be aware that `setState()` is [asynchronous](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3).  Calling `setState()` should be considered a request that React may ignore.  This is particularly true if `setState()` is called multiple times in the same update cycle; later calls may overwrite earlier ones. 
 * In addition, it is good practice to only ever change state properties immutably.  This can be achieved by making a copy of the property to be updated, updating the copy and then overwriting the original property, e.g.
 
+Bearing these issues in mind, the recommended pattern is the following:
+
 ```jsx
 deleteOldestHandler = () => {
   // create a copy of the person array
@@ -837,7 +839,16 @@ deleteOldestHandler = () => {
   persons.sort((a, b) => a.age - b.age).pop();
   
   // overwrite the old array with the new one.
-  this.setState({persons: persons});
+  // also update a counter of number of people 
+  // deleted.
+  // prevState is guaranteed to be the latest
+  // state.
+  this.setState((prevState, props) => { 
+    return {
+      persons: persons, 
+      deleteCounter: prevState.deleteCounter + 1
+    };
+  });
 }
 ```
 
@@ -948,6 +959,139 @@ const App = props => {
 `const`- use this if a variable never changes (i.e. is constant).
 
 With the release of ES6, avoid using `var`.
+
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ PropTypes</button>   
+<div class="content" style="display: none;" markdown="1">
+
+PropTypes allow control of the data types used in the app (i.e. more like a strongly-typed language).  This is a feature provided by React, but it is not included in React Core, so it needs to be installed:
+
+Install: `npm install prop-types`
+
+PropTypes can be used on both class and functional components.  They are particularly important when you are sharing components with other people.
+
+```
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+class Person extends Component {
+  render() {
+    return (
+      <Aux>
+        <p onClick={this.props.click}>
+          I'm {this.props.name} and I 
+          am {this.props.age} years old!
+        </p>
+        <p>{this.props.children}</p>
+        <input 
+          type="text" 
+          onChange={this.props.changed} 
+          value={this.props.name} 
+        />
+      </Aux>
+    ); 
+  }
+};
+
+// specify prop values types after 
+// component has been defined
+Person.propTypes = {
+  click: PropTypes.func,
+  name: PropTypes.string,
+  age: PropTypes.number,
+  changed: PropTypes.func
+};
+
+export default withClass(Person, styles.Person);
+```
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Refs</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Refs (or "references") are used to accessing specific elements of the DOM.  Specifically, there are used for accessing HTML elements or class components (they cannot be used with functional components).
+
+In the following example, a ref is added to the input element.  The ref points to a function that creates a new class property that points to the input element.
+
+The property is the used to ensure that, when the Person components are mounted, the text field for the last Person mounted will be given the focus.
+
+In older code, an example implementation might be:
+
+```
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+class Person extends Component {
+  constructor() {
+    this.inputElement = React.createRef();
+  }
+  
+  componentDidMount() {
+    this.myInputElement.focus();
+  }
+  
+  render() {
+    return (
+      <Aux>
+        ...
+        
+        <input 
+          ref={
+            (myInputEl) => {
+              this.myInputElement = myInputEl
+             }
+          }
+          type="text" 
+          onChange={this.props.changed} 
+          value={this.props.name} 
+        />
+      </Aux>
+    ); 
+  }
+};
+```
+
+In newer code, an alternative approach is to create a generic ref in the constructor and then attach this to the current element of interest:
+
+```
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+class Person extends Component {
+  constructor(props) {
+    super(props);
+    this.elementRef = React.createRef();
+  }
+  
+  componentDidMount() {
+    // current gives access to the current reference
+    this.elementRef.current.focus();
+  }
+  
+  render() {
+    return (
+      <Aux>
+        ...
+        
+        <input 
+          ref={this.elementRef}
+          type="text" 
+          onChange={this.props.changed} 
+          value={this.props.name} 
+        />
+      </Aux>
+    ); 
+  }
+};
+```
+
+For further information, see here:
+   * [Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
 
 </div>
 </div>
@@ -2080,7 +2224,6 @@ The general form is `(function(){ })();`.
    * [Basic Hooks](https://reactjs.org/docs/hooks-reference.html#basic-hooks)
    * [Additional Hooks](https://reactjs.org/docs/hooks-reference.html#additional-hooks)
    * [Building Your Own Hooks](https://reactjs.org/docs/hooks-custom.html)
-* [Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
 * [React Top Level API](https://reactjs.org/docs/react-api.html)
 * [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
 * [componentDidCatch](https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html)
