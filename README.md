@@ -2521,7 +2521,7 @@ The general form is `(function(){ })();`.
 
 <script type="text/javascript">
 
-    function loadCSS(filename){ 
+    function loadCSS = (filename) => { 
 
        var file = document.createElement("link");
        file.setAttribute("rel", "stylesheet");
@@ -2530,49 +2530,57 @@ The general form is `(function(){ })();`.
        document.head.appendChild(file);
     }
 
+    function addListenerToSections = () ==> {
+      var coll = document.getElementsByClassName("collapsible");
+      var i;
+
+      for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", () => {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.display === "block") {
+            content.style.display = "none";
+          } else {
+            content.style.display = "block";
+          }
+        });
+      }
+    }
+
+    function addListenerToToggle = () => {
+      var toggleAll = document.querySelector("#toggle-all");
+
+      toggleAll.addEventListener("click", () => {
+
+        var toggle = this.value;
+
+        var isExpanded = toggle !== "block";
+        var currentGlyph = isExpanded ? "Collapse" : "Expand";
+        var nextGlyph = isExpanded ? "Expand" : "Collapse";
+
+        this.setAttribute("value", isExpanded ? "none" : "block");
+
+        var childNode = toggleAll.childNodes[0];
+
+        var buttonText = childNode.nodeValue;
+        childNode.nodeValue = buttonText.replace(currentGlyph, nextGlyph);
+        var sections = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < sections.length; i++) {
+          var section = sections[i];
+          section.classList.toggle("active");
+          var content = section.nextElementSibling;
+          content.style.display = toggle;
+        }
+      });
+    }
+    
     //just call a function to load your CSS
     //this path should be relative your HTML location
     loadCSS("../collapse.css");
 
-    var coll = document.getElementsByClassName("collapsible");
-    var i;
-
-    for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var content = this.nextElementSibling;
-        if (content.style.display === "block") {
-          content.style.display = "none";
-        } else {
-          content.style.display = "block";
-        }
-      });
-    }
-
-    var toggleAll = document.querySelector("#toggle-all");
-    
-    toggleAll.addEventListener("click", function() {
-
-      var toggle = toggleAll.value;
-      
-      var isExpanded = toggle !== "block";
-      var currentGlyph = isExpanded ? "Collapse" : "Expand";
-      var nextGlyph = isExpanded ? "Expand" : "Collapse";
-      
-      toggleAll.setAttribute("value", isExpanded ? "none" : "block");
-
-      var childNode = toggleAll.childNodes[0];
-
-      var buttonText = childNode.nodeValue;
-      childNode.nodeValue = buttonText.replace(currentGlyph, nextGlyph);
-      var sections = document.getElementsByClassName("collapsible");
-      var i;
-
-      for (i = 0; i < sections.length; i++) {
-        sections[i].classList.toggle("active");
-        var content = sections[i].nextElementSibling;
-        content.style.display = toggle;
-      }
-    });
+    addListenerToToggle();
+    addListenerToSections();
 
 </script>
