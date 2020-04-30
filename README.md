@@ -141,7 +141,7 @@ Some examples of common patterns can be found here:
 -------
 
 <div>
-<button type="button" class="collapsible">+ Setup Basic Environment</button>
+<button type="button" class="collapsible">+ Using NodeJS and create-react-app</button>
 <div class="content" style="display: none;" markdown="1">
 
 1. Install NodeJs: 
@@ -333,9 +333,9 @@ export default calculator;
 <button type="button" class="collapsible">+ Virtual DOM</button>   
 <div class="content" style="display: none;" markdown="1">
 
-It is important to note that, when render() is called for an app (or a functional component returns), React creates a Virtual DOM ([Domain Object Model](https://www.w3schools.com/whatis/whatis_htmldom.asp)); it does not automatically update the real DOM (i.e. the UI).  This is for performance reasons (updating the real DOM is very expensive).
+It is important to note that, when render() is called for an app (or a functional component returns), React creates a Virtual DOM ([Domain Object Model](https://www.w3schools.com/whatis/whatis_htmldom.asp)); it does not automatically update the real DOM (i.e. the UI).  This is for performance reasons (updating the real DOM is potentially expensive).
 
-Once generated, the new Virtual DOM is compared to the previous Virtual DOM to see if anything has changed.  In the event something has changed, the real DOM is updated with the changes in the new Virtual DOM, and the UI redrawn.  If nothing has changed, the UI is not updated (since this is potentially expensive).
+Once generated, the new Virtual DOM is compared to the previous Virtual DOM to see if anything has changed.  In the event something has changed, the real DOM is updated with the changes in the new Virtual DOM, and the UI redrawn.  If nothing has changed, the UI is not updated.
 </div>
 </div>
   
@@ -511,44 +511,78 @@ The `render()` method does not allow adjacent elements (i.e. ones with the same 
 
 ```jsx
 return (
-    <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+    <p onClick={
+      this.props.click
+    }>
+      I'm {this.props.name} and 
+      I am {this.props.age} years old!
+    </p>
     <p>{this.props.children}</p>
-    <input type="text" onChange={this.props.changed} value={this.props.name} />
+    <input 
+      type="text" 
+      onChange={this.props.changed} 
+      value={this.props.name} 
+    />
 )
 ```
 There are several ways around this:
 
 ----- 
 
+&nbsp;
+
 * Using a root element that wraps all other elements:
 
 ```jsx
 return (
     <div>
-      <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+      <p onClick={
+        this.props.click
+      }>
+        I'm {this.props.name} and 
+        I am {this.props.age} years old!
+      </p>
       <p>{this.props.children}</p>
-      <input type="text" onChange={this.props.changed} value={this.props.name} />
+      <input 
+        type="text" 
+        onChange={this.props.changed} 
+        value={this.props.name} 
+      />
     </div>
 )
 ```
 
 ----- 
 
+&nbsp;
+
 * Using square brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
 
 ```jsx
 return (
     [
-      <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>,
-      <p key="i2">{this.props.children}</p>,
-      <input key="i3" type="text" onChange={this.props.changed} value={this.props.name} />
+      <p key="i1" onClick={
+        this.props.click
+      }>
+        I'm {this.props.name} and 
+        I am {this.props.age} years old!
+      </p>
+      <p key="i2">{this.props.children}</p>
+      <input
+        key="i3"
+        type="text" 
+        onChange={this.props.changed} 
+        value={this.props.name} 
+      />
     ]
 )
 ```
 
 ----- 
 
-* Using an Aux funcion that wraps all other elements.
+&nbsp;
+
+* Using an Aux function that wraps all other elements.
    * Caveat: On Windows this needs to be called `Auxiliary` since `Aux` is a reserved word.
 
 *Aux.js*
@@ -571,15 +605,26 @@ import Aux from '../../../hoc/Aux';
 render() {
   return (
       <Aux>
-        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+        <p onClick={
+          this.props.click
+        }>
+          I'm {this.props.name} and 
+          I am {this.props.age} years old!
+        </p>
         <p>{this.props.children}</p>
-        <input type="text" onChange={this.props.changed} value={this.props.name} />
+        <input 
+          type="text" 
+          onChange={this.props.changed} 
+          value={this.props.name} 
+        />
       </Aux>
   );
 }
 ```
 
 ----- 
+
+&nbsp;
 
 * Using React.Fragment:
 
@@ -595,9 +640,18 @@ import React, { Component, Fragment } from 'react';
 render() {
   return (
       <Fragment>
-        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+        <p onClick={
+          this.props.click
+        }>
+          I'm {this.props.name} and 
+          I am {this.props.age} years old!
+        </p>
         <p>{this.props.children}</p>
-        <input type="text" onChange={this.props.changed} value={this.props.name} />
+        <input 
+          type="text" 
+          onChange={this.props.changed} 
+          value={this.props.name} 
+        />
       </Fragment>
   );
 }
@@ -609,13 +663,15 @@ render() {
 <button type="button" class="collapsible">+ Higher Order Components (HOC)</button>   
 <div class="content" style="display: none;" markdown="1">
 
-The `Aux`and `Fragment` components are examples of Higher Order Components.  This basically means that they wrap another component and provide specific, limited functionality to the wrapped component.
+The `Aux`and `Fragment` components are examples of Higher Order Components.  This means that they wrap another component and add specific, limited functionality to the wrapped component.
 
 There is a general convention to name HOCs with a `With` at the beginning, and place them in an `hoc` folder.
 
 There are two approaches to defining HOCs:
 
 ----- 
+
+&nbsp;
 
 * Return a jsx functional component.
    * This approach is recommended when changing the HTML code or styling.
@@ -659,6 +715,8 @@ export default App;
 ```
 
 ----- 
+
+&nbsp;
 
 * Return a javascript function that returns a jsx functional component:
   * This approach is recommended for adding behind-the-scenes logic, e.g. error handling or sending analytic data.
@@ -715,6 +773,8 @@ There are two approaches to handling application state:
    * `props`
 
 -------
+
+&nbsp;
 
 **state**
 
@@ -773,6 +833,8 @@ deleteOldestHandler = () => {
 
 -------
 
+&nbsp;
+
 **props**
 
 * Unlike `state`, both Class components and Functional components can access the `props` object.
@@ -800,6 +862,8 @@ export default Town;
 ```
 
 -------
+
+&nbsp;
 
 **useState()**
 
