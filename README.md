@@ -2550,10 +2550,11 @@ The general form is `(function(){ })();`.
     }
 
     var toggleAll = document.querySelector("#toggle-all");
-    var toggle = toggleAll.value;
-    toggleAll.setAttribute("value", toggle === "block" ? "none" : "block");
     
     toggleAll.addEventListener("click", function() {
+
+      var toggle = toggleAll.value;
+      toggleAll.setAttribute("value", toggle === "block" ? "none" : "block");
 
       var sections = document.getElementsByClassName("collapsible");
       var i;
