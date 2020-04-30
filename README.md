@@ -973,7 +973,7 @@ Install: `npm install prop-types`
 
 PropTypes can be used on both class and functional components.  They are particularly important when you are sharing components with other people.
 
-```
+```jsx
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -1014,7 +1014,7 @@ export default withClass(Person, styles.Person);
 <button type="button" class="collapsible">+ Refs</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Refs (or "references") are used to accessing specific elements of the DOM.  Specifically, there are used for accessing HTML elements or class components (they cannot be used with functional components; although functional components can use refs via React Hooks - see below).
+Refs (i.e. references) are used to accessing specific elements of the DOM.  Specifically, there are used for accessing HTML elements or class components (they cannot be used to reference functional components, although functional components can use refs via React Hooks - see below).
 
 In the following example, a ref is added to the input element.  The ref points to a function that creates a new class property that points to the input element.
 
@@ -1094,16 +1094,18 @@ class Person extends Component {
 
 -----
 
-**Refs and Functional Components**
+**Refs and Functional Components - useRef()**
 
-As mentioned above, you cannot use refs to refer to functional components, but they can be used inside functional components by using React Hooks, specifically `useRef`.
+As mentioned above, you cannot use refs to refer to functional components, but they can be used inside functional components by using React Hooks, specifically `useRef()`.
 
 The basic pattern is:
 1. Create ref to null before the `return` method: `const myBtnRef = useRef(null);`
 1. Add the ref to the element of interest: `<button ref={myBtnRef} onClick={props.clicked}>`
-1. Call the ref using the `useEffect` hook: `useEffect(() => { myBtnRef.current.click(); }, []);`
+1. Call the ref using the `useEffect()` hook: `useEffect(() => { myBtnRef.current.click(); }, []);`
 
-The reason the ref must be called from `useEffect`is that it cannot be called before the functional component has been returned (since the elements of the component must be initialized).  Since `useEffect` is only called after the `return` method, this makes it an appropriate place to access the ref.
+The reason the ref must be called from `useEffect()` is that it cannot be called before the functional component has returned (since the elements of the component must be initialized).  
+
+Since `useEffect()` is only called after the `return` method, this makes it an appropriate place to access the ref.
 
 ```jsx
 import React, { useEffect, useRef } from 'react';
@@ -1233,10 +1235,11 @@ class Person extends Component {
     return (
       <Aux>
         <AuthContext.Consumer>
-          {(context) => 
-            context.authenticated ? 
-              <p>Authenticated!</p> : 
-              <p>Please log in</p>
+          {(context) => {
+              context.authenticated ? 
+                <p>Authenticated!</p> : 
+                <p>Please log in</p>
+            }
           }
         </AuthContext.Consumer> 
         
@@ -1261,10 +1264,12 @@ const Cockpit = (props) => {
         <h1>{props.title}</h1>
       
         <AuthContext.Consumer>
-          {(context) => 
-            <button onClick={context.login}>
-              Log in
-            </button>}
+          {(context) => {
+              <button onClick={context.login}>
+                Log in
+              </button>
+            }
+          }
         </AuthContext.Consumer>
       </Aux>
     );
@@ -1317,11 +1322,11 @@ class Person extends Component {
 
 -----
 
-**useContext (functional components only)**
+**useContext() (functional components only)**
 
-For functional components, there is a React Hook that can be used: `useContext`. 
+For functional components, there is a React Hook that can be used: `useContext()`. 
 
-By creating a const reference to the context, `useContext` makes the context accessible anywhere within the function..
+By creating a const reference to the context, `useContext()` makes the context accessible anywhere within the function..
 
 *Cockpit.js*
 
