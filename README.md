@@ -481,6 +481,232 @@ class Welcome extends React.Component {
 </div>
 
 <div>
+<button type="button" class="collapsible">+ PureComponents</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* A [`PureComponent`](https://reactjs.org/docs/react-api.html#reactpurecomponent) is essentially the same as a `Component` except that it checks to see if either the props or state has changed before allowing the Virtual DOM to be updated. 
+   * i.e. This is a replacement for `shouldComponentUpdate()` (which will ignored for a `PureComponent`).
+   * Note that all children must extend `PureComponent`.
+
+```jsx
+import React, { PureComponent } from 'react';
+
+class App extends PureComponent {
+  
+  ...
+  
+  render() {
+    ...
+  };
+}
+```
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Adjacent Elements</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The `render()` method does not allow adjacent elements (i.e. ones with the same root) to be returned, e.g.
+
+```jsx
+return (
+    <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+    <p>{this.props.children}</p>
+    <input type="text" onChange={this.props.changed} value={this.props.name} />
+)
+```
+There are several ways around this:
+
+----- 
+
+* Using a root element that wraps all other elements:
+
+```jsx
+return (
+    <div>
+      <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+      <p>{this.props.children}</p>
+      <input type="text" onChange={this.props.changed} value={this.props.name} />
+    </div>
+)
+```
+
+----- 
+
+* Using square brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
+
+```jsx
+return (
+    [
+      <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>,
+      <p key="i2">{this.props.children}</p>,
+      <input key="i3" type="text" onChange={this.props.changed} value={this.props.name} />
+    ]
+)
+```
+
+----- 
+
+* Using an Aux funcion that wraps all other elements.
+   * Caveat: On Windows this needs to be called `Auxiliary` since `Aux` is a reserved word.
+
+*Aux.js*
+
+```jsx
+import React from 'react';
+
+const aux = props => props.children;
+
+export default aux;
+```
+
+*Person.js*
+
+```jsx
+import Aux from '../../../hoc/Aux';
+
+...
+
+render() {
+  return (
+      <Aux>
+        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+        <p>{this.props.children}</p>
+        <input type="text" onChange={this.props.changed} value={this.props.name} />
+      </Aux>
+  );
+}
+```
+
+----- 
+
+* Using React.Fragment:
+
+Since React 16.8, there is a built-in version of `Aux` called `React.Fragment`:
+
+*Person.js*
+
+```jsx
+import React, { Component, Fragment } from 'react';
+
+...
+
+render() {
+  return (
+      <Fragment>
+        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+        <p>{this.props.children}</p>
+        <input type="text" onChange={this.props.changed} value={this.props.name} />
+      </Fragment>
+  );
+}
+```
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Higher Order Components (HOC)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The `Aux`and `Fragment` components are examples of Higher Order Components.  This basically means that they wrap another component and provide specific, limited functionality to the wrapped component.
+
+There is a general convention to name HOCs with a `With` at the beginning, and place them in an `hoc` folder.
+
+There are two approaches to defining HOCs:
+
+----- 
+
+* Return a jsx functional component.
+   * This approach is recommended when changing the HTML code or styling.
+
+*hoc/WithClass.js (upper-case 'W' to indicate this is a component, not function)*
+
+```jsx
+import React from 'react';
+
+const withClass = props => (
+  <div className={props.classes}>
+    {props.children}
+  </div>
+);
+
+export default withClass;
+
+```
+
+*containers/App.js*
+
+```jsx
+class App extends Component {
+  import React from 'react';
+
+  // upper-case 'W' to indicate this is a component, not a function
+  import WithClass from '../hoc/WithClass';
+  
+  ...
+ 
+  render() {
+    return (
+      <WithClass classes={styles.App}>
+        ...
+      </WithClass>
+    );
+  } 
+}
+
+export default App;
+```
+
+----- 
+
+* Return a javascript function that returns a jsx functional component:
+  * This approach is recommended for adding behind-the-scenes logic, e.g. error handling or sending analytic data.
+
+*hoc/withClass.js (lower-case 'w' to indicate this is a function, not component)*
+
+```jsx
+import React from 'react';
+
+const withClass = (WrappedComponent, className) => {
+  return props => (
+    <div className={className}>
+      <WrappedComponent />}
+    </div>
+  );
+};
+
+export default withClass;
+
+```
+*containers/App.js*
+
+```jsx
+class App extends Component {
+  import React from 'react';
+  
+  // lower-case 'w' to indicate this is a function, not component
+  import withClass from '../hoc/WithClass';
+  import Aux from '../hoc/Aux';
+  
+  ...
+ 
+  render() {
+    return (
+      <Aux>
+        ...
+      </Aux>
+    );
+  } 
+}
+
+export default withClass(App, styles.App);
+```
+
+</div>
+</div>
+
+<div>
 <button type="button" class="collapsible">+ Props & State</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -632,29 +858,6 @@ const App = props => {
       </button>
     </div>
   )
-}
-```
-</div>
-</div>
-
-<div>
-<button type="button" class="collapsible">+ PureComponents</button>   
-<div class="content" style="display: none;" markdown="1">
-
-* A [`PureComponent`](https://reactjs.org/docs/react-api.html#reactpurecomponent) is essentially the same as a `Component` except that it checks to see if either the props or state has changed before allowing the Virtual DOM to be updated. 
-   * i.e. This is a replacement for `shouldComponentUpdate()` (which will ignored for a `PureComponent`).
-   * Note that all children must extend `PureComponent`.
-
-```jsx
-import React, { PureComponent } from 'react';
-
-class App extends PureComponent {
-  
-  ...
-  
-  render() {
-    ...
-  };
 }
 ```
 </div>
@@ -1107,98 +1310,6 @@ class App extends Component {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ Adjacent Elements</button>   
-<div class="content" style="display: none;" markdown="1">
-
-The `render()` method does not allow adjacent elements (i.e. ones with the same root) to be returned, e.g.
-
-```jsx
-return (
-    <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
-    <p>{this.props.children}</p>
-    <input type="text" onChange={this.props.changed} value={this.props.name} />
-)
-```
-There are several ways around this:
-
-* Using a root element that wraps all other elements:
-
-```jsx
-return (
-    <div>
-      <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
-      <p>{this.props.children}</p>
-      <input type="text" onChange={this.props.changed} value={this.props.name} />
-    </div>
-)
-```
-
-* Using squares brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
-
-```jsx
-return (
-    [
-      <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>,
-      <p key="i2">{this.props.children}</p>,
-      <input key="i3" type="text" onChange={this.props.changed} value={this.props.name} />
-    ]
-)
-```
-
-* Using an Aux funcion that wraps all other elements.
-   * Caveat: On Windows this needs to be called `Auxiliary` since `Aux` is a reserved word.
-
-**Aux.js**
-
-```jsx
-import React from 'react';
-
-const aux = props => props.children;
-
-export default aux;
-```
-
-**Person.js**
-
-```jsx
-import Aux from '../../../hoc/Aux';
-
-...
-
-render() {
-  return (
-      <Aux>
-        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
-        <p>{this.props.children}</p>
-        <input type="text" onChange={this.props.changed} value={this.props.name} />
-      </Aux>
-  );
-}
-```
-
-* Using React.Fragment:
-
-Since React 16.8, there is a built-in version of `Aux` called `React.Fragment`:
-
-**Person.js**
-
-```jsx
-import React, { Component, Fragment } from 'react';
-
-...
-
-render() {
-  return (
-      <Fragment>
-        <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
-        <p>{this.props.children}</p>
-        <input type="text" onChange={this.props.changed} value={this.props.name} />
-      </Fragment>
-  );
-}
-```
-
-<div>
 <button type="button" class="collapsible">+ Events &amp; Binding</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1308,6 +1419,7 @@ In the following example, the sequence of actions is:
 1. And the cycle repeats...
 
 *App.js*
+
 ```jsx
 class App extends Component {
 
