@@ -11,7 +11,7 @@
 &nbsp;
 
 
-<button type="button" id="toggle-all" value="block">Toggle All Sections NNN</button>
+<button type="button" id="toggle-all" value="block">Expand All Sections</button>
 
 &nbsp;
 
@@ -2556,8 +2556,8 @@ The general form is `(function(){ })();`.
       var toggle = toggleAll.value;
       
       var isExpanded = toggle === "block";
-      var currentGlyph = isExpanded ? "YYY" : "NNN";
-      var nextGlyph = isExpanded ? "NNN" : "YYY";
+      var currentGlyph = isExpanded ? "Collapse" : "Expand";
+      var nextGlyph = isExpanded ? "Expand" : "Collapse";
       
       toggleAll.setAttribute("value", isExpanded ? "none" : "block");
 
