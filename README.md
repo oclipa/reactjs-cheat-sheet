@@ -1014,7 +1014,7 @@ export default withClass(Person, styles.Person);
 <button type="button" class="collapsible">+ Refs</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Refs (or "references") are used to accessing specific elements of the DOM.  Specifically, there are used for accessing HTML elements or class components (they cannot be used with functional components).
+Refs (or "references") are used to accessing specific elements of the DOM.  Specifically, there are used for accessing HTML elements or class components (they cannot be used with functional components; although functional components can use refs via React Hooks - see below).
 
 In the following example, a ref is added to the input element.  The ref points to a function that creates a new class property that points to the input element.
 
@@ -1022,7 +1022,7 @@ The property is the used to ensure that, when the Person components are mounted,
 
 In older code, an example implementation might be:
 
-```
+```jsx
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -1058,7 +1058,7 @@ class Person extends Component {
 
 In newer code, an alternative approach is to create a generic ref in the constructor and then attach this to the current element of interest:
 
-```
+```jsx
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -1089,6 +1089,50 @@ class Person extends Component {
   }
 };
 ```
+
+&nbsp;
+
+-----
+
+**Refs and Functional Components**
+
+As mentioned above, you cannot use refs to refer to functional components, but they can be used inside functional components by using React Hooks, specifically `useRef`.
+
+The basic pattern is:
+1. Create ref to null before the `return` method: `const myBtnRef = useRef(null);`
+1. Add the ref to the element of interest: `<button ref={myBtnRef} onClick={props.clicked}>`
+1. Call the ref using the `useEffect` hook: `useEffect(() => { myBtnRef.current.click(); }, []);`
+
+The reason the ref must be called from `useEffect`is that it cannot be called before the functional component has been returned (since the elements of the component must be initialized).  Since `useEffect` is only called after the `return` method, this makes it an appropriate place to access the ref.
+
+```
+import React, { useEffect, useRef } from 'react';
+
+const Cockpit = (props) => {
+  const toggleBtnRef = useRef(null);
+
+  // runs after first render cycle
+  useEffect(() => {
+  
+    toggleBtnRef.current.click();
+    
+  }, []);
+
+  ...
+
+  return (
+    <div>
+      <button ref={toggleBtnRef} onClick={props.clicked}>
+        Toggle Persons
+      </button>
+    </div>
+  );
+};
+```
+
+&nbsp;
+
+-----
 
 For further information, see here:
    * [Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
