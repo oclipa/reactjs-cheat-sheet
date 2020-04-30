@@ -10,6 +10,11 @@
 
 &nbsp;
 
+
+<button type="button" class="toggle-all" value="block">Toggle All Sections</button>
+
+&nbsp;
+
 -------
 
 <div>
@@ -2543,5 +2548,21 @@ The general form is `(function(){ })();`.
         }
       });
     }
+
+    var toggleAll = document.querySelector(".toggle-all");
+    var toggle = toggleAll.value;
+    toggleAll.setAttribute("value", toggle === "block" ? "none" : "block");
+    
+    toggleAll.addEventListener("click", function() {
+
+      var sections = document.getElementsByClassName("collapsible");
+      var i;
+
+      for (i = 0; i < sections.length; i++) {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        content.style.display = toggle;
+      }
+    });
 
 </script>
