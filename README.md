@@ -1203,10 +1203,12 @@ class App extends Component {
              context go outside tags */ }
 
         <AuthContext.Provider 
-          value={{
-            authenticated: this.state.authenticated, 
-            login: this.loginHandler
-          }} 
+          value={ 
+            {
+              authenticated: this.state.authenticated, 
+              login: this.loginHandler
+            } 
+          } 
         >
          { /* components interested in 
               context go between tags */ }
