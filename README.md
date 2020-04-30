@@ -638,6 +638,29 @@ const App = props => {
 </div>
 
 <div>
+<button type="button" class="collapsible">+ PureComponents</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* A [`PureComponent`](https://reactjs.org/docs/react-api.html#reactpurecomponent) is essentially the same as a `Component` except that it checks to see if either the props or state has changed before allowing the Virtual DOM to be updated. 
+   * i.e. This is a replacement for `shouldComponentUpdate()` (which will ignored for a `PureComponent`).
+   * Note that all children must extend `PureComponent`.
+
+```jsx
+import React, { PureComponent } from 'react';
+
+class App extends PureComponent {
+  
+  ...
+  
+  render() {
+    ...
+  };
+}
+```
+</div>
+</div>
+
+<div>
 <button type="button" class="collapsible">+ var, let &amp; const</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1089,7 +1112,7 @@ class App extends Component {
 
 The `render()` method does not allow adjacent elements (i.e. ones with the same root) to be returned, e.g.
 
-```
+```jsx
 return (
     <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
     <p>{this.props.children}</p>
@@ -1099,7 +1122,8 @@ return (
 There are several ways around this:
 
 * Using a root element that wraps all other elements:
-```
+
+```jsx
 return (
     <div>
       <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
@@ -1110,7 +1134,8 @@ return (
 ```
 
 * Using squares brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
-```
+
+```jsx
 return (
     [
       <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>,
@@ -1125,7 +1150,7 @@ return (
 
 **Aux.js**
 
-```
+```jsx
 import React from 'react';
 
 const aux = props => props.children;
@@ -1134,7 +1159,8 @@ export default aux;
 ```
 
 **Person.js**
-```
+
+```jsx
 import Aux from '../../../hoc/Aux';
 
 ...
@@ -1155,7 +1181,8 @@ render() {
 Since React 16.8, there is a built-in version of `Aux` called `React.Fragment`:
 
 **Person.js**
-```
+
+```jsx
 import React, { Component, Fragment } from 'react';
 
 ...
@@ -1831,9 +1858,6 @@ The general form is `(function(){ })();`.
 * Preact
 * [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
 * [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
-* [PureComponents](https://reactjs.org/docs/react-api.html#reactpurecomponent)
-   * Use if want to check if any props value changes (i.e. don't need to implement `shouldComponentUpdate()`)
-   * Note that all children must be PureComponents as well.
 * [React Hooks](https://reactjs.org/docs/hooks-overview.html)
    * [Basic Hooks](https://reactjs.org/docs/hooks-reference.html#basic-hooks)
    * [Additional Hooks](https://reactjs.org/docs/hooks-reference.html#additional-hooks)
