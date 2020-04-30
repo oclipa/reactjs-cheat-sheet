@@ -8,6 +8,8 @@
 **Recommended Course:**
    * **[React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/course/react-the-complete-guide-incl-redux/)**
 
+&nbsp;
+
 -------
 
 <div>
@@ -345,6 +347,8 @@ Once generated, the new Virtual DOM is compared to the previous Virtual DOM to s
 
 **Both Functional and Class components should start with an uppercase letter.**
 
+&nbsp;
+
 -------
 
 ### Functional Component
@@ -380,6 +384,8 @@ Cons:
    * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
    * useEffect() allows you to perform an action after render() has been called.
 
+&nbsp;
+
 -------
 
 **useEffect()**
@@ -397,6 +403,8 @@ Cons:
   * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
   * If an empty array is passed, the cleanup function will only run when the component is unmounted (destroyed).
 
+&nbsp;
+
 -------
 
 ### Class Component
@@ -412,6 +420,8 @@ class Welcome extends React.Component {
 * Class components must access state and props using `this`(e.g. `this.state.XY`).
 
 * As a general of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
+
+&nbsp;
 
 -------
 
@@ -527,9 +537,9 @@ return (
 ```
 There are several ways around this:
 
------ 
-
 &nbsp;
+
+-------
 
 * Using a root element that wraps all other elements:
 
@@ -552,9 +562,9 @@ return (
 )
 ```
 
------ 
-
 &nbsp;
+
+-------
 
 * Using square brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
 
@@ -578,9 +588,9 @@ return (
 )
 ```
 
------ 
-
 &nbsp;
+
+-------
 
 * Using an Aux function that wraps all other elements.
    * Caveat: On Windows this needs to be called `Auxiliary` since `Aux` is a reserved word.
@@ -622,9 +632,9 @@ render() {
 }
 ```
 
------ 
-
 &nbsp;
+
+-------
 
 * Using React.Fragment:
 
@@ -669,9 +679,9 @@ There is a general convention to name HOCs with a `With` at the beginning, and p
 
 There are two approaches to defining HOCs:
 
------ 
-
 &nbsp;
+
+-------
 
 * Return a jsx functional component.
    * This approach is recommended when changing the HTML code or styling.
@@ -714,9 +724,9 @@ class App extends Component {
 export default App;
 ```
 
------ 
-
 &nbsp;
+
+-------
 
 * Return a javascript function that returns a jsx functional component:
   * This approach is recommended for adding behind-the-scenes logic, e.g. error handling or sending analytic data.
@@ -772,9 +782,9 @@ There are two approaches to handling application state:
    * `state`
    * `props`
 
--------
-
 &nbsp;
+
+-------
 
 **state**
 
@@ -831,9 +841,9 @@ deleteOldestHandler = () => {
 }
 ```
 
--------
-
 &nbsp;
+
+-------
 
 **props**
 
@@ -861,9 +871,9 @@ const Town = (props) => {
 export default Town;
 ```
 
--------
-
 &nbsp;
+
+-------
 
 **useState()**
 
@@ -971,7 +981,9 @@ Differences:
 * Arguments must be explicitly passed into arrow functions (the `arguments` object is only available to ES5 functions).
 * Cannot use arrow functions as constructors or methods (see below).
 
------
+&nbsp;
+
+-------
 
 **Digression: What is the difference between a method and a function?**
 
@@ -1003,7 +1015,9 @@ For those coming from languages such as C#, it may be useful to think of functio
 
 Both Spread and Rest use the same operator: `...`
 
------
+&nbsp;
+
+-------
 
 **Spread:**
    * Used to split up (i.e. spread) array elements OR object properties.
@@ -1024,7 +1038,9 @@ const newObject = ({ ...oldObject,
                            newProp: 5 })
 ```
 
------
+&nbsp;
+
+-------
 
 **Rest:**
    * Used to merge a list of elements into an array.
@@ -1119,7 +1135,9 @@ console.log(map1);
 // expected output: Array [2, 8, 18, 32]
 ```
 
------
+&nbsp;
+
+-------
 
 **[`find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)** 
 
@@ -1135,7 +1153,9 @@ console.log(res);
 // expected output: 12
 ```
 
------
+&nbsp;
+
+-------
 
 **[`findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)**
 
@@ -1151,7 +1171,9 @@ console.log(array1.findIndex(isLarge));
 // expected output: 3
 ```
 
------
+&nbsp;
+
+-------
 
 **[`filter()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)** 
 
@@ -1170,7 +1192,9 @@ console.log(res);
 // Array ["enflame", "dutiful", "present"]
 ```
 
------
+&nbsp;
+
+-------
 
 **[`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)** 
 
@@ -1218,7 +1242,9 @@ console.log(result);
 // results in ['a', 'b', 'c', 1, 2, 3]
 ```
 
------
+&nbsp;
+
+-------
 
 **[`slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)** 
 
@@ -1243,7 +1269,9 @@ console.log(animals.slice(1, 5));
 // Array ["bison", "camel", "duck", "elephant"]
 ```
 
------
+&nbsp;
+
+-------
 
 **[`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)** 
 
@@ -1419,6 +1447,10 @@ If you need to pass a value to the event handler, there are two approaches:
    * The `bind()` method.
    * An anonymous function.
 
+&nbsp;
+
+-------
+
 **`bind()` method**
 
 By calling the `bind()` method on the handler, a value can be passed as an argument.
@@ -1444,6 +1476,10 @@ By calling the `bind()` method on the handler, a value can be passed as an argum
   }
 ```
 
+&nbsp;
+
+-------
+
 **Anonymous function**
 
 ```jsx
@@ -1459,6 +1495,8 @@ By calling the `bind()` method on the handler, a value can be passed as an argum
 Note that in this case `()` must be added to the event handler, since we are registering a reference to the anonymous function, rather than the event handler itself.  This means that we can pass data to the event handler. 
 
 &nbsp;
+
+-------
 
 Of the two approaches, **the `bind()` method is generally the most efficient**, so it is recommended to use this rather than the anonymous function.
 
@@ -1915,7 +1953,9 @@ try {
 </div>
 </div>
 
------
+&nbsp;
+
+-------
 
 <div>
 <button type="button" class="collapsible">+ Addendum: Semi-Colons!</button>   
@@ -2011,7 +2051,9 @@ The general form is `(function(){ })();`.
 </div>
 </div>
 
------
+&nbsp;
+
+-------
 
 <div>
 <button type="button" class="collapsible">+ Future Updates</button>   
