@@ -2025,10 +2025,19 @@ try {
 <div class="content" style="display: none;" markdown="1">
 
 `var`- creates a variable; doesn't differentiate between variables and constants.
+   * `var` is scoped to the immediate function body (i.e. function scope).
+   * `var foo = "foo1"; var foo = "foo2";` is allowed.
+   * Creating a globally-scoped `var` adds a property on the global object (`window.foo`).
+   * Using `var` allows variables to be hoisted (i.e. used before they are defined).
 
 `let`- is basically the same as `var`; use this if a variable is actually variable.
+   * `let` is scoped to the immediate enclosing block denoted by `{ }` (i.e. block scope).
+   * `let bar = "bar1"; let bar = "bar2";` is a SyntaxError (already declared).
+   * Creating a globally-scoped `let` does not add a property on the global object.
+   * Using `let` does not allow variables to be hoisted.
 
-`const`- use this if a variable never changes (i.e. is constant).
+`const`- is basically the same as `let` except the pointer (if a reference-type object) or value (if a value-type) cannot be changed once defined.
+   * Other than being read-only, `const` behaviour is the same as `let`.
 
 With the release of ES6, avoid using `var`.
 
