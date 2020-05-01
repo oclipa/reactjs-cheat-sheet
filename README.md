@@ -15,9 +15,9 @@
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
-# Theory #
+### Theory
 
 <div>
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
@@ -147,9 +147,9 @@ Some examples of common patterns can be found here:
 </div>
 </div>
 
--------
+------------------------------------------------------------------------------------------------------
 
-# Practice #
+### Practice
 
 <div>
 <button type="button" class="collapsible">+ Using NodeJS and create-react-app</button>
@@ -358,7 +358,7 @@ Once generated, the new Virtual DOM is compared to the previous Virtual DOM to s
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 ### Functional Component
 
@@ -395,7 +395,7 @@ Cons:
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **useEffect()**
 
@@ -414,7 +414,7 @@ Cons:
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 ### Class Component
 
@@ -432,7 +432,7 @@ class Welcome extends React.Component {
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **Class Component LifeCycle**
 
@@ -548,7 +548,7 @@ There are several ways around this:
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 * Using a root element that wraps all other elements:
 
@@ -573,7 +573,7 @@ return (
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 * Using square brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
 
@@ -599,7 +599,7 @@ return (
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 * Using an Aux function that wraps all other elements.
    * Caveat: On Windows this needs to be called `Auxiliary` since `Aux` is a reserved word.
@@ -643,7 +643,7 @@ render() {
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 * Using React.Fragment:
 
@@ -690,7 +690,7 @@ There are two approaches to defining HOCs:
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 * Return a jsx functional component.
    * This approach is recommended when changing the HTML code or styling.
@@ -735,7 +735,7 @@ export default App;
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 * Return a javascript function that returns a jsx functional component:
   * This approach is recommended for adding behind-the-scenes logic, e.g. error handling or sending analytic data.
@@ -793,7 +793,7 @@ There are two approaches to handling application state:
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **state**
 
@@ -863,7 +863,7 @@ deleteOldestHandler = () => {
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **props**
 
@@ -893,7 +893,7 @@ export default Town;
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **useState()**
 
@@ -1101,7 +1101,7 @@ class Person extends Component {
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **Refs and Functional Components - useRef()**
 
@@ -1143,7 +1143,7 @@ const Cockpit = (props) => {
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 For further information, see here:
    * [https://reactjs.org/docs/refs-and-the-dom.html](https://reactjs.org/docs/refs-and-the-dom.html)
@@ -1291,7 +1291,7 @@ const Cockpit = (props) => {
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **contextType (class components only)**
 
@@ -1331,7 +1331,7 @@ class Person extends Component {
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **useContext() (functional components only)**
 
@@ -1368,7 +1368,7 @@ const Cockpit = (props) => {
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 For further information, see here:
    * [https://reactjs.org/docs/context.html](https://reactjs.org/docs/context.html)
@@ -1524,7 +1524,7 @@ If you need to pass a value to the event handler, there are two approaches:
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **`bind()` method**
 
@@ -1553,7 +1553,7 @@ By calling the `bind()` method on the handler, a value can be passed as an argum
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **Anonymous function**
 
@@ -1571,13 +1571,13 @@ Note that in this case `()` must be added to the event handler, since we are reg
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 Of the two approaches, **the `bind()` method is generally the most efficient**, so it is recommended to use this rather than the anonymous function.
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **Two-Way Binding**
 
@@ -1653,7 +1653,7 @@ There are several approaches to styling React pages:
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **Inline**
 
@@ -1687,7 +1687,7 @@ Some CSS features are quite difficult to implement using this approach (e.g. `:h
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **Stylesheets**
 
@@ -1722,7 +1722,7 @@ const person = (props) => {
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **Dynamic**
 
@@ -1778,7 +1778,7 @@ class App extends Component {
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **Radium**
 
@@ -1854,7 +1854,7 @@ export default Radium(Person);
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **styled-components**
 
@@ -1902,7 +1902,7 @@ export default Person;
 
 &nbsp;
 
------
+-------------------------------------------------------------------------------------------------------
 
 **CSS modules**
 
@@ -2030,15 +2030,54 @@ try {
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
-# Addendum: Javascript Basics #
+### Javascript Basics
+
+<div>
+<button type="button" class="collapsible">+ Function Syntax</button>   
+<div class="content" style="display: none;" markdown="1">
+
+```javascript   
+
+    // anonymous function 
+    var multiply = function(x, y) {
+        return (     // or, return x * y;
+          x * y;
+        )
+    };
+
+    // named function 
+    var multiply = function func_name(x, y) {
+      ...
+    };
+    
+    // arrow function
+    const multiply = (x, y) => {
+        return (     // or, return x * y;
+          x * y
+        )
+    };
+    
+    // self-executing expression
+    (function() {
+      statements
+    })();
+    
+    // or,
+    
+    (() => {
+      statements
+    })();  
+```
+</div>
+</div>
 
 <div>
 <button type="button" class="collapsible">+ Methods vs Functions</button>   
 <div class="content" style="display: none;" markdown="1">
 
-The difference between a method and a function (in javascript) is that: 
+The difference between a method and a function (in javascript) is: 
    * functions are called in isolation (e.g. `someFunction()`)
    * methods are only called from other objects (e.g. `someObject.someFunction()`)
 
@@ -2057,6 +2096,8 @@ e.g.
     myFunc();          // function call
 ```
 For those coming from languages such as C#, it may be useful to think of functions as private and methods as public.
+</div>
+</div>
 
 <div>
 <button type="button" class="collapsible">+ Self-Executing Functions</button>   
@@ -2109,7 +2150,7 @@ Both Spread and Rest use the same operator: `...`
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **Spread:**
    * Used to split up (i.e. spread) array elements OR object properties.
@@ -2132,7 +2173,7 @@ const newObject = ({ ...oldObject,
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **Rest:**
    * Used to merge a list of elements into an array.
@@ -2209,8 +2250,9 @@ function Greeting({name, ...restProps}) {
 ```
 </div>
 </div>
+
 <div>
-<button type="button" class="collapsible">+ Array Functions</button>   
+<button type="button" class="collapsible">+ Array Functions (map() etc.)</button>   
 <div class="content" style="display: none;" markdown="1">
 
 **[`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)**
@@ -2229,7 +2271,7 @@ console.log(map1);
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **[`find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)** 
 
@@ -2247,7 +2289,7 @@ console.log(res);
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **[`findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)**
 
@@ -2265,7 +2307,7 @@ console.log(array1.findIndex(isLarge));
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **[`filter()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)** 
 
@@ -2286,7 +2328,7 @@ console.log(res);
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **[`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)** 
 
@@ -2306,7 +2348,7 @@ console.log(array1.reduce(reducer, 5));
 // expected output: 15
 ```
 
------
+-------------------------------------------------------------------------------------------------------
 
 **[`concat()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)** 
 
@@ -2336,7 +2378,7 @@ console.log(result);
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **[`slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)** 
 
@@ -2363,7 +2405,7 @@ console.log(animals.slice(1, 5));
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 **[`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)** 
 
@@ -2475,7 +2517,7 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 
 &nbsp;
 
--------
+-------------------------------------------------------------------------------------------------------
 
 <div>
 <button type="button" class="collapsible">+ Future Updates</button>   
@@ -2518,7 +2560,7 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 
 &nbsp;
 
-------
+-------------------------------------------------------------------------------------------------------
 
 **Move along; nothing to see here...**
 
