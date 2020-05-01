@@ -10,7 +10,6 @@
 
 &nbsp;
 
-
 <button type="button" id="toggle-all" value="none">Expand All Sections</button>
 
 &nbsp;
@@ -2561,6 +2560,7 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 * [Portals](https://reactjs.org/docs/portals.html)
 * [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
 * [Strict Mode](https://reactjs.org/docs/strict-mode.html)
+* [Closures](https://medium.com/javascript-scene/master-the-javascript-interview-what-is-a-closure-b2f0d2152b36)
 
 </div>
 </div>
@@ -2585,117 +2585,17 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
        document.head.appendChild(file);
     };
 
-    const collapsed = "none";
-    const expanded = "block";
-    const plus = "+";
-    const minus = "-";
-    const collapseText = "Collapse";
-    const expandText = "Expand";
+    const loadJS = (filename) => { 
 
-
-    const addListenerToSections = () => {
-      const coll = document.getElementsByClassName("collapsible");
-      let i;
-
-      for (i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", (event) => {
-
-          const toggleButton = event.target;
-          const content = toggleButton.nextElementSibling;
-
-          // if currently expanded, current div display value will be "block"
-          // if currently collapsed, current div display value will be "none"
-          const willExpand = content.style.display === collapsed;
-       
-          toggleCss(toggleButton, willExpand);
-
-          toggleButtonText(toggleButton, willExpand);
-
-          toggleSection(toggleButton, content, willExpand);
-        });
-      }
+       const file = document.createElement("script");
+       file.setAttribute("type", "text/javascript");
+       file.setAttribute("src", filename);
+       document.head.appendChild(file);
     };
-
-    const toggleCss = (toggleButton, isNowExpanded) => {
-      toggleButton.classList.toggle("active", isNowExpanded);  
-    }
-
-    const toggleButtonText = (toggleButton, isNowExpanded) => {
-
-      const childNode = toggleButton.childNodes[0];
-      const buttonBits = childNode.nodeValue.split(" ");
-
-      buttonBits[0] = isNowExpanded ? minus : plus;
-      childNode.nodeValue = buttonBits.join(" ");
-    }
-
-    const setToggleAllText = (toggleButton, isNowExpanded) => {
-
-      // if willExpand this event will expand the
-      // sections, so need to change the button so that the next
-      // option is to collapse the sections.
-      // and vice versa.
-      const currentGlyph = isNowExpanded ? expandText : collapseText;
-      const nextGlyph = isNowExpanded ? collapseText : expandText;
-
-      const childNode = toggleButton.childNodes[0];
-      const buttonText = childNode.nodeValue;
-      childNode.nodeValue = buttonText.replace(currentGlyph, nextGlyph);
-    }
-
-    const setToggleAllValue = (toggleButton, isNowExpanded) => {
-
-      // if willExpand, sections are being expanded, so 
-      // need to set next toggle value to be "block"
-      // and vice versa.
-      const nextToggleValue = isNowExpanded ? expanded : collapsed;
-
-      toggleButton.setAttribute("value", nextToggleValue);
-    }
-
-    const toggleSection = (toggleButton, content, isNowExpanded) => {
-      content.style.display = isNowExpanded ? expanded : collapsed;
-    }
-
-    const addListenerToToggle = () => {
-      var toggleAll = document.querySelector("#toggle-all");
-
-      toggleAll.addEventListener("click", (event) => {
-
-        var toggleButton = event.target;
-
-        var prevToggleValue = toggleButton.value;
-
-        // if currently expanded, current button value will be "block"
-        // if currently collapsed, current button value will be "none"
-        var willExpand = prevToggleValue === collapsed;
-
-        setToggleAllValue(toggleButton, willExpand);
-
-        setToggleAllText(toggleButton, willExpand);
-
-        var sections = document.getElementsByClassName("collapsible");
-        var i;
-
-        for (i = 0; i < sections.length; i++) {
-
-          var section = sections[i];
-          var content = section.nextElementSibling;
-
-          toggleCss(section, willExpand);
-
-          toggleButtonText(section, willExpand);
-          
-          toggleSection(section, content, willExpand);          
-        }
-      });
-    };
-    
+   
     //just call a function to load your CSS
     //this path should be relative your HTML location
     loadCSS("../collapse.css");
-
-    addListenerToToggle();
-    addListenerToSections();
+    loadJS("../collapse.js");
 
 </script>
