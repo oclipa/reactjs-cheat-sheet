@@ -17,6 +17,8 @@
 
 -------
 
+# Theory #
+
 <div>
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
 <div class="content" style="display: none;" markdown="1">
@@ -146,6 +148,8 @@ Some examples of common patterns can be found here:
 </div>
 
 -------
+
+# Practice #
 
 <div>
 <button type="button" class="collapsible">+ Using NodeJS and create-react-app</button>
@@ -1373,356 +1377,7 @@ For further information, see here:
 </div>
 
 <div>
-<button type="button" class="collapsible">+ Arrow Functions</button>   
-<div class="content" style="display: none;" markdown="1">
-
-"Traditional" Function (ES5):
-
-```jsx
-function myFunc() {
-  console.log(arguments);
-  return ...
-}
-```
-
-Arrow Function (ES6):
-
-```jsx
-const myFunc = (args) => ({
-  console.log(args);
-  ...
-})
-```
-
-Differences:
-* Arrow functions avoid problems with `this` keyword (always refers to the enclosing context).
-* Arrow functions have an implicit return, so the `return` keyword does not need to be used, however the function block must be wrapped in parantheses (if nothing is being returned, the parantheses can be left out).
-* Arrow functions cannot be [hoisted](https://www.w3schools.com/js/js_hoisting.asp), unlike the ES5 function.
-* Arguments must be explicitly passed into arrow functions (the `arguments` object is only available to ES5 functions).
-* Cannot use arrow functions as constructors or methods (see below).
-
-&nbsp;
-
--------
-
-**Digression: What is the difference between a method and a function?**
-
-The difference between a method and a function (in javascript) is that: 
-   * functions are called in isolation (e.g. `someFunction()`)
-   * methods are only called from other objects (e.g. `someObject.someFunction()`)
-
-e.g.
-
-```jsx
-    var object = {
-      myMethod: function() {
-        console.log("What am I?");
-      }
-    };
-    
-    object.myMethod(); // method call
-    
-    var myFunc = object.myMethod; 
-    myFunc();          // function call
-```
-For those coming from languages such as C#, it may be useful to think of functions as private and methods as public.
-</div>
-</div>
-
-<div>
-<button type="button" class="collapsible">+ Spread and Rest Operators (...)</button>   
-<div class="content" style="display: none;" markdown="1">
-
-Both Spread and Rest use the same operator: `...`
-
-&nbsp;
-
--------
-
-**Spread:**
-   * Used to split up (i.e. spread) array elements OR object properties.
-
-```jsx
-// create new array by splitting the old 
-// array and adding objects a and b
-
-const newArray = [...oldArray, a, b];
-
-// create new object by splitting up the 
-// old object into properties and adding 
-// a new property (newProp).
-// If oldObject already contains newProp, 
-// the old value will be overwritten.
-
-const newObject = ({ ...oldObject, 
-                           newProp: 5 })
-```
-
-&nbsp;
-
--------
-
-**Rest:**
-   * Used to merge a list of elements into an array.
-   * Name comes from ability to merge "the rest of the elements" into an array.
-
-An example of the general case is:
-
-```jsx
-var dogPref = ["Dogs" , "Like" , "Bones"];
-const [animal , ...pref] = dogPref;
-console.log(animal); // Dogs
-console.log(pref); // [ "Like", "Bones"]
-```
-
-A more common case is for handling arguments passed to a function:
-
-```jsx
-// args can be an unlimited list of 
-// arguments.
-// The rest operator merges all of the 
-// arguments into an array.
-
-function sortArgs(...args) {
-   return args.sort();
-}
-```
-</div>
-</div>
-<div>
-<button type="button" class="collapsible">+ Destructuring ([a, b] = [x, y])</button>   
-<div class="content" style="display: none;" markdown="1">
-
-The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) syntax is a JavaScript expression that makes it possible to unpack values from arrays, or properties from objects, into distinct variables.
-
-For arrays:
-
-```jsx
-let a, b, rest;
-[a, b] = [10, 20];
-
-console.log(a);
-// expected output: 10
-
-console.log(b);
-// expected output: 20
-
-[a, b, ...rest] = [10, 20, 30, 40, 50];
-
-console.log(rest);
-// expected output: Array [30,40,50]
-```
-
-There is a similar syntax for objects (simply replaces `[]` with `{}`): 
-
-```jsx
-{name} = {name:'Max', age: 28};
-console.log(name); // Max
-console.log(age); // undefined
-
-// The following component declarations 
-// are equivalent:
-
-function Greeting(props) {
-  return <div>Hi {props.name}!</div>;
-}
-
-function Greeting({name}) {
-  return <div>Hi {name}!</div>;
-}
-
-function Greeting({name, ...restProps}) {
-  return <div>Hi {name}!</div>;
-}
-```
-</div>
-</div>
-<div>
-<button type="button" class="collapsible">+ Array Functions (=>)</button>   
-<div class="content" style="display: none;" markdown="1">
-
-**[`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)**
-
-* Applies a function to each element in an array and returns a new array with the result.
-
-```jsx
-const array1 = [1, 4, 9, 16];
-
-// pass a function to map
-const map1 = array1.map(x => x * 2);
-
-console.log(map1);
-// expected output: Array [2, 8, 18, 32]
-```
-
-&nbsp;
-
--------
-
-**[`find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)** 
-
-* Returns the **first** element in an array that matches the testing function. 
-
-```jsx
-const array1 = [5, 12, 8, 130, 44];
-
-const res = array1.find(element => 
-                          element > 10);
-
-console.log(res);
-// expected output: 12
-```
-
-&nbsp;
-
--------
-
-**[`findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)**
-
-* Returns the index of the **first** element in an array that matches the testing function. 
-
-```jsx
-const array1 = [5, 12, 8, 130, 44];
-
-const isLarge = (element) => 
-                    element > 13;
-
-console.log(array1.findIndex(isLarge));
-// expected output: 3
-```
-
-&nbsp;
-
--------
-
-**[`filter()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)** 
-
-* Returns a new array that only contains elements of the input array that match the testing function. 
-
-```jsx
-const words = ['spray', 'limit', 'elite', 
-                'enflame', 'dutiful', 
-                'present'];
-
-const res = words.filter(word => 
-                          word.length > 6);
-
-console.log(res);
-// expected output: 
-// Array ["enflame", "dutiful", "present"]
-```
-
-&nbsp;
-
--------
-
-**[`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)** 
-
-* Applies a [reducer](https://www.robinwieruch.de/javascript-reducer) function to each element of an array, resulting in a single output value.
-
-```jsx
-const array1 = [1, 2, 3, 4];
-const reducer = (total, currentValue) => 
-                      total + currentValue;
-
-// 1 + 2 + 3 + 4
-console.log(array1.reduce(reducer));
-// expected output: 10
-
-// 5 + 1 + 2 + 3 + 4
-console.log(array1.reduce(reducer, 5));
-// expected output: 15
-```
-
------
-
-**[`concat()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)** 
-
-* Returns a new array that is a concatenation of two or more arrays (using a shallow copy).
-* Syntax 1: `array1.concat[array2, array3, ...arrayN]`
-
-```jsx
-const letters = ['a', 'b', 'c'];
-const numbers = [1, 2, 3];
-
-letters.concat(numbers);
-// result in ['a', 'b', 'c', 1, 2, 3]
-```
-
-&nbsp;
-
-* Syntax 2: `array1.concat[value1[, value2[, ...[, valueN]]]]`
-
-```jsx
-const letters = ['a', 'b', 'c'];
-
-const result = letters.concat(1, [2, 3]);
-
-console.log(result); 
-// results in ['a', 'b', 'c', 1, 2, 3]
-```
-
-&nbsp;
-
--------
-
-**[`slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)** 
-
-* Returns a new array containing a shallow copy of the selected elements of an array.
-* Syntax: `slice[inclusive begin, exclusive end]`
-
-```jsx
-const animals = ['ant', 'bison', 
-                  'camel', 'duck', 
-                  'elephant'];
-
-console.log(animals.slice(2));
-// expected output: 
-// Array ["camel", "duck", "elephant"]
-
-console.log(animals.slice(2, 4));
-// expected output: 
-// Array ["camel", "duck"]
-
-console.log(animals.slice(1, 5));
-// expected output: 
-// Array ["bison", "camel", "duck", "elephant"]
-```
-
-&nbsp;
-
--------
-
-**[`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)** 
-
-* Changes the contents of an array by removing or replacing existing elements and/or adding new elements [in place](https://en.wikipedia.org/wiki/In-place_algorithm) (i.e. it does not create a new array).
-* Syntax: `let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])`
-
-```jsx
-const months = ['Jan', 'March', 
-                'April', 'June'];
-months.splice(1, 0, 'Feb');
-// inserts at index 1
-
-console.log(months);
-// expected output: 
-// Array ["Jan", "Feb", "March", 
-//          "April", "June"]
-
-months.splice(4, 1, 'May');
-// replaces 1 element at index 4
-
-console.log(months);
-// expected output: 
-// Array ["Jan", "Feb", "March", 
-//          "April", "May"]
-```
-
-</div>
-</div>
-<div>
-  
-<button type="button" class="collapsible">+ Lists</button>   
+<button type="button" class="collapsible">+ Lists in JSX</button>   
 <div class="content" style="display: none;" markdown="1">
 
 List items must always have a `key` property.  Note that using `index` as the `key` is not recommended, since it is an intrinsic part of the list, rather than part of the objects in the list.
@@ -1754,7 +1409,7 @@ render() {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ Using Conditionals</button>   
+<button type="button" class="collapsible">+ Using Conditionals In JSX</button>   
 <div class="content" style="display: none;" markdown="1">
 
 * Conditional statements take advantage of the fact that you can inject javascript into jsx using single curly braces `{}`.
@@ -2377,8 +2032,369 @@ try {
 
 -------
 
+# Addendum: Javascript Basics #
+
 <div>
-<button type="button" class="collapsible">+ Addendum: Semi-Colons!</button>   
+<button type="button" class="collapsible">+ Methods vs Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The difference between a method and a function (in javascript) is that: 
+   * functions are called in isolation (e.g. `someFunction()`)
+   * methods are only called from other objects (e.g. `someObject.someFunction()`)
+
+e.g.
+
+```jsx
+    var object = {
+      myMethod: function() {
+        console.log("What am I?");
+      }
+    };
+    
+    object.myMethod(); // method call
+    
+    var myFunc = object.myMethod; 
+    myFunc();          // function call
+```
+For those coming from languages such as C#, it may be useful to think of functions as private and methods as public.
+
+<div>
+<button type="button" class="collapsible">+ Self-Executing Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Self-Executing Functions (a.k.a Immediately Invoked Function Expressions) are functions which are invoked immediately after being defined, i.e. they don't need to be explicitly called elsewhere in the code.
+
+The general form is `(function(){ })();`.  
+   * The parentheses around the function are to ensure that the code within the function is contained in the private scope of the function.
+   * The parentheses at the end of the function are what invokes the function.
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Arrow Functions (=>)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+"Traditional" Function (ES5):
+
+```jsx
+function myFunc() {
+  console.log(arguments);
+  return ...
+}
+```
+
+Arrow Function (ES6):
+
+```jsx
+const myFunc = (args) => ({
+  console.log(args);
+  ...
+})
+```
+
+Differences:
+* Arrow functions avoid problems with `this` keyword (always refers to the enclosing context).
+* Arrow functions have an implicit return, so the `return` keyword does not need to be used, however the function block must be wrapped in parantheses (if nothing is being returned, the parantheses can be left out).
+* Arrow functions cannot be [hoisted](https://www.w3schools.com/js/js_hoisting.asp), unlike the ES5 function.
+* Arguments must be explicitly passed into arrow functions (the `arguments` object is only available to ES5 functions).
+* Cannot use arrow functions as constructors or methods (see below).
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Spread and Rest Operators (...)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Both Spread and Rest use the same operator: `...`
+
+&nbsp;
+
+-------
+
+**Spread:**
+   * Used to split up (i.e. spread) array elements OR object properties.
+
+```jsx
+// create new array by splitting the old 
+// array and adding objects a and b
+
+const newArray = [...oldArray, a, b];
+
+// create new object by splitting up the 
+// old object into properties and adding 
+// a new property (newProp).
+// If oldObject already contains newProp, 
+// the old value will be overwritten.
+
+const newObject = ({ ...oldObject, 
+                           newProp: 5 })
+```
+
+&nbsp;
+
+-------
+
+**Rest:**
+   * Used to merge a list of elements into an array.
+   * Name comes from ability to merge "the rest of the elements" into an array.
+
+An example of the general case is:
+
+```jsx
+var dogPref = ["Dogs" , "Like" , "Bones"];
+const [animal , ...pref] = dogPref;
+console.log(animal); // Dogs
+console.log(pref); // [ "Like", "Bones"]
+```
+
+A more common case is for handling arguments passed to a function:
+
+```jsx
+// args can be an unlimited list of 
+// arguments.
+// The rest operator merges all of the 
+// arguments into an array.
+
+function sortArgs(...args) {
+   return args.sort();
+}
+```
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Destructuring ([a, b] = [x, y])</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) syntax is a JavaScript expression that makes it possible to unpack values from arrays, or properties from objects, into distinct variables.
+
+For arrays:
+
+```jsx
+let a, b, rest;
+[a, b] = [10, 20];
+
+console.log(a);
+// expected output: 10
+
+console.log(b);
+// expected output: 20
+
+[a, b, ...rest] = [10, 20, 30, 40, 50];
+
+console.log(rest);
+// expected output: Array [30,40,50]
+```
+
+There is a similar syntax for objects (simply replaces `[]` with `{}`): 
+
+```jsx
+{name} = {name:'Max', age: 28};
+console.log(name); // Max
+console.log(age); // undefined
+
+// The following component declarations 
+// are equivalent:
+
+function Greeting(props) {
+  return <div>Hi {props.name}!</div>;
+}
+
+function Greeting({name}) {
+  return <div>Hi {name}!</div>;
+}
+
+function Greeting({name, ...restProps}) {
+  return <div>Hi {name}!</div>;
+}
+```
+</div>
+</div>
+<div>
+<button type="button" class="collapsible">+ Array Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**[`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)**
+
+* Applies a function to each element in an array and returns a new array with the result.
+
+```jsx
+const array1 = [1, 4, 9, 16];
+
+// pass a function to map
+const map1 = array1.map(x => x * 2);
+
+console.log(map1);
+// expected output: Array [2, 8, 18, 32]
+```
+
+&nbsp;
+
+-------
+
+**[`find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)** 
+
+* Returns the **first** element in an array that matches the testing function. 
+
+```jsx
+const array1 = [5, 12, 8, 130, 44];
+
+const res = array1.find(element => 
+                          element > 10);
+
+console.log(res);
+// expected output: 12
+```
+
+&nbsp;
+
+-------
+
+**[`findIndex()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)**
+
+* Returns the index of the **first** element in an array that matches the testing function. 
+
+```jsx
+const array1 = [5, 12, 8, 130, 44];
+
+const isLarge = (element) => 
+                    element > 13;
+
+console.log(array1.findIndex(isLarge));
+// expected output: 3
+```
+
+&nbsp;
+
+-------
+
+**[`filter()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)** 
+
+* Returns a new array that only contains elements of the input array that match the testing function. 
+
+```jsx
+const words = ['spray', 'limit', 'elite', 
+                'enflame', 'dutiful', 
+                'present'];
+
+const res = words.filter(word => 
+                          word.length > 6);
+
+console.log(res);
+// expected output: 
+// Array ["enflame", "dutiful", "present"]
+```
+
+&nbsp;
+
+-------
+
+**[`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)** 
+
+* Applies a [reducer](https://www.robinwieruch.de/javascript-reducer) function to each element of an array, resulting in a single output value.
+
+```jsx
+const array1 = [1, 2, 3, 4];
+const reducer = (total, currentValue) => 
+                      total + currentValue;
+
+// 1 + 2 + 3 + 4
+console.log(array1.reduce(reducer));
+// expected output: 10
+
+// 5 + 1 + 2 + 3 + 4
+console.log(array1.reduce(reducer, 5));
+// expected output: 15
+```
+
+-----
+
+**[`concat()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)** 
+
+* Returns a new array that is a concatenation of two or more arrays (using a shallow copy).
+* Syntax 1: `array1.concat[array2, array3, ...arrayN]`
+
+```jsx
+const letters = ['a', 'b', 'c'];
+const numbers = [1, 2, 3];
+
+letters.concat(numbers);
+// result in ['a', 'b', 'c', 1, 2, 3]
+```
+
+&nbsp;
+
+* Syntax 2: `array1.concat[value1[, value2[, ...[, valueN]]]]`
+
+```jsx
+const letters = ['a', 'b', 'c'];
+
+const result = letters.concat(1, [2, 3]);
+
+console.log(result); 
+// results in ['a', 'b', 'c', 1, 2, 3]
+```
+
+&nbsp;
+
+-------
+
+**[`slice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)** 
+
+* Returns a new array containing a shallow copy of the selected elements of an array.
+* Syntax: `slice[inclusive begin, exclusive end]`
+
+```jsx
+const animals = ['ant', 'bison', 
+                  'camel', 'duck', 
+                  'elephant'];
+
+console.log(animals.slice(2));
+// expected output: 
+// Array ["camel", "duck", "elephant"]
+
+console.log(animals.slice(2, 4));
+// expected output: 
+// Array ["camel", "duck"]
+
+console.log(animals.slice(1, 5));
+// expected output: 
+// Array ["bison", "camel", "duck", "elephant"]
+```
+
+&nbsp;
+
+-------
+
+**[`splice()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)** 
+
+* Changes the contents of an array by removing or replacing existing elements and/or adding new elements [in place](https://en.wikipedia.org/wiki/In-place_algorithm) (i.e. it does not create a new array).
+* Syntax: `let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])`
+
+```jsx
+const months = ['Jan', 'March', 
+                'April', 'June'];
+months.splice(1, 0, 'Feb');
+// inserts at index 1
+
+console.log(months);
+// expected output: 
+// Array ["Jan", "Feb", "March", 
+//          "April", "June"]
+
+months.splice(4, 1, 'May');
+// replaces 1 element at index 4
+
+console.log(months);
+// expected output: 
+// Array ["Jan", "Feb", "March", 
+//          "April", "May"]
+```
+
+</div>
+</div>
+
+<div>
+<button type="button" class="collapsible">+ Semi-Colons!</button>   
 <div class="content" style="display: none;" markdown="1">
 
 Summarized from:
@@ -2454,20 +2470,6 @@ alert ("hi");
 for (var i=0; i < 10; i++)  {/*actions*/}       // correct
 for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 ```
-
-&nbsp;
-
-&nbsp;
-
------
-
-**Digression: What is a Self-Executing Function?**
-
-Self-Executing Functions (a.k.a Immediately Invoked Function Expressions) are functions which are invoked immediately after being defined, i.e. they don't need to be explicitly called elsewhere in the code.
-
-The general form is `(function(){ })();`.  
-   * The parentheses around the function are to ensure that the code within the function is contained in the private scope of the function.
-   * The parentheses at the end of the function are what invokes the function.
 </div>
 </div>
 
