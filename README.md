@@ -2550,8 +2550,7 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 * [componentDidCatch](https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html)
 * [Portals](https://reactjs.org/docs/portals.html)
 * [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
-* [PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html)
-
+* [Strict Mode](https://reactjs.org/docs/strict-mode.html)
 
 </div>
 </div>
