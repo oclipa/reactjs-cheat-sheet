@@ -18,7 +18,7 @@
 
 ### Theory
 
-<div>
+<div id="howto">
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
 <div class="content" style="display: none;" markdown="1">
 
@@ -56,7 +56,8 @@
 
 </div>
 </div>
-<div>
+
+<div id="design">
 <button type="button" class="collapsible">+ React Design Principles</button>
 <div class="content" style="display: none;" markdown="1">
 
@@ -96,7 +97,8 @@
 
 </div>
 </div>
-<div>
+
+<div id="patterns">
 <button type="button" class="collapsible">+ React Patterns</button>
 <div class="content" style="display: none;" markdown="1">
 
@@ -113,7 +115,8 @@ Some examples of common patterns can be found here:
 
 </div>
 </div>
-<div>
+
+<div id="practices">
 <button type="button" class="collapsible">+ Best Practices List (WIP)</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -150,7 +153,7 @@ Some examples of common patterns can be found here:
 
 ### Practice
 
-<div>
+<div id="nodejs">
 <button type="button" class="collapsible">+ Using NodeJS and create-react-app</button>
 <div class="content" style="display: none;" markdown="1">
 
@@ -168,7 +171,8 @@ Some examples of common patterns can be found here:
 
 </div>
 </div>
-<div>  
+
+<div id="simple-app">  
 <button type="button" class="collapsible">+ Example of a Simple App</button> 
 <div class="content" style="display: none;" markdown="1">
 
@@ -339,7 +343,7 @@ export default calculator;
 </div>
 </div>
 
-<div>
+<div id="dom">
 <button type="button" class="collapsible">+ Virtual DOM</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -349,7 +353,7 @@ Once generated, the new Virtual DOM is compared to the previous Virtual DOM to s
 </div>
 </div>
   
-<div>
+<div id="components">
 <button type="button" class="collapsible">+ Functional vs Class Components</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -498,7 +502,7 @@ class Welcome extends React.Component {
 </div>
 </div>
 
-<div>
+<div id="pure">
 <button type="button" class="collapsible">+ PureComponents</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -521,7 +525,7 @@ class App extends PureComponent {
 </div>
 </div>
 
-<div>
+<div id="adjacent">
 <button type="button" class="collapsible">+ Adjacent Elements</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -677,7 +681,7 @@ render() {
 </div>
 </div>
 
-<div>
+<div id="hoc">
 <button type="button" class="collapsible">+ Higher Order Components (HOC)</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -782,7 +786,7 @@ export default withClass(App, styles.App);
 </div>
 </div>
 
-<div>
+<div id="state">
 <button type="button" class="collapsible">+ Props & State</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -956,7 +960,7 @@ const App = props => {
 </div>
 </div>
 
-<div>
+<div id="proptypes">
 <button type="button" class="collapsible">+ PropTypes</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1003,7 +1007,7 @@ export default withClass(Person, styles.Person);
 </div>
 </div>
 
-<div>
+<div id="refs">
 <button type="button" class="collapsible">+ Refs</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1135,7 +1139,7 @@ For further information, see here:
 </div>
 </div>
 
-<div>
+<div id="context">
 <button type="button" class="collapsible">+ Context API</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1360,7 +1364,7 @@ For further information, see here:
 </div>
 </div>
 
-<div>
+<div id="lists">
 <button type="button" class="collapsible">+ Lists in JSX</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1392,7 +1396,7 @@ render() {
 </div>
 </div>
 
-<div>
+<div id="conditionals">
 <button type="button" class="collapsible">+ Using Conditionals In JSX</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1460,7 +1464,7 @@ class App extends Component {
 </div>
 </div>
 
-<div>
+<div id="events">
 <button type="button" class="collapsible">+ Events &amp; Binding</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1623,7 +1627,7 @@ const person = (props) => {
 </div>
 </div>
 
-<div>
+<div id="css">
 <button type="button" class="collapsible">+ Styling</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1925,7 +1929,7 @@ For further details about CSS modules in general, see here:
 </div>
 </div>
 
-<div>
+<div id="debug">
 <button type="button" class="collapsible">+ Debugging</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -1934,7 +1938,8 @@ For further details about CSS modules in general, see here:
 * Alternatively, use the "Debugger for Chrome" extension in Visual Studio Code.
 </div>
 </div>
-<div>
+
+<div id="errors">
 <button type="button" class="collapsible">+ Error Handling</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2019,7 +2024,7 @@ try {
 ### Javascript Basics
 
 
-<div>
+<div id="var">
 <button type="button" class="collapsible">+ var, let &amp; const</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2044,7 +2049,7 @@ With the release of ES6, avoid using `var`.
 </div>
 </div>
 
-<div>
+<div id="function">
 <button type="button" class="collapsible">+ Function Syntax</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2083,7 +2088,7 @@ With the release of ES6, avoid using `var`.
 </div>
 </div>
 
-<div>
+<div id="methods">
 <button type="button" class="collapsible">+ Methods vs Functions</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2109,7 +2114,7 @@ For those coming from languages such as C#, it may be useful to think of functio
 </div>
 </div>
 
-<div>
+<div id="iife">
 <button type="button" class="collapsible">+ Self-Executing Functions</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2121,7 +2126,82 @@ The general form is `(function(){ })();`.
 </div>
 </div>
 
-<div>
+<div id="closures">
+<button type="button" class="collapsible">+ Closures</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A more in-depth discussion of closures is given [here](https://oclipa.github.io/csharp-cheat-sheet/#closures?expand) (in the context of C#, but the general principles apply to Javascript).  Following are a couple of illustrative examples:
+
+In this first example, although at first glance this might be expected to print out (0, 1, 2, ...etc), the actual output will be (10, 10, 10, ...etc).  This is because `i` exists in the scope of the `createPrinters` function, so the latest value (10) will be used when the function is evaluated.
+
+```
+const createPrinters = () => { 
+  
+  const arr = []; 
+  
+  // i is scoped within this function,
+  // and so will retain whatever value
+  // was set when the for loop completes.
+  let i; 
+  for (i = 0; i < 10; i++)  
+  { 
+    // storing anonymous function 
+    arr[i] = () => { 
+    
+      // in arrow functions, variables are
+      // scoped within the parent block (in
+      // this case, within the for loop)
+      return i; 
+    };
+  } 
+
+  // returning the array. 
+  return arr; 
+}
+
+const printers = createPrinters(); 
+  
+printers.map(printer => { console.log(printer()); })
+
+```
+In this second example, `val` is scoped within a closure (basically, a couple of nested functions), so it will retain whichever value it had when the closure was instantiated.  When the `createPrinters` function is evaluated, the output will be the less surprising (0, 1, 2, ...etc).
+
+```
+const createPrinters = () => { 
+    
+  const createClosure = (val) => { 
+    
+    // val is scoped within this function,
+    // and so will retain whatever value
+    // was passed in via the arguments.
+    return () => {
+    
+      // in arrow functions, variables are
+      // scoped within the parent block (in
+      // this case, within createClosure)
+      return val; 
+    }; 
+  };
+  
+  var arr = []; 
+  var i; 
+  for (i = 0; i < 10; i++)  
+  { 
+    // storing the closure function 
+    arr[i] = createClosure(i); 
+  } 
+  return arr; 
+};
+
+var printers = createPrinters(); 
+
+printers.map(printer => { console.log(printer()); })
+```
+
+</div>
+</div>
+
+<div id="arrow">
 <button type="button" class="collapsible">+ Arrow Functions (=>)</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2152,7 +2232,7 @@ Differences:
 </div>
 </div>
 
-<div>
+<div id="spread">
 <button type="button" class="collapsible">+ Spread and Rest Operators (...)</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2212,7 +2292,8 @@ function sortArgs(...args) {
 ```
 </div>
 </div>
-<div>
+
+<div id="destruct">
 <button type="button" class="collapsible">+ Destructuring ([a, b] = [x, y])</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2261,7 +2342,7 @@ function Greeting({name, ...restProps}) {
 </div>
 </div>
 
-<div>
+<div id="array">
 <button type="button" class="collapsible">+ Array Functions (map() etc.)</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2445,7 +2526,7 @@ console.log(months);
 </div>
 </div>
 
-<div>
+<div id="semi">
 <button type="button" class="collapsible">+ Semi-Colons!</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2529,7 +2610,7 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 
 -------------------------------------------------------------------------------------------------------
 
-<div>
+<div id="future">
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2560,7 +2641,6 @@ for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
 * [Portals](https://reactjs.org/docs/portals.html)
 * [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
 * [Strict Mode](https://reactjs.org/docs/strict-mode.html)
-* [Closures](https://medium.com/javascript-scene/master-the-javascript-interview-what-is-a-closure-b2f0d2152b36)
 
 </div>
 </div>
