@@ -958,21 +958,6 @@ const App = props => {
 </div>
 
 <div>
-<button type="button" class="collapsible">+ var, let &amp; const</button>   
-<div class="content" style="display: none;" markdown="1">
-
-`var`- creates a variable; doesn't differentiate between variables and constants.
-
-`let`- is basically the same as `var`; use this if a variable is actually variable.
-
-`const`- use this if a variable never changes (i.e. is constant).
-
-With the release of ES6, avoid using `var`.
-
-</div>
-</div>
-
-<div>
 <button type="button" class="collapsible">+ PropTypes</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2033,6 +2018,22 @@ try {
 -------------------------------------------------------------------------------------------------------
 
 ### Javascript Basics
+
+
+<div>
+<button type="button" class="collapsible">+ var, let &amp; const</button>   
+<div class="content" style="display: none;" markdown="1">
+
+`var`- creates a variable; doesn't differentiate between variables and constants.
+
+`let`- is basically the same as `var`; use this if a variable is actually variable.
+
+`const`- use this if a variable never changes (i.e. is constant).
+
+With the release of ES6, avoid using `var`.
+
+</div>
+</div>
 
 <div>
 <button type="button" class="collapsible">+ Function Syntax</button>   
