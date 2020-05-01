@@ -2036,7 +2036,8 @@ try {
    * Creating a globally-scoped `let` does not add a property on the global object.
    * Using `let` does not allow variables to be hoisted.
 
-`const`- is basically the same as `let` except the pointer (if a reference-type object) or value (if a value-type) cannot be changed once defined.
+`const`- is basically the same as `let` except it is read-only
+   * In this content, read-only means that the pointer (if a reference-type) or value (if a value-type) cannot be changed once defined.  It does not mean that the contents of a reference-type cannot be changed.
    * Other than being read-only, `const` behaviour is the same as `let`.
 
 With the release of ES6, avoid using `var`.
