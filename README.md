@@ -2036,8 +2036,122 @@ try {
 
 -------------------------------------------------------------------------------------------------------
 
-### Javascript Basics
+### Javascript Concepts
 
+Functional programming vs Object-orientated programming
+ - Lisp, Haskell
+Prototypal inheritance vs Class inheritance
+Multi-paradigm
+Can you name two programming paradigms important for JavaScript app developers?
+What is functional programming?
+What is the difference between classical inheritance and prototypal inheritance?
+What are the pros and cons of functional programming vs object-oriented programming?
+When is classical inheritance an appropriate choice?
+When is prototypal inheritance an appropriate choice?
+What does “favor object composition over class inheritance” mean?
+What are two-way data binding and one-way data flow, and how are they different?
+What are the pros and cons of monolithic vs microservice architectures?
+What is asynchronous programming, and why is it important in JavaScript?
+
+
+
+<div id="lambda">
+<button type="button" class="collapsible">+ Lambdas</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Lambda expressions are abstractions that enable a function to be passed around like data.  In other languages that support them, lambda expressions are normally identified by arrow notation (`=>`), but this is not the case in Javascript.
+
+In Javascript, it is common for 'lambda expression' to be reserved for anonymous functions, but this is not strictly true.  It is perfectly possible for a named function to a lambda expression *as long as it is passed into another function and treated as data*.   In addition, it is perfectly possible for an anonymous functions to not be a lambda expression *if it is not passed into another function*.  An example of this latter case would be a Self-Executing Function.
+
+In summary: Lambda means "function used as data".
+
+</div>
+</div>
+
+<div id="purefunc">
+<button type="button" class="collapsible">+ Pure Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A pure function is one that:
+
+   * Given the same inputs, always returns the same output.
+   * Has no side-effects (see below).
+
+One of the chief advantages of pure functions is that, as long as the result is the same, they can be replaced without changing the meaning of the program, which is useful for things like micro-services and unit testing.  In addition, since they are guaranteed to be completely self-contained, they are great candidates for situations that require concurrency.
+
+An indicator of an impure function is one that can be called without using its return value.  This implies that it produces side-effects.
+
+In an ideal world, an application would be composed entirely of pure functions.  In practice, impure functions are required (e.g. Math.random(); Data.getTime(); anything that updates the UI).
+
+</div>
+</div>
+
+<div id="funccomp">
+<button type="button" class="collapsible">+ Function Composition</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Function composition is the process of combining two or more functions in order to produce a new function, e.g. `f(g(x))`.
+
+Currying???  https://blog.bitsrc.io/understanding-currying-in-javascript-ceb2188c339
+
+</div>
+</div>
+
+<div id="sharedstate">
+<button type="button" class="collapsible">+ Avoiding Shared State</button>   
+<div class="content" style="display: none;" markdown="1">
+
+
+</div>
+</div>
+
+<div id="mutatedstate">
+<button type="button" class="collapsible">+ Avoiding Mutated State</button>   
+<div class="content" style="display: none;" markdown="1">
+
+
+</div>
+</div>
+
+<div id="sideffect">
+<button type="button" class="collapsible">+ Avoiding Side-Effects</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In functional programming, a side effect is any application state change that is observable outside the called function other than its return value.
+
+Examples include:
+   * Modifying any external variable or object property (e.g., a global variable, or a variable in the parent function scope chain).
+   * Logging to the console.
+   * Writing to the screen.
+   * Writing to a file.
+   * Writing to the network.
+   * Triggering any external process.
+   * Calling any other functions with side-effects.
+
+The goal in functional programming is to minimize side-effects; in the ideal case, the only result of calling a function should be the return value.
+
+If side-effects cannot be avoided, best practice is to isolate them from the rest of the software.  To draw a comparision with OO programming, this is similar to the Model-View-Controller (MVC) pattern, where the View is the side-effects, the Controller the functional logic, and the Model the state.  These "components" should be kept separate and loosely coupled.
+</div>
+</div>
+
+<div id="hof">
+<button type="button" class="collapsible">+ Higher Order Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+
+</div>
+</div>
+
+<div id="promise">
+<button type="button" class="collapsible">+ Promises</button>   
+<div class="content" style="display: none;" markdown="1">
+
+
+</div>
+</div>
+
+
+### Javascript Basics
 
 <div id="var">
 <button type="button" class="collapsible">+ var, let &amp; const</button>   
@@ -2137,40 +2251,6 @@ Self-Executing Functions (a.k.a Immediately Invoked Function Expressions) are fu
 The general form is `(function(){ })();`.  
    * The parentheses around the function are to ensure that the code within the function is contained in the private scope of the function.
    * The parentheses at the end of the function are what invokes the function.
-</div>
-</div>
-
-<div id="lambda">
-<button type="button" class="collapsible">+ Lambdas</button>   
-<div class="content" style="display: none;" markdown="1">
-
-Lambda expressions are abstractions that enable a function to be passed around like data.  In other languages that support them, lambda expressions are normally identified by arrow notation (`=>`), but this is not the case in Javascript.
-
-In Javascript, it is common for 'lambda expression' to be reserved for anonymous functions, but this is not strictly true.  It is perfectly possible for a named function to a lambda expression *as long as it is passed into another function and treated as data*.   In addition, it is perfectly possible for an anonymous functions to not be a lambda expression *if it is not passed into another function*.  An example of this latter case would be a Self-Executing Function.
-
-In summary: Lambda means "function used as data".
-
-</div>
-</div>
-
-<div id="sideffect">
-<button type="button" class="collapsible">+ Side-Effects</button>   
-<div class="content" style="display: none;" markdown="1">
-
-In functional programming, a side effect is any application state change that is observable outside the called function other than its return value.
-
-Examples include:
-   * Modifying any external variable or object property (e.g., a global variable, or a variable in the parent function scope chain).
-   * Logging to the console.
-   * Writing to the screen.
-   * Writing to a file.
-   * Writing to the network.
-   * Triggering any external process.
-   * Calling any other functions with side-effects.
-
-The goal in functional programming is to minimize side-effects; in the ideal case, the only result of calling a function should be the return value.
-
-If side-effects cannot be avoided, best practice is to isolate them from the rest of the software.  To draw a comparision with OO programming, this is similar to the Model-View-Controller (MVC) pattern, where the View is the side-effects, the Controller the functional logic, and the Model the state.  These "components" should be kept separate and loosely coupled.
 </div>
 </div>
 
