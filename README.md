@@ -655,8 +655,8 @@ Since React 16.8, there is a built-in version of `Aux` called `React.Fragment`:
 *Person.js*
 
 ```jsx
-import React, { Component, Fragment } from 'react';
-
+import React, { Component, Fragment } 
+        from 'react';
 ...
 
 render() {
@@ -719,7 +719,8 @@ export default withClass;
 class App extends Component {
   import React from 'react';
 
-  // upper-case 'W' to indicate this is a component, not a function
+  // upper-case 'W' to indicate this 
+  // is a component, not a function
   import WithClass from '../hoc/WithClass';
   
   ...
@@ -748,11 +749,12 @@ export default App;
 ```jsx
 import React from 'react';
 
-const withClass = (WrappedComponent, className) => {
-  return props => (
-    <div className={className}>
-      <WrappedComponent {...props} />}
-    </div>
+const withClass = 
+  (WrappedComponent, className) => {
+    return props => (
+      <div className={className}>
+        <WrappedComponent {...props} />}
+      </div>
   );
 };
 
@@ -765,7 +767,8 @@ export default withClass;
 class App extends Component {
   import React from 'react';
   
-  // lower-case 'w' to indicate this is a function, not component
+  // lower-case 'w' to indicate this 
+  // is a function, not component
   import withClass from '../hoc/WithClass';
   import Aux from '../hoc/Aux';
   
@@ -1039,10 +1042,10 @@ class Person extends Component {
         
         <input 
           ref={
-            (myInputEl) => {
-              this.myInputElement = myInputEl
-             }
-          }
+            (el) => {
+              this.myInputElement = el
+             };
+          };
           type="text" 
           onChange={this.props.changed} 
           value={this.props.name} 
@@ -1066,7 +1069,8 @@ class Person extends Component {
   }
   
   componentDidMount() {
-    // current gives access to the current reference
+    // current gives access to the 
+    // current reference
     this.elementRef.current.focus();
   }
   
@@ -1105,7 +1109,8 @@ The reason the ref must be called from `useEffect()` is that it cannot be called
 Since `useEffect()` is only called after the `return` method, this makes it an appropriate place to access the ref.
 
 ```jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } 
+        from 'react';
 
 const Cockpit = (props) => {
   const toggleBtnRef = useRef(null);
@@ -1121,7 +1126,10 @@ const Cockpit = (props) => {
 
   return (
     <div>
-      <button ref={toggleBtnRef} onClick={props.clicked}>
+      <button 
+        ref={toggleBtnRef} 
+        onClick={props.clicked}
+      >
         Toggle Persons
       </button>
     </div>
@@ -1153,7 +1161,7 @@ First we create a globally available javascript object, e.g.:
 import Read from 'react';
 
 const authContext = React.createContext({
-  authenticated: false, 
+  auth: false, 
   login: () => {}
 });
 
@@ -1165,7 +1173,8 @@ Then, in the parent component, the components (or parents of the components) tha
 *App.js*
 
 ```jsx
-import AuthContext from 'context/auth-context';
+import AuthContext 
+        from 'context/auth-context';
 
 class App extends Component {
   constructor(props) {
@@ -1173,16 +1182,16 @@ class App extends Component {
     
     this.state = {
       persons: [
-        { id: 'asfa1', name: 'Max', age: 28 },
-        { id: 'vasdf1', name: 'Manu', age: 29 },
-        { id: 'asdf11', name: 'Stephanie', age: 26 }
+        { id: 'asfa1', name: 'Max' },
+        { id: 'vasdf1', name: 'Manu' },
+        { id: 'asdf11', name: 'Stephanie' }
       ],
-      authenticated: false
+      auth: false
     }
   }
 
   loginHandler = () => {
-    this.setState( { authenticated: true } );
+    this.setState( { auth: true } );
   };
 
   render() {
@@ -1190,7 +1199,7 @@ class App extends Component {
     persons = (
       <Persons 
         persons={this.state.persons}
-        isAuthenticated={this.state.authenticated}
+        isAuthenticated={this.state.auth}
       />
     );
   
@@ -1202,7 +1211,7 @@ class App extends Component {
         <AuthContext.Provider 
           value={ 
             {
-              authenticated: this.state.authenticated, 
+              authenticated: this.state.auth, 
               login: this.loginHandler
             } 
           } 
@@ -1226,7 +1235,8 @@ And finally, in the components that need to access the context, the relevant ele
 *Person.js (inherits context from Persons.js)*
 
 ```jsx
-import AuthContext from 'context/auth-context';
+import AuthContext 
+        from 'context/auth-context';
 
 class Person extends Component {
 
@@ -1235,7 +1245,7 @@ class Person extends Component {
       <Aux>
         <AuthContext.Consumer>
           {(context) => {
-              context.authenticated ? 
+              context.auth ? 
                 <p>Authenticated!</p> : 
                 <p>Please log in</p>
             }
@@ -1290,14 +1300,15 @@ By creating a static reference to the context called `contextType` this makes th
 *Person.js*
 
 ```jsx
-import AuthContext from 'context/auth-context';
+import AuthContext 
+        from 'context/auth-context';
 
 class Person extends Component {
 
   static contextType = AuthContext;
   
   componentDidMount() {
-    console.log(this.context.authenticated);
+    console.log(this.context.auth);
     console.log(this.context.login);
   }
   
@@ -1305,7 +1316,7 @@ class Person extends Component {
     return (
       <Aux>
         {
-          this.context.authenticated ? 
+          this.context.auth ? 
             <p>Authenticated!</p> : 
             <p>Please log in</p>
         }
@@ -1331,13 +1342,14 @@ By creating a const reference to the context, `useContext()` makes the context a
 
 ```jsx
 import React, { useContext } from 'react';
-import AuthContext from 'context/auth-context';
+import AuthContext 
+        from 'context/auth-context';
 
 const Cockpit = (props) => {
 
   const authContext = useContext(AuthContext);
 
-  console.log(authContext.authenticated);
+  console.log(authContext.auth);
 
   render() {
     return (
@@ -1519,24 +1531,26 @@ If you need to pass a value to the event handler, there are two approaches:
 By calling the `bind()` method on the handler, a value can be passed as an argument.
 
 ```jsx
-  switchNameHandler = (newName) => {
-    this.setState( {
-      persons: [
-        { name: 'Fred', age: 40 },
-        { name: newName, age: 35 },
-        { name: 'Barney', age: 38 },
-      ],
-    } );
-  }
-  
-  render() {
-    return (
-      <button 
-        onClick={
-          this.switchNameHandler.bind(this, 'Betty')
-        }>Switch Name</button>
-    );
-  }
+switchNameHandler = (newName) => {
+  this.setState( {
+    persons: [
+      { name: 'Fred', age: 40 },
+      { name: newName, age: 35 },
+      { name: 'Barney', age: 38 },
+    ],
+  } );
+}
+
+render() {
+  return (
+    <button 
+      onClick={
+        this.switchNameHandler.bind(
+          this, 'Betty'
+        )
+      }>Switch Name</button>
+  );
+}
 ```
 
 &nbsp;
@@ -1546,14 +1560,14 @@ By calling the `bind()` method on the handler, a value can be passed as an argum
 **Anonymous function**
 
 ```jsx
-  render() {
-    return (
-      <button 
-        onClick={
-          () => this.switchNameHandler('Betty')
-        }>Switch Name</button>
-    );
-  }
+render() {
+  return (
+    <button 
+      onClick={
+        () => this.switchNameHandler('Betty')
+      }>Switch Name</button>
+  );
+}
 ```
 Note that in this case `()` must be added to the event handler, since we are registering a reference to the anonymous function, rather than the event handler itself.  This means that we can pass data to the event handler. 
 
@@ -1748,10 +1762,10 @@ class App extends Component {
     // dynamically change text
     const classes = [];
     if (this.state.persons.length <= 2) {
-      classes.push('red'); // classes = ['red']
+      classes.push('red'); // ['red']
     }
     if (this.state.persons.length <= 1) {
-      classes.push('bold'); // classes = ['red', 'bold']
+      classes.push('bold'); // ['red', 'bold']
     }
     
     return (
@@ -1863,19 +1877,20 @@ All styled methods return a React component.
 import styled from 'styled-components';
 
 const StyledDiv = styled.div``
-      background-color: ${props => props.alt ? 'red' : 'green'};
-      color: white;
-      cursor: pointer;
-      
-      &:hover {
-        background-color: lightgreen;
-        color: black;
-      }
+  background-color: ${props => props.alt ?
+                            'red' : 'green'};
+  color: white;
+  cursor: pointer;
 
-      @media (min-width: 500px) {
-        width: '450px';
-      }
-    ``
+  &:hover {
+    background-color: lightgreen;
+    color: black;
+  }
+
+  @media (min-width: 500px) {
+    width: '450px';
+  }
+``
 
 const person = (props) => {
   return (
@@ -1934,7 +1949,7 @@ For further details about CSS modules in general, see here:
 <div class="content" style="display: none;" markdown="1">
 
 * Simplest: Use Chrome Developer Tools (OPTION + CMD + i)
-   * Can combine with React Developer Tools Extension: [https://chrome.google.com/webstore/search/react%20developer%20tools?hl=en](https://chrome.google.com/webstore/search/react%20developer%20tools?hl=en)
+   * Can combine with [React Developer Tools Extension] (https://chrome.google.com/webstore/search/react%20developer%20tools?hl=en)
 * Alternatively, use the "Debugger for Chrome" extension in Visual Studio Code.
 </div>
 </div>
@@ -1971,8 +1986,8 @@ class ErrorBoundary extends Component {
   }
   
   // Can only be used on the client-side.
-  // Is called during the "commit phase" when 
-  // the DOM has already been updated.
+  // Is called during the "commit phase" 
+  // when the DOM has already been updated.
   // Should be used for something like 
   // error reporting.
   componentDidCatch = (error, info) => {
@@ -2040,7 +2055,7 @@ try {
    * Creating a globally-scoped `let` does not add a property on the global object.
    * Using `let` does not allow variables to be hoisted.
 
-`const`- is basically the same as `let` except it is read-only
+`const`- is basically the same as `let` except it is read-only.
    * In this content, read-only means that the pointer (if a reference-type) or value (if a value-type) cannot be changed once defined.  It does not mean that the contents of a reference-type cannot be changed.
    * Other than being read-only, `const` behaviour is the same as `let`.
 
@@ -2054,7 +2069,6 @@ With the release of ES6, avoid using `var`.
 <div class="content" style="display: none;" markdown="1">
 
 ```javascript   
-
     // anonymous function 
     var multiply = function(x, y) {
         return (     // or, return x * y;
@@ -2063,7 +2077,7 @@ With the release of ES6, avoid using `var`.
     };
 
     // named function 
-    var multiply = function func_name(x, y) {
+    var multiply = function name(x, y) {
       ...
     };
     
@@ -2098,7 +2112,7 @@ The difference between a method and a function (in javascript) is:
 
 e.g.
 
-```jsx
+```javascript
     var object = {
       myMethod: function() {
         console.log("What am I?");
@@ -2134,7 +2148,7 @@ A more in-depth discussion of closures is given [here](https://oclipa.github.io/
 
 In this first example, although at first glance this might be expected to print out (0, 1, 2, ...etc), the actual output will be (10, 10, 10, ...etc).  This is because `i` exists in the scope of the `createPrinters` function, so the latest value (10) will be used when the function is evaluated.
 
-```
+```javascript
 const createPrinters = () => { 
   
   const arr = []; 
@@ -2149,8 +2163,8 @@ const createPrinters = () => {
     arr[i] = () => { 
     
       // in arrow functions, variables are
-      // scoped within the parent block (in
-      // this case, within the for loop)
+      // scoped within the parent block 
+      // (in this case, within the for loop)
       return i; 
     };
   } 
@@ -2161,12 +2175,14 @@ const createPrinters = () => {
 
 const printers = createPrinters(); 
   
-printers.map(printer => { console.log(printer()); })
+printers.map(printer => { 
+              console.log(printer()); 
+            });
 
 ```
 In this second example, `val` is scoped within a closure (basically, a couple of nested functions), so it will retain whichever value it had when the closure was instantiated.  When the `createPrinters` function is evaluated, the output will be the less surprising (0, 1, 2, ...etc).
 
-```
+```javascript
 const createPrinters = () => { 
     
   const createClosure = (val) => { 
@@ -2195,7 +2211,9 @@ const createPrinters = () => {
 
 var printers = createPrinters(); 
 
-printers.map(printer => { console.log(printer()); })
+printers.map(printer => { 
+              console.log(printer()); 
+            })
 ```
 
 </div>
@@ -2216,7 +2234,7 @@ function myFunc() {
 
 Arrow Function (ES6):
 
-```jsx
+```javascript
 const myFunc = (args) => ({
   console.log(args);
   ...
@@ -2245,7 +2263,7 @@ Both Spread and Rest use the same operator: `...`
 **Spread:**
    * Used to split up (i.e. spread) array elements OR object properties.
 
-```jsx
+```javascript
 // create new array by splitting the old 
 // array and adding objects a and b
 
@@ -2271,7 +2289,7 @@ const newObject = ({ ...oldObject,
 
 An example of the general case is:
 
-```jsx
+```javascript
 var dogPref = ["Dogs" , "Like" , "Bones"];
 const [animal , ...pref] = dogPref;
 console.log(animal); // Dogs
@@ -2280,7 +2298,7 @@ console.log(pref); // [ "Like", "Bones"]
 
 A more common case is for handling arguments passed to a function:
 
-```jsx
+```javascript
 // args can be an unlimited list of 
 // arguments.
 // The rest operator merges all of the 
@@ -2301,7 +2319,7 @@ The [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/Java
 
 For arrays:
 
-```jsx
+```javascript
 let a, b, rest;
 [a, b] = [10, 20];
 
@@ -2319,7 +2337,7 @@ console.log(rest);
 
 There is a similar syntax for objects (simply replaces `[]` with `{}`): 
 
-```jsx
+```javascript
 {name} = {name:'Max', age: 28};
 console.log(name); // Max
 console.log(age); // undefined
@@ -2350,7 +2368,7 @@ function Greeting({name, ...restProps}) {
 
 * Applies a function to each element in an array and returns a new array with the result.
 
-```jsx
+```javascript
 const array1 = [1, 4, 9, 16];
 
 // pass a function to map
@@ -2368,7 +2386,7 @@ console.log(map1);
 
 * Returns the **first** element in an array that matches the testing function. 
 
-```jsx
+```javascript
 const array1 = [5, 12, 8, 130, 44];
 
 const res = array1.find(element => 
@@ -2386,7 +2404,7 @@ console.log(res);
 
 * Returns the index of the **first** element in an array that matches the testing function. 
 
-```jsx
+```javascript
 const array1 = [5, 12, 8, 130, 44];
 
 const isLarge = (element) => 
@@ -2404,7 +2422,7 @@ console.log(array1.findIndex(isLarge));
 
 * Returns a new array that only contains elements of the input array that match the testing function. 
 
-```jsx
+```javascript
 const words = ['spray', 'limit', 'elite', 
                 'enflame', 'dutiful', 
                 'present'];
@@ -2425,7 +2443,7 @@ console.log(res);
 
 * Applies a [reducer](https://www.robinwieruch.de/javascript-reducer) function to each element of an array, resulting in a single output value.
 
-```jsx
+```javascript
 const array1 = [1, 2, 3, 4];
 const reducer = (total, currentValue) => 
                       total + currentValue;
@@ -2446,7 +2464,7 @@ console.log(array1.reduce(reducer, 5));
 * Returns a new array that is a concatenation of two or more arrays (using a shallow copy).
 * Syntax 1: `array1.concat[array2, array3, ...arrayN]`
 
-```jsx
+```javascript
 const letters = ['a', 'b', 'c'];
 const numbers = [1, 2, 3];
 
@@ -2458,7 +2476,7 @@ letters.concat(numbers);
 
 * Syntax 2: `array1.concat[value1[, value2[, ...[, valueN]]]]`
 
-```jsx
+```javascript
 const letters = ['a', 'b', 'c'];
 
 const result = letters.concat(1, [2, 3]);
@@ -2476,7 +2494,7 @@ console.log(result);
 * Returns a new array containing a shallow copy of the selected elements of an array.
 * Syntax: `slice[inclusive begin, exclusive end]`
 
-```jsx
+```javascript
 const animals = ['ant', 'bison', 
                   'camel', 'duck', 
                   'elephant'];
@@ -2503,7 +2521,7 @@ console.log(animals.slice(1, 5));
 * Changes the contents of an array by removing or replacing existing elements and/or adding new elements [in place](https://en.wikipedia.org/wiki/In-place_algorithm) (i.e. it does not create a new array).
 * Syntax: `let arrDeletedItems = array.splice(start[, deleteCount[, item1[, item2[, ...]]]])`
 
-```jsx
+```javascript
 const months = ['Jan', 'March', 
                 'April', 'June'];
 months.splice(1, 0, 'Feb');
@@ -2539,7 +2557,7 @@ Javascript is pretty flexible when it comes to the presence (or lack) of semi-co
 
 Always put semi-colons after statements:
 
-```jsx
+```javascript
 var i;                        // variable declaration
 i = 5;                        // value assignment
 i = i + 1;                    // value assignment
@@ -2555,7 +2573,7 @@ Strictly speaking, semi-colons are not required in these cases unless the statem
 
 Don't need to put semi-colons after a curly bracket *unless* something is being assigned (e.g. `var obj = {};`):
 
-```jsx
+```javascript
 if  (...) {...} else {...}
 for (...) {...}
 while (...) {...}
@@ -2570,7 +2588,7 @@ In these cases, adding a semi-colon is harmless, but it is good practice to leav
 
 After the closing parenthensis of an `if`, `for`, `while` or `switch` statement:
 
-```jsx
+```javascript
 if (0 === 1); { alert("hi") }
 
 // equivalent to:
@@ -2589,7 +2607,7 @@ alert ("hi");
 
 * The closing parenthensis of a Self-Executing Function:
 
-```jsx
+```javascript
 (function (parameters) {
     // Function body
 })(parameters);
@@ -2599,9 +2617,9 @@ alert ("hi");
 
 * Inside the `()` of a `for` loop, semicolons only go after the first and second statement, never after the third:
 
-```jsx
-for (var i=0; i < 10; i++)  {/*actions*/}       // correct
-for (var i=0; i < 10; i++;) {/*actions*/}       // SyntaxError
+```javascript
+for (var i=0; i < 10; i++)  {/*actions*/} // correct
+for (var i=0; i < 10; i++;) {/*actions*/} // SyntaxError
 ```
 </div>
 </div>
