@@ -2140,6 +2140,40 @@ The general form is `(function(){ })();`.
 </div>
 </div>
 
+<div id="lambda">
+<button type="button" class="collapsible">+ Lambdas</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Lambda expressions are abstractions that enable a function to be passed around like data.  In other languages that support them, lambda expressions are normally identified by arrow notation (`=>`), but this is not the case in Javascript.
+
+In Javascript, it is common for 'lambda expression' to be reserved for anonymous functions, but this is not strictly true.  It is perfectly possible for a named function to a lambda expression *as long as it is passed into another function and treated as data*.   In addition, it is perfectly possible for an anonymous functions to not be a lambda expression *if it is not passed into another function*.  An example of this latter case would be a Self-Executing Function.
+
+In summary: Lambda means "function used as data".
+
+</div>
+</div>
+
+<div id="sideffect">
+<button type="button" class="collapsible">+ Side-Effects</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In functional programming, a side effect is any application state change that is observable outside the called function other than its return value.
+
+Examples include:
+   * Modifying any external variable or object property (e.g., a global variable, or a variable in the parent function scope chain).
+   * Logging to the console.
+   * Writing to the screen.
+   * Writing to a file.
+   * Writing to the network.
+   * Triggering any external process.
+   * Calling any other functions with side-effects.
+
+The goal in functional programming is to minimize side-effects; in the ideal case, the only result of calling a function should be the return value.
+
+If side-effects cannot be avoided, best practice is to isolate them from the rest of the software.  To draw a comparision with OO programming, this is similar to the Model-View-Controller (MVC) pattern, where the View is the side-effects, the Controller the functional logic, and the Model the state.  These "components" should be kept separate and loosely coupled.
+</div>
+</div>
+
 <div id="closures">
 <button type="button" class="collapsible">+ Closures</button>   
 <div class="content" style="display: none;" markdown="1">
