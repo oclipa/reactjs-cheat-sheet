@@ -2038,11 +2038,80 @@ try {
 
 ### Javascript Concepts
 
-Functional programming vs Object-orientated programming
- - Lisp, Haskell
-Prototypal inheritance vs Class inheritance
-Multi-paradigm
-Can you name two programming paradigms important for JavaScript app developers?
+<div id="paradigmns">
+<button type="button" class="collapsible">+ Javascript Paradigms</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Javascript is what is termed a multi-paradigm language, which means that it supports multiple different approaches to programming.  In particular it supports:
+
+   * Prototypal Inheritance
+   * Functional Programming
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+**Prototypal Inheritance**
+
+* Objects without classes.
+   * Each object has a prototype: Object.prototype.
+   * The prototype cannot access private variables in a class (they would need to be accessed using getters and setters).
+* Protoype delegation (a.k.a OLOO).
+   * If a function is not found in the object, the engine will then look for it in the prototype.
+
+For a more in-depth discussion regarding how you describe prototypal inheritance, go [here](https://alexsexton.com/blog/2013/04/understanding-javascript-inheritance/).  
+
+Alternatively, the following example is the conclusion of that article:
+
+```javascript
+// define a prototype object with defaults.
+const defaults = {
+  zero: 0,
+  one: 1
+};
+
+// use the prototype to create 
+// specific instances
+const myOptions = Object.create(defaults);
+const yourOptions = Object.create(defaults);
+
+// change properties of one instance
+myOptions.zero = 1000;
+
+// change properties of another instance
+yourOptions.one = 42;
+
+// update the defaults
+defaults.two = 2;
+
+// the instances have picked up the new defaults.
+myOptions.two; // 2
+yourOptions.two; // 2
+
+// to create a new object that inherits 
+// one of the instances, use:
+let myWiderOptions = Object.create(defaults);
+myWiderOptions = Object.assign(
+    myWiderOptions, 
+    myOptions, 
+    { three: 3 }
+);
+// or, 
+// let myWiderOptions = Object.create(myOptions);
+// myOptions.three = 3;
+```
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+**Functional Programming**
+
+   * Enabled by lambdas with closure.
+
+</div>
+</div>
+
 What is functional programming?
 What is the difference between classical inheritance and prototypal inheritance?
 What are the pros and cons of functional programming vs object-oriented programming?
@@ -2053,7 +2122,7 @@ What are two-way data binding and one-way data flow, and how are they different?
 What are the pros and cons of monolithic vs microservice architectures?
 What is asynchronous programming, and why is it important in JavaScript?
 
-
+template strings 'some text and a ${templateString} can be output ${likeThis}'
 
 <div id="lambda">
 <button type="button" class="collapsible">+ Lambdas</button>   
@@ -2152,6 +2221,187 @@ If side-effects cannot be avoided, best practice is to isolate them from the res
 
 
 ### Javascript Basics
+
+<div id="createobj">
+<button type="button" class="collapsible">+ Creating An Object</button>   
+<div class="content" style="display: none;" markdown="1">
+
+There are several approaches to creating objects in Javascript.
+
+   * Using an Object Literal.
+   * Using a Factory Function.
+   * Using Object.create().
+   * Using Prototypal Inheritance.
+   * Using Classes.
+
+As a general rule of thumb, Prototypal Inheritance and Classes should be avoided, since these create problems for functional programming.
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+*Using an Object literal*
+
+```javascript
+let mouse = {
+  furColor: 'brown',
+  legs: 4,
+  tail: 'long, skinny',
+  describe () {
+    return `A mouse with ${this.furColor} 
+      fur, ${this.legs} legs, and a 
+      ${this.tail} tail.`;
+  }
+};
+
+```
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+*Using a Factory Function*
+
+```
+let animal = {
+  animalType: 'animal',
+ 
+  describe () {
+    return `An ${this.animalType}, with 
+      ${this.furColor} fur, ${this.legs} 
+      legs, and a ${this.tail} tail.`;
+  }
+};
+ 
+let mouse = function mouse () {
+  return Object.assign(
+    Object.create(animal), 
+    {
+      animalType: 'mouse',
+      furColor: 'brown',
+      legs: 4,
+      tail: 'long, skinny'
+    }
+  );
+};
+
+let mickey = mouse();
+```
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+*Using Object.create()*
+
+```javascript
+let animal = {
+  animalType: 'animal',
+  
+  describe () {
+    return `An ${this.animalType}, with 
+      ${this.furColor} fur, ${this.legs} 
+      legs, and a ${this.tail} tail.`;
+  }
+};
+
+// assign(target, source1, source2 ...)
+let mouse = Object.assign(
+  Object.create(animal), 
+  {
+    animalType: 'mouse',
+    furColor: 'brown',
+    legs: 4,
+    tail: 'long, skinny'
+  }
+);
+```
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+*Using Prototypal Inheritance*
+
+```
+function Rodent(rodentType, furColor, legs, tail) {
+  this.rodentType = rodentType;
+  this.furColor = furColor;
+  this.legs = legs;
+  this.tail = tail;
+}
+
+// add describe function
+Rodent.prototype.describe = function() {
+  return ('A ' + this.rodentType +', with ' + this.furColor +' fur, ' + this.legs +' legs, and a ' + this.tail +' tail.');
+};
+
+// constructor function
+function Mouse(rodentType, furColor, legs, tail, food) {
+  Rodent.call(this, rodentType, furColor, legs, tail);
+  this.food = food;
+}
+
+// inheritance logic
+Mouse.prototype = Object.create(Rodent.prototype);
+Mouse.prototype.constructor = Mouse;
+
+// override describe function
+Mouse.prototype.describe = function() {
+  return ('A ' + this.rodentType +', with ' + this.furColor +' fur, ' + this.legs +' legs, and a ' + this.tail +' tail. It likes ' + this.food +'.');
+}
+
+const rodent = new Rodent('vole', 'grey', 4, 'short, stubby');
+console.log(rodent.describe());
+
+const mouse = new Mouse('mouse', 'brown', 4, 'long, skinny', 'cheese');
+console.log(mouse.describe());
+
+```
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+*Using Classes*
+
+Note that `class` is simply syntactical sugar on prototype inheritance, so this example and the preceeding one are essentially identical under-the-covers.  The `class` pattern in ES6 is not the same as classical inheritance.
+
+```javascript
+class Rodent {
+  constructor(rodentType, furColor, legs, tail) {
+  this.rodentType = rodentType;
+  this.furColor = furColor;
+  this.legs = legs;
+  this.tail = tail;
+  }
+  
+  describe() {
+      return ('A ' + this.rodentType +', with ' + this.furColor +' fur, ' + this.legs +' legs, and a ' + this.tail +' tail.');
+  }
+}
+
+class Mouse extends Rodent {
+  constructor(rodentType, furColor, legs, tail, food) {
+    super(rodentType, furColor, legs, tail);
+    this.food = food;
+  }
+  
+  describe() {
+    return ('A ' + this.rodentType +', with ' + this.furColor +' fur, ' + this.legs +' legs, and a ' + this.tail +' tail. It likes ' + this.food +'.');
+  }
+}
+
+// Actual usage remains the same
+const rodent = new Rodent('vole', 'grey', 4, 'short, stubby');
+console.log(rodent.describe());
+
+const mouse = new Mouse('mouse', 'brown', 4, 'long, skinny', 'cheese');
+console.log(mouse.describe());
+```
+
+</div>
+</div>
 
 <div id="var">
 <button type="button" class="collapsible">+ var, let &amp; const</button>   
@@ -2330,6 +2580,37 @@ printers.map(printer => {
             })
 ```
 
+Another example demonstrating how a closure can be used for data privacy:
+
+```
+let animal = {
+  animalType: 'animal',
+ 
+  describe () {
+    return `An ${this.animalType} with ${this.furColor} fur, 
+      ${this.legs} legs, and a ${this.tail} tail.`;
+  }
+};
+ 
+let mouse = function mouse () {
+  let secret = 'secret agent';
+
+  return Object.assign(
+    Object.create(animal), 
+    {
+      animalType: 'mouse',
+      furColor: 'brown',
+      legs: 4,
+      tail: 'long, skinny',
+      profession () {
+        return secret;
+      }
+    }
+  );
+};
+ 
+let james = mouse();
+```
 </div>
 </div>
 
