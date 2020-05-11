@@ -155,8 +155,9 @@ Some examples of common patterns can be found here:
 <button type="button" class="collapsible">+ Using NodeJS and create-react-app</button>
 <div class="content" style="display: none;" markdown="1">
 
-1. Install NodeJs: 
-   * [https://nodejs.org](https://nodejs.org)
+1. To install NodeJS:
+   * Either, download the installer from the NodeJS website: [https://nodejs.org](https://nodejs.org)
+   * Or, if on a Mac, install using HomeBrew: `brew install node`
 2. Install create-react-app: 
    * `sudo npm install create-react-app -g`
 3. Create a new app: 
