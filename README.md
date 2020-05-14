@@ -968,7 +968,8 @@ const App = props => {
 
 PropTypes allow control of the data types used in the app (i.e. more like a strongly-typed language).  This is a feature provided by React, but it is not included in React Core, so it needs to be installed:
 
-Install: `npm install prop-types`
+* Install: `npm install prop-types`
+* Import: `import PropTypes from 'prop-types';`
 
 PropTypes can be used on both class and functional components.  They are particularly important when you are sharing components with other people.
 
@@ -2042,30 +2043,186 @@ try {
 Axios is a promise-based HTTP client that can be integrated with ReactJS:  
    * https://github.com/axios/axios
 
-Installation:
-   * `npm install axios`
+* Install: `npm install axios`
+* Import: `import axios from 'axios';`
 
-Import:
-   * `import axios from 'axios';`
+**Example Usage:**
 
-Example Usage:
+HTTP requests are typically placed in `componentDidMount()` (which is called after initial render) or `componentDidUpdate` (which is called after subsequent renders) because these can cause side effects.  Normally the state is not updated in these functions, however in this case it can be done because the http request/response is asynchronous.
+
+Errors need to be handled.  An effective way to do this is to make the default state of a page to be an error state, which is only replaced by content in the event of success.  Typically errors would be written to the console, recorded in a log and/or displayed (in a user-friendly manner) to the user.
 
 ```
 import React, { Component } from 'react';
 import axios from 'axios';
 
 class QueryComponent extends Component {
-    componentDidMount () {
-        axios.get('http://jsonplaceholder.typicode.com/posts')
-            .then(response => {
-                console.log(response);
-            });
+  state = {
+    posts: []
+    error: false
+  }
+
+  // called after render
+  componentDidMount () {
+    // get() returns a Promise (because query is asynchronous)
+    axios.get('http://jsonplaceholder.typicode.com/posts')
+      .then(response => {
+        const firstFourPosts = response.data.slice(0, 4);
+        this.setState({posts:firstFourPosts});
+      })       
+      .catch(error => {
+        this.setState({ error: true });
+        console.log(error);
+        log(error);
+      });
+  } 
+  
+  // called when button clicked
+  postDataHandler = () => {
+    const data = {
+      title: this.state.title,
+      body: this.state.content,
+      author: this.state.author,
+    };
+
+    axios
+      .post("http://jsonplaceholder.typicode.com/posts", data)
+      .then(response => {
+        console.log(response);
+      })       
+      .catch(error => {
+        this.setState({ error: true });
+        console.log(error);
+        log(error);
+      });
+  };
+
+  // called when button clicked
+  deleteDataHandler = () => {
+    axios
+      .delete("http://jsonplaceholder.typicode.com/posts/" + this.props.id)
+      .then(response => {
+        console.log(response);
+      })       
+      .catch(error => {
+        this.setState({ error: true });
+        console.log(error);
+        log(error);
+      });   
+  };
+  
+  // called when response received (and state updated)
+  render () {
+    let posts = <p>Something went wrong!</p>;
+    
+    if (!this.state.error) {
+      posts = this.state.posts.map(post => {
+        return (
+          <Post 
+            key={post.id} 
+            title={post.title} 
+            author={post.author}
+          />
+        );
+      });
     }
 
-    render () {
-      ...
-    }
+    return (
+      <div>
+        <section>{posts}</section>
+        
+        <section>
+          ...
+          <button 
+            onClick={this.postDataHandler}>
+              Add Post
+          </button>
+        </section>
+
+        <section>
+          ...
+          <button 
+            onClick={this.deleteDataHandler}>
+              Add Post
+          </button>
+        </section>
+      </div>
+    );
+  }
 }
+```
+**Interceptors:**
+
+Interceptors allow HTTP messages to be intecepted globally (i.e. will be applied to every request sent from, or response received by, the app).
+
+Typical uses are: 
+   * adding common headers to requests (e.g. for authorization)
+   * logging responses and requests
+   * error handling
+   * setting a default global config (e.g. setting a global base url)
+
+Interceptors are usually enabled in globally significant components (e.g. index.js).
+
+```
+import axios from 'axios';
+
+// allows urls to be specified as /posts (for example)
+axios.defaults.baseURL = 'http://jsonplaceholder.typicode.com'
+
+// allows headers to be edited or inserted for all messages
+axios.defaults.headers.common['Authorization'] = 'MY_AUTH_TOKEN';
+
+// allows headers to be edited or inserted for POST messages only
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+// intercept all requests
+axios.interceptors.request.use(request => {
+  // edit request here
+  // must always return the request
+  return request;
+}, error => {
+  // return an exception that can be caught
+  return Promise.reject(error);
+});
+
+// intercept all responses
+axios.interceptors.response.use(response => {
+  // edit response here
+  // must always return the response
+  return response;
+}, error => {
+  // return an exception that can be caught
+  return Promise.reject(error);
+});
+```
+
+It is also possible to set up axios "instances", which override the global defaults for different parts of the application, e.g.:
+
+*axios.js*
+
+```
+import axios from 'axios';
+
+// axios instances overwrite the global defaults
+const instance = axios.create({
+  baseURL: 'http://jsonplaceholder.typicode.com'
+});
+
+instance.defaults.headers.common['Authorization'] = 'AUTH_TOKEN_FROM_INSTANCE';
+
+export default instance;
+```
+*MyComponent.js*
+
+```
+//import axios from "axios";
+import axios from '../../axios';
+
+// within this component, values in 
+// axios.js override the global defaults
+
+...
+
 ```
 </div>
 </div>
