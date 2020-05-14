@@ -2032,16 +2032,12 @@ try {
 </div>
 </div>
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 <div id="http">
-<button type="button" class="collapsible">+ HTTP Request with Axios</button>   
+<button type="button" class="collapsible">+ HTTP Requests with Axios</button>   
 <div class="content" style="display: none;" markdown="1">
 
 Axios is a promise-based HTTP client that can be integrated with ReactJS:  
-   * https://github.com/axios/axios
+   * [https://github.com/axios/axios](https://github.com/axios/axios)
 
 * Install: `npm install axios`
 * Import: `import axios from 'axios';`
@@ -2052,7 +2048,7 @@ HTTP requests are typically placed in `componentDidMount()` (which is called aft
 
 Errors need to be handled.  An effective way to do this is to make the default state of a page to be an error state, which is only replaced by content in the event of success.  Typically errors would be written to the console, recorded in a log and/or displayed (in a user-friendly manner) to the user.
 
-```
+```jsx
 import React, { Component } from 'react';
 import axios from 'axios';
 
@@ -2163,7 +2159,7 @@ Typical uses are:
 
 Interceptors are usually enabled in globally significant components (e.g. index.js).
 
-```
+```jsx
 import axios from 'axios';
 
 // allows urls to be specified as /posts (for example)
@@ -2200,7 +2196,7 @@ It is also possible to set up axios "instances", which override the global defau
 
 *axios.js*
 
-```
+```jsx
 import axios from 'axios';
 
 // axios instances overwrite the global defaults
@@ -2214,7 +2210,7 @@ export default instance;
 ```
 *MyComponent.js*
 
-```
+```jsx
 //import axios from "axios";
 import axios from '../../axios';
 
