@@ -2035,6 +2035,45 @@ try {
 
 -------------------------------------------------------------------------------------------------------
 
+<div id="http">
+<button type="button" class="collapsible">+ HTTP Request with Axios</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Axios is a promise-based HTTP client that can be integrated with ReactJS:  
+   * https://github.com/axios/axios
+
+Installation:
+   * `npm install axios`
+
+Import:
+   * `import axios from 'axios';`
+
+Example Usage:
+
+```
+import React, { Component } from 'react';
+import axios from 'axios';
+
+class QueryComponent extends Component {
+    componentDidMount () {
+        axios.get('http://jsonplaceholder.typicode.com/posts')
+            .then(response => {
+                console.log(response);
+            });
+    }
+
+    render () {
+      ...
+    }
+}
+```
+</div>
+</div>
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
 <div id="future">
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
