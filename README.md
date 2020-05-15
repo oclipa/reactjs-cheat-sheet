@@ -2232,6 +2232,31 @@ import axios from '../../axios';
 ```
 </div>
 </div>
+<div id="errors">
+<button type="button" class="collapsible">+ Popular NPM Packages</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Globally Installed**
+
+* `[sudo] npm install create-react-app -g`
+  * Command-line tool that creates the basic framework for a react app.
+
+**Locally Installed**
+
+* `npm install prop-types`
+   * Enables use of PropTypes for validation of properties
+* `npm install radium`
+   * Uses an HOC that can be used to style components.
+   * Requires pseudo-CSS for inline CSS (the same as standard react).
+* `npm install styled-components`
+   * Uses tagged template literals to style components.
+   * Allows inline CSS to be specified as normal (rather than in the pseudo-CSS required by standard React or Radium).
+   * Doesn't really allow a clear separation between style and logic.
+* `npm install axios`
+   * This is a promise-based HTTP client.
+
+</div>
+</div>
 
 &nbsp;
 
