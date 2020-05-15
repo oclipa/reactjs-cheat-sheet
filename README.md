@@ -166,7 +166,7 @@ Some examples of common patterns can be found here:
       1. Restart prompt (if there problems are reported with .bashrc, check the permissions on .bashrc)
       1. `nvm install --lts`
       1. `nvm use --lts`
-      1. `echo "nvm use --lts" >> .zshrc`
+      1. `echo "nvm use --silent --lts" >> .zshrc`
       
 2. Install create-react-app (might not need `sudo`): 
    * `[sudo] npm install create-react-app -g`
