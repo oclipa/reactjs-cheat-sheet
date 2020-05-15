@@ -157,9 +157,19 @@ Some examples of common patterns can be found here:
 
 1. To install NodeJS:
    * Either, download the installer from the NodeJS website: [https://nodejs.org](https://nodejs.org)
-   * Or, if on a Mac, install using HomeBrew: `brew install node`
-2. Install create-react-app: 
-   * `sudo npm install create-react-app -g`
+   * Or, if using MacOS, install using HomeBrew: `brew install node`
+   * Or, if using Zsh on Unbuntu (if using Bash, just replace `zsh` with `bash` and `.zshrc` with `.bash_profile`):
+      1. `sudo apt-get update`
+      1. `sudo apt-get upgrade`
+      1. `sudo apt-get install build-essential`
+      1. `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | zsh`
+      1. Restart prompt (if there problems are reported with .bashrc, check the permissions on .bashrc)
+      1. `nvm install --lts`
+      1. `nvm use --lts`
+      1. `echo "nvm use --lts" >> .zshrc`
+      
+2. Install create-react-app (might not need `sudo`): 
+   * `[sudo] npm install create-react-app -g`
 3. Create a new app: 
    * `create-react-app [app-name] [--scripts-version version]`
    * This will create a new sub-directory of the current directory called `app-name`.
