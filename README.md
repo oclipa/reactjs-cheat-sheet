@@ -168,13 +168,15 @@ Some examples of common patterns can be found here:
       1. `nvm use --lts`
       1. `echo "nvm use --silent --lts" >> .zshrc`
       
-2. Install create-react-app (might not need `sudo`): 
+1. Install create-react-app (might not need `sudo`): 
    * `[sudo] npm install create-react-app -g`
-3. Create a new app: 
+1. Create a new app: 
    * `create-react-app [app-name] [--scripts-version version]`
    * This will create a new sub-directory of the current directory called `app-name`.
    * `--scripts-version version` is optional; if not used, the latest version of create-react-app will be used.
-4. In the new app directory, start the development server: 
+1. Install an existing app (which has an existing package.json file): 
+   * In the app root folder run: `npm install`
+1. In the new app directory, start the development server: 
    * `npm start`
    * This actually calls a bespoke command defined in package.json.
 
