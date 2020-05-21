@@ -2244,6 +2244,8 @@ import axios from '../../axios';
 
 * `[sudo] npm install create-react-app -g`
   * Command-line tool that creates the basic framework for a react app.
+* `npm install -g eslist`
+   * Linting tool for javascript
 
 **Locally Installed**
 
