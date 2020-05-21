@@ -370,6 +370,8 @@ Once generated, the new Virtual DOM is compared to the previous Virtual DOM to s
 
 **Both Functional and Class components should start with an uppercase letter.**
 
+Class components should be used if the component is stateful, or there is a need to use lifecycle methods (e.g. `componentDidMount()`).
+
 &nbsp;
 
 -------------------------------------------------------------------------------------------------------
@@ -508,7 +510,7 @@ class Welcome extends React.Component {
    * `componentWillUnmount()`
    
 * **Other**
-   * `componentDidCatch()
+   * `componentDidCatch()`
 
 </div>
 </div>
