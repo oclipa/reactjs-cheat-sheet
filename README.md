@@ -2036,6 +2036,8 @@ Usage:
 </ErrorBoundary>
 ```
 
+&nbsp;
+
 **try/catch**
 
 For imperative code, use try/catch:
@@ -2047,6 +2049,8 @@ try {
   // ...
 }
 ```
+
+&nbsp;
 
 **withErrorHandler() HOC**
 
@@ -2318,6 +2322,10 @@ Firebase has offers two types of database:
 
 In general, Realtime Database is sufficient for simple apps, but Firestore is recommended for larger, more complex ones.
 
+&nbsp;
+
+**Accessing the database**
+
 In this example, a Realtime Database is used with a structure similar to the following:
 
 ```
@@ -2331,8 +2339,6 @@ In this example, a Realtime Database is used with a structure similar to the fol
       - user-request2
       - user-request3
 ```
-
-**Accessing the database**
 
 Database access is performed using Axios:
 
