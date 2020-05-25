@@ -2492,12 +2492,13 @@ Two packages are required to enable routing (although strictly speaking you only
    * `import { Router } from 'react-router-dom';`
    * `import { Link } from 'react-router-dom';`
    * `import { withRouter } from 'react-router-dom';`
+   * `import { NavLink } from 'react-router-dom';`
    
 **BrowserRouter Component**
 
 To implement routing, the first thing step is to, in either App.js or index.js files, wrap the part of the app that supports routing with the `BrowserRouter` component:
 
-```
+```jsx
 import React from 'react';
 import Blog from 'Blog';
 import { BrowserRouter } from 'react-router-dom';
@@ -2518,7 +2519,7 @@ export default App;
 **Route Component**
 
 The next step is to  add the `Route` component to components where the contents should be dependent on the path, e.g.:
-```
+```jsx
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
 import Posts from "Posts";
@@ -2564,12 +2565,21 @@ The `render` property of the Route component is only really intended for small u
 
 Generally, and particularly for larger sections, the `component` property should be used.
 
+**Route Parameters**
+
+Often it is not possible to hardwire a specific path in the Link.  In these cases, a route parameter can be used. A route parameters is effectively a wildcard that copies a section of the link into a variable.  
+
+An example might be:
+   * `<Route path="/:id" exact component={FullPost} />`
+
+The crucial feature is the `:`, which indicates that everything following it should be copied into a variable called `id`.
+
 **Link Component**
 
 If a link is specified using the familiar `<a href="">` tag, this will force the entire page to be re-fetched from the server.  Typically this is not desirable; in modern web apps it is more typical to only refresh those sections of the page that have changed.
 
 To avoid the full page refresh, the Link component is used:
-```
+```jsx
 import React, { Component } from "react";
 import Posts from "Posts";
 import NewPost from "NewPost";
@@ -2614,7 +2624,7 @@ If the current path was accessed via a Link component, the current path can be a
 **Route Props**
 
 If the props of a component that has been called from a Link are examined, it can be seen that there is a wealth of information available that can be used in the component:
-```
+```jsx
 class NewPost extends Component {
   ...
   componentDidMount() {
@@ -2624,7 +2634,7 @@ class NewPost extends Component {
 }
 ```
 
-```
+```jsx
 {history: {…}, location: {…}, match: {…}, staticContext: undefined}
   history:
     action: "PUSH"
@@ -2662,7 +2672,7 @@ There are two approaches to passing these properties further down the chain:
 
 One approach is to use the spread operator to add the props to the child components:
 
-```
+```jsx
   render() {
         return (
           <Post
@@ -2681,7 +2691,7 @@ One approach is to use the spread operator to add the props to the child compone
 
 A more sophisticated approach is to use the withRouter HOC, which, when wrapped around a component, ensures that the component receives the route props.
 
-```
+```jsx
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 
@@ -2699,6 +2709,59 @@ const post = (props) => {
 
 export default withRouter(post);
 ```
+
+**NavLink Component**
+
+An extension of the Link component is the NavLink component.  With regard to linking, these behave exactly the same, however NavLink allows styling to be applied to a link.  It also enables the correct focus to be maintained, for accessibility.
+
+When NavLink is used in place of Link, the resulting `a` tag is decorated with two new properties:
+   * `aria-current="page"`: this indicates that this is the link for the current page and is chiefly used by screen-readers.
+      * For further details, see: [https://tink.uk/using-the-aria-current-attribute/](https://tink.uk/using-the-aria-current-attribute/)
+   * `class="active"`: this provides a class that can be used for styling.
+      * The class name can be changed using the `activeClassName` property.
+
+e.g. `<NavLink to="/">Home</NavLink>` translates to `<a aria-current="page" class="active" href="/">Home</a>`.
+
+Additional NavLink properties include:
+   * `activeStyle`, which allows inline CSS to be specified as a javascript object
+   * `isActive`, which indicates that the link should be flagged as the active link (overriding the default).
+   * `location`, which overrides the current location property.
+
+An example might be:
+
+```jsx
+<NavLink
+  {/* the link */}
+  to="/user"
+  
+  {/* inline styling */}
+  activeStyle={{
+    background: 'red',
+    color: 'white',
+  }}
+  
+  {/* override the search property of the current location */}
+  location={{
+    search: '?id=2',
+  }}
+  
+  {/* this link is marked as active if match.isExact is true
+      and the current search params contain 'id' (which it
+      will do because location.search has been overridden) */}
+  isActive={(match, location) => {
+    if (!match) {
+      return false;
+    }
+    const searchParams = new URLSearchParams(location.search);
+    return match.isExact && searchParams.has('id');
+  }}
+>
+  User
+</NavLink>
+```
+
+For further information see here:
+   * [https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42](https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42)
 
 </div>
 </div>
