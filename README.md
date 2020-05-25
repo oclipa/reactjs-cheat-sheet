@@ -2474,6 +2474,234 @@ export default withErrorHandler(MyApp, db);
 
 </div>
 </div>
+<div id="routing">
+<button type="button" class="collapsible">+ Routing</button>   
+<div class="content" style="display: none;" markdown="1">
+Routing is the functionality that allows a single page to serve multiples pages as if the user was browsing separate URLs.
+  
+There are three stages to routing:
+1. Parse the URL
+1. Read the config
+1. Render the appropriate component
+
+Two packages are required to enable routing (although strictly speaking you only really need react-router-dom, which wraps react-router):
+
+* Install: `npm install react-router react-router-dom`
+* Import: 
+   * `import { BrowserRouter } from 'react-router-dom';`
+   * `import { Router } from 'react-router-dom';`
+   * `import { Link } from 'react-router-dom';`
+   * `import { withRouter } from 'react-router-dom';`
+   
+**BrowserRouter Component**
+
+To implement routing, the first thing step is to, in either App.js or index.js files, wrap the part of the app that supports routing with the `BrowserRouter` component:
+
+```
+import React from 'react';
+import Blog from 'Blog';
+import { BrowserRouter } from 'react-router-dom';
+
+function App () {
+  return (
+    <BrowserRouter>
+      <div className="App">
+        <Blog />
+      </div>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
+
+**Route Component**
+
+The next step is to  add the `Route` component to components where the contents should be dependent on the path, e.g.:
+```
+import React, { Component } from "react";
+import { Route } from "react-router-dom";
+import Posts from "Posts";
+import NewPost from "NewPost";
+
+class Blog extends Component {
+  render() {
+    return (
+      <div className="Blog">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                <a href="/">Home</a>
+              </li>
+              <li>
+                <a href="/new-post">New Post</a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        
+        {/* path = the relative path to handle 
+            exact = by default, the component will match paths that 
+                    start with the path value; the property forces 
+                    exact matching
+            render = the function to be called if the path matches
+            component = the component to be called if the path matches */}
+        <Route path="/" exact render={() => <h1>Home</h1>} />
+        <Route path="/" exact component={Posts} />
+        <Route path="/new-post" component={NewPost} />
+        
+        {/* The Route component can reference the same path
+            multiple times in the same page */}
+        <Route path="/" render={() => <h1>Home 2</h1>} />
+      </div>
+    );
+  }
+}
+```
+
+The `render` property of the Route component is only really intended for small updates to a page, such as simple messages or images.
+
+Generally, and particularly for larger sections, the `component` property should be used.
+
+**Link Component**
+
+If a link is specified using the familiar `<a href="">` tag, this will force the entire page to be re-fetched from the server.  Typically this is not desirable; in modern web apps it is more typical to only refresh those sections of the page that have changed.
+
+To avoid the full page refresh, the Link component is used:
+```
+import React, { Component } from "react";
+import Posts from "Posts";
+import NewPost from "NewPost";
+
+class Blog extends Component {
+  render() {
+    return (
+      <div className="Blog">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                {/* 'to' can be a simple string */}
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                {/* 'to' can also be a javascript object */}
+                <Link to={{
+                  pathname: '/new-post',
+                  hash: '#submit',
+                  search: '?quick-submit=true'
+                }}>New Post</Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        
+        <Route path="/" exact component={Posts} />
+        <Route path="/new-post" component={NewPost} />
+      </div>
+    );
+  }
+}
+```
+
+Note: Link paths are *always* absolute, regardless of whether "/new-post" or "new-post" is used.  In the latter case, this will be converted to "/new-post".
+
+If you want to use a relative path, you need to build this dynamically based on knowledge of the current path, e.g. if you are currently at /posts and want to go to /posts/new-post, you would construct a path using `pathname: currentUrl + '/new-post'`.
+
+If the current path was accessed via a Link component, the current path can be accessed using the route props (in this case, `this.props.match.url`).
+
+**Route Props**
+
+If the props of a component that has been called from a Link are examined, it can be seen that there is a wealth of information available that can be used in the component:
+```
+class NewPost extends Component {
+  ...
+  componentDidMount() {
+    console.log(this.props);
+  }  
+  ...
+}
+```
+
+```
+{history: {…}, location: {…}, match: {…}, staticContext: undefined}
+  history:
+    action: "PUSH"
+    block: ƒ block(prompt)
+    createHref: ƒ createHref(location)
+    go: ƒ go(n)
+    goBack: ƒ goBack()
+    goForward: ƒ goForward()
+    length: 21
+    listen: ƒ listen(listener)
+    location: {pathname: "/new-post", hash: "#submit", search: "?quick-submit=true", key: "5mpy2d"}
+    push: ƒ push(path, state)
+    replace: ƒ replace(path, state)
+    __proto__: Object
+  location:
+    hash: "#submit"
+    key: "5mpy2d"
+    pathname: "/new-post"
+    search: "?quick-submit=true"
+    __proto__: Object
+  match:
+    isExact: true
+    params: {}
+    path: "/new-post"
+    url: "/new-post"
+    __proto__: Object
+  staticContext: undefined
+  __proto__: Object
+```
+However, these extra properties are not passed down, by default, to children of the component.  
+
+There are two approaches to passing these properties further down the chain:
+
+**...props**
+
+One approach is to use the spread operator to add the props to the child components:
+
+```
+  render() {
+        return (
+          <Post
+            key={post.id}
+            title={post.title}
+            author={post.author}
+            {...this.props} 
+            {/* or, {this.props.myProp} for a specific property /*}
+            clicked={() => this.postSelectedHandler(post.id)}
+          />
+        );
+    }
+```
+
+**withRouter() HOC**
+
+A more sophisticated approach is to use the withRouter HOC, which, when wrapped around a component, ensures that the component receives the route props.
+
+```
+import React from 'react';
+import { withRouter } from 'react-router-dom';
+
+const post = (props) => {
+  console.log(props);
+  return (
+    <article className="Post" onClick={props.clicked}>
+      <h1>{props.title}</h1>
+      <div className="Info">
+        <div className="Author">{props.author}</div>
+      </div>
+    </article>
+  );
+};
+
+export default withRouter(post);
+```
+
+</div>
+</div>
 <div id="npm">
 <button type="button" class="collapsible">+ Popular NPM Packages</button>   
 <div class="content" style="display: none;" markdown="1">
