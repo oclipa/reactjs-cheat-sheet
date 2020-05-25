@@ -2052,7 +2052,7 @@ try {
 
 For web communication using Axios, wrap the components that handle the request and response in an HOC that intercepts any errors messages and handles them appropriately:
 
-```
+```jsx
 const withErrorHandler = (WrappedComponent, axios) => {
   return class extends Component {
     state = {
@@ -2318,7 +2318,7 @@ Firebase has offers two types of database:
 
 In general, Realtime Database is sufficient for simple apps, but Firestore is recommended for larger, more complex ones.
 
-In this case, a Realtime Database is used with a structure similar to the following:
+In this example, a Realtime Database is used with a structure similar to the following:
 
 ```
 - my-app
@@ -2337,7 +2337,7 @@ In this case, a Realtime Database is used with a structure similar to the follow
 Database access is performed using Axios:
 
 *db.js*
-```
+```jsx
 import axios from 'axios';
 
 const instance = axios.create({
@@ -2348,7 +2348,7 @@ export default instance;
 ```
 
 *MyApp.js*
-```
+```jsx
 import db from 'db';
 
 /* Class component so that we can use lifecycle methods */
