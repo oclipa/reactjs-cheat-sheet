@@ -617,29 +617,29 @@ return (
 
 -------------------------------------------------------------------------------------------------------
 
-* Using an Aux function that wraps all other elements.
-   * Caveat: On Windows this needs to be called `Auxiliary` since `Aux` is a reserved word.
+* Using an Wrapper function that wraps all other elements.
+   * Caveat: In some places this function is referred to as `Aux`, however this is a reserved word on Windows and should be avoided (unless you can guarantee that Windows will never be used for development).
 
-*Aux.js*
+*Wrapper.js*
 
 ```jsx
 import React from 'react';
 
-const aux = props => props.children;
+const wrapper = props => props.children;
 
-export default aux;
+export default wrapper;
 ```
 
 *Person.js*
 
 ```jsx
-import Aux from '../../../hoc/Aux';
+import Wrapper from '../../../hoc/Wrapper';
 
 ...
 
 render() {
   return (
-      <Aux>
+      <Wrapper>
         <p onClick={
           this.props.click
         }>
@@ -652,7 +652,7 @@ render() {
           onChange={this.props.changed} 
           value={this.props.name} 
         />
-      </Aux>
+      </Wrapper>
   );
 }
 ```
@@ -663,7 +663,7 @@ render() {
 
 * Using React.Fragment:
 
-Since React 16.8, there is a built-in version of `Aux` called `React.Fragment`:
+Since React 16.8, there is a built-in version of `Wrapper` called `React.Fragment`:
 
 *Person.js*
 
@@ -698,7 +698,7 @@ render() {
 <button type="button" class="collapsible">+ Higher Order Components (HOC)</button>   
 <div class="content" style="display: none;" markdown="1">
 
-The `Aux`and `Fragment` components are examples of Higher Order Components.  This means that they wrap another component and add specific, limited functionality to the wrapped component.
+The `Wrapper`and `Fragment` components are examples of Higher Order Components.  This means that they wrap another component and add specific, limited functionality to the wrapped component.
 
 There is a general convention to name HOCs with a `With` at the beginning, and place them in an `hoc` folder.
 
@@ -783,15 +783,15 @@ class App extends Component {
   // lower-case 'w' to indicate this 
   // is a function, not component
   import withClass from '../hoc/WithClass';
-  import Aux from '../hoc/Aux';
+  import Wrapper from '../hoc/Wrapper';
   
   ...
  
   render() {
     return (
-      <Aux>
+      <Wrapper>
         ...
-      </Aux>
+      </Wrapper>
     );
   } 
 }
@@ -994,7 +994,7 @@ import PropTypes from 'prop-types';
 class Person extends Component {
   render() {
     return (
-      <Aux>
+      <Wrapper>
         <p onClick={this.props.click}>
           I'm {this.props.name} and I 
           am {this.props.age} years old!
@@ -1005,7 +1005,7 @@ class Person extends Component {
           onChange={this.props.changed} 
           value={this.props.name} 
         />
-      </Aux>
+      </Wrapper>
     ); 
   }
 };
@@ -1051,7 +1051,7 @@ class Person extends Component {
   
   render() {
     return (
-      <Aux>
+      <Wrapper>
         ...
         
         <input 
@@ -1064,7 +1064,7 @@ class Person extends Component {
           onChange={this.props.changed} 
           value={this.props.name} 
         />
-      </Aux>
+      </Wrapper>
     ); 
   }
 };
@@ -1090,7 +1090,7 @@ class Person extends Component {
   
   render() {
     return (
-      <Aux>
+      <Wrapper>
         ...
         
         <input 
@@ -1099,7 +1099,7 @@ class Person extends Component {
           onChange={this.props.changed} 
           value={this.props.name} 
         />
-      </Aux>
+      </Wrapper>
     ); 
   }
 };
@@ -1218,7 +1218,7 @@ class App extends Component {
     );
   
     return (
-      <Aux>
+      <Wrapper>
         { /* components not interested in 
              context go outside tags */ }
 
@@ -1237,7 +1237,7 @@ class App extends Component {
          {persons}
 
         </AuthContext.Provider>
-      </Aux>
+      </Wrapper>
     );
   }
 }
@@ -1256,7 +1256,7 @@ class Person extends Component {
 
   render() {
     return (
-      <Aux>
+      <Wrapper>
         <AuthContext.Consumer>
           {(context) => {
               context.auth ? 
@@ -1267,7 +1267,7 @@ class Person extends Component {
         </AuthContext.Consumer> 
         
         <p>{this.props.children}</p>
-      </Aux>
+      </Wrapper>
     );
   }
 }
@@ -1283,7 +1283,7 @@ const Cockpit = (props) => {
 
   render() {
     return (
-      <Aux>
+      <Wrapper>
         <h1>{props.title}</h1>
       
         <AuthContext.Consumer>
@@ -1294,7 +1294,7 @@ const Cockpit = (props) => {
             }
           }
         </AuthContext.Consumer>
-      </Aux>
+      </Wrapper>
     );
   }
 }
@@ -1328,7 +1328,7 @@ class Person extends Component {
   
   render() {
     return (
-      <Aux>
+      <Wrapper>
         {
           this.context.auth ? 
             <p>Authenticated!</p> : 
@@ -1336,7 +1336,7 @@ class Person extends Component {
         }
         
         <p>{this.props.children}</p>
-      </Aux>
+      </Wrapper>
     );
   }
 ```
@@ -1367,13 +1367,13 @@ const Cockpit = (props) => {
 
   render() {
     return (
-      <Aux>
+      <Wrapper>
         <h1>{props.title}</h1>
       
         <button onClick={authContext.login}>
           Log in
         </button>
-      </Aux>
+      </Wrapper>
     );
   }
 }
@@ -1972,6 +1972,8 @@ For further details about CSS modules in general, see here:
 <button type="button" class="collapsible">+ Error Handling</button>   
 <div class="content" style="display: none;" markdown="1">
 
+**ErrorBoundary**
+
 Use the ErrorBoundary component to catch errors thrown by components.
    * Caveat: ErrorBoundary does not work in event handlers; in this case use try/catch
 
@@ -2034,6 +2036,8 @@ Usage:
 </ErrorBoundary>
 ```
 
+**try/catch**
+
 For imperative code, use try/catch:
 
 ```jsx
@@ -2043,6 +2047,63 @@ try {
   // ...
 }
 ```
+
+**withErrorHandler() HOC**
+
+For web communication using Axios, wrap the components that handle the request and response in an HOC that intercepts any errors messages and handles them appropriately:
+
+```
+const withErrorHandler = (WrappedComponent, axios) => {
+  return class extends Component {
+    state = {
+      error: null,
+    };
+
+    /* Add interceptors before component is loaded 
+      (so that any errors during loading can be handled) */
+    UNSAFE_componentWillMount() {
+      // When a request is submitted, set the error state to null
+      this.reqInterceptor = axios.interceptors.request.use((req) => {
+        this.setState({ error: null });
+        return req;
+      });
+      
+      /* When a response is received and it includes an error, 
+         set the error state to be the error object */
+      this.resInterceptor = axios.interceptors.response.use(
+        (res) => res,  // '(res) => res' indicates that 'res' should be returned
+        (error) => {
+          this.setState({ error: error });
+        }
+      );
+    }
+
+    /* Remove the interceptors when the component is destroyed,
+       to avoid unnecessary handling of web communications */
+    componentWillUnmount() {
+      axios.interceptors.request.eject(this.reqInterceptor);
+      axios.interceptors.response.eject(this.resInterceptor);
+    }
+
+    render() {
+      return (
+        <Wrapper>
+          {/* if there is an error, display it */}
+          <ErrorMessage show={this.state.error}>
+            {this.state.error ? this.state.error.message : null}
+          </ErrorMessage>
+          
+          {/* display the wrapped component */}
+          <WrappedComponent {...this.props} />
+        </Wrapper>
+      );
+    }
+  };
+};
+
+export default withErrorHandler;
+```
+
 </div>
 </div>
 
@@ -2236,7 +2297,178 @@ import axios from '../../axios';
 ```
 </div>
 </div>
-<div id="errors">
+<div id="database">
+<button type="button" class="collapsible">+ Accessing a database</button>   
+<div class="content" style="display: none;" markdown="1">
+
+This example uses Google's Firebase database service, which is a NoSQL database (similar to MongoDB):  
+   * [https://console.firebase.google.com/](https://console.firebase.google.com/)
+
+In general, Firebase is a good choice for smaller scale or startup applications since it provides a highly scaleable, hosted database solution.  The chief downsides are the cost and the limitation that you cannot host the data layer.
+
+For a more complex solution, or one that must be hosted internally, [https://www.mongodb.com/](MongoDB) is generally considered the go-to choice.
+
+**Firebase**
+
+Firebase has offers two types of database:
+   * Realtime Database
+      * Data is stored as one large JSON tree which makes it easier to store simple data but harder to organize complex, hierarchical data at scale.
+   * Firestore
+      * Data is stored as documents arranged in collections. Simple data is stored in documents, which is easy and similar to the way data is stored in JSON. Complex, hierarchical data is conveniently organized at scale using subcollections within documents. Cloud Firestore requires less denormalization and data flattening.
+
+In general, Realtime Database is sufficient for simple apps, but Firestore is recommended for larger, more complex ones.
+
+In this case, a Realtime Database is used with a structure similar to the following:
+
+```
+- my-app
+   - items
+      - item1
+      - item2
+      - item3
+   - user-requests
+      - user-request1
+      - user-request2
+      - user-request3
+```
+
+**Accessing the database**
+
+Database access is performed using Axios:
+
+*db.js*
+```
+import axios from 'axios';
+
+const instance = axios.create({
+    baseURL: 'https://my-app.firebaseio.com/'
+});
+
+export default instance;
+```
+
+*MyApp.js*
+```
+import db from 'db';
+
+/* Class component so that we can use lifecycle methods */
+class MyApp extends Component {
+  state = {
+    items: null,
+    requesting: false,
+    loading: false,
+    error: false,
+  };
+  
+  /* Query database after component is loaded */
+  componentDidMount() {
+    db
+      .get('/items.json') /* .json suffix is required by firebase */
+      .then((response) => {
+        console.log(response);
+        this.setState({ myItems: response.data });
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({ error: true });
+      });
+  }
+
+  ...
+  
+  /* Set state as "requesting" so that a confirmation dialog
+     can be displayed to the user */
+  userRequestHandler = () => {
+    // must be an arrow function to use 'this' in an event handler
+    this.setState({ requesting: true });
+  }
+  
+  /* User has confirmed request, so set state to "loading" 
+     and send the request to the database */
+  userRequestConfirmedHandler = () => {
+  
+    this.setState({ loading: true });
+
+    // package the request up as a simple object
+    const userRequest = {
+      items: this.state.items,
+      user: {
+        name: 'Fred Flintstone',
+        address: {
+          street: '345 Cave Stone Road',
+          zipCode: '41351',
+          town: 'Bedrock',
+        },
+        email: 'test@test.com',
+      }
+    };
+    
+    // post the request to the database
+    db
+      .post('/user-requests.json', order)
+      .then((response) => {
+        console.log(response);
+        this.setState({ loading: false, requesting: false });
+      })
+      .catch((error) => {
+        // don't need to set 'error: true' here because error will
+        // be handled by withErrorHandler() wrapper
+        console.log(error);
+        this.setState({ loading: false, requesting: false });
+      });
+  };
+  
+  ... 
+  
+  render() {
+    let userRequestSummary = null;
+
+    // while waiting for a result, display a spinner, or an error message if appropriate
+    let result = this.state.error ? <p>Items cannot be loaded!</p> : <Spinner />;
+
+    // if items have been selected
+    if (this.state.items) {
+      // display the results of the user's selection and give the user
+      // the option to submit this to the database to be saved.
+      result = (
+        <Wrapper>
+          <Result items={this.state.items} />
+          <RequestControls requested={this.userRequestHandler} />
+        </Wrapper>
+      );
+      
+      // if the state is "requesting" display a summary of the user's
+      // request so that they can be confirm they really want to submit this.
+      userRequestSummary = (
+        <UserRequestSummary
+          show={this.state.requesting}
+          items={this.state.items}
+          userRequestConfirmed={this.userRequestConfirmedHandler}
+        />
+      );
+    }
+
+    // if state is "loading", display a spinner while waiting
+    // for a result
+    if (this.state.loading) {
+      userRequestSummary = <Spinner />;
+    }
+
+    return (
+      <Wrapper>
+        {userRequestSummary}
+        {result}
+      </Wrapper>
+    );
+  }  
+}
+
+export default withErrorHandler(MyApp, db);
+```
+
+</div>
+</div>
+<div id="npm">
 <button type="button" class="collapsible">+ Popular NPM Packages</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -2264,6 +2496,7 @@ import axios from '../../axios';
 </div>
 </div>
 
+  
 &nbsp;
 
 -------------------------------------------------------------------------------------------------------
@@ -2272,7 +2505,6 @@ import axios from '../../axios';
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Interacting With The Web
 * [React Router](https://devhints.io/react-router)
 * Form Validation
 * [Redux](https://devhints.io/redux)
