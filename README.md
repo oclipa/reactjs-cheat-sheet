@@ -478,6 +478,7 @@ class Welcome extends React.Component {
       * Very common 
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
+      * **Only called when a component is first mounted; use componentDidUpdate() if component is already displayed**
    1. `componentWillMount()`
       * Available but deprecated
       * Do not use
@@ -505,6 +506,7 @@ class Welcome extends React.Component {
    1. `componentDidUpdate()` &lt;-- Commonly used
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
+      * **Only called when a component is already displayed; use componentDidMount() if component is not yet displayed**
 
 * **Unmounting (clean-up)**
    * `componentWillUnmount()`
@@ -889,7 +891,7 @@ deleteOldestHandler = () => {
 * Unlike `state`, both Class components and Functional components can access the `props` object.
    * For Class components, this is done use the `this` keyword: `persons = this.props.persons;`.
    * For Functional components, the `props` object is passed in as a function parameter: `const Town = (props) => { persons = props.persons; }`
-* The `props` object is read-only.  It is created from the tag parameters for the component: `<Town persons={persons} />`.
+* The `props` object is read-only.  It is created from the element properties of the component: `<Town persons={persons} />`.
 * Since props cannot be updated, the only way to update the state is via callbacks passed via the `props` object.  In this way, the parent object both owns the state and is responsible for updating it.
 
 ```jsx
@@ -1182,7 +1184,7 @@ const authContext = React.createContext({
 export default authContext;
 ```
 
-Then, in the parent component, the components (or parents of the components) that need to receive the context are wrapped in a `<AuthContext.Provider />` tag,  in the `render()` method:
+Then, in the parent component, the components (or parents of the components) that need to receive the context are wrapped in a `<AuthContext.Provider />` element,  in the `render()` method:
 
 *App.js*
 
@@ -1244,7 +1246,7 @@ class App extends Component {
 
 ```
 
-And finally, in the components that need to access the context, the relevant elements in the `render()` method are wrapped in a `<AuthContext.Consumer />` tag:
+And finally, in the components that need to access the context, the relevant elements in the `render()` method are wrapped in a `<AuthContext.Consumer />` element:
 
 *Person.js (inherits context from Persons.js)*
 
@@ -2494,6 +2496,7 @@ Two packages are required to enable routing (although strictly speaking you only
    * `import { NavLink } from 'react-router-dom';`
    * `import { withRouter } from 'react-router-dom';`
    * `import { Switch } from 'react-router-dom';`
+   * `import { Redirect } from 'react-router-dom';`
    
 **BrowserRouter Component**
 
@@ -2645,7 +2648,7 @@ This value can be accessed using `props.location.hash`.
 
 **Link Component**
 
-If a link is specified using the familiar `<a href="">` tag, this will force the entire page to be re-fetched from the server.  Typically this is not desirable; in modern web apps it is more typical to only refresh those sections of the page that have changed.
+If a link is specified using the familiar `<a href="">` element, this will force the entire page to be re-fetched from the server.  Typically this is not desirable; in modern web apps it is more typical to only refresh those sections of the page that have changed.
 
 To avoid the full page refresh, the Link component is used:
 ```jsx
@@ -2783,7 +2786,7 @@ export default withRouter(post);
 
 An extension of the Link component is the NavLink component.  Both components behave exactly the same when it comes to linking, however NavLink also allows styling to be applied to a link.  It also enables the correct focus to be maintained, for accessibility.
 
-When NavLink is used in place of Link, the resulting `a` tag is decorated with two new properties:
+When NavLink is used in place of Link, the resulting `a` element is decorated with two new properties:
    * `aria-current="page"`: this indicates that this is the link for the current page and is chiefly used by screen-readers.
       * For further details, see: [https://tink.uk/using-the-aria-current-attribute/](https://tink.uk/using-the-aria-current-attribute/)
    * `class="active"`: this provides a class that can be used for styling.
@@ -2850,6 +2853,139 @@ In the event that navigate must happen in response to some event (rather than di
       />
     );
   }
+```
+
+**Nested Routes**
+
+Routes can be specified anywhere in the app as long as the components fall under the `BrowserRoute` tags.  This means that it is possible for routes to be nested (i.e. a route calls a component that contains another route).  This can be problematic since all of the routes, no matter where they are located, are still evaluated sequentially.  This can lead to a route being "blocked" by a preceding route.
+
+For example:
+```jsx
+class Blog extends Component {
+  render() {
+    return (
+      <div className="Blog">
+        <Switch>
+          {/* test 1: if matches "/" exactly */}
+          <Route path="/" exact component={Posts} />
+
+          {/* test 2: else if starts with "/new-post" */}
+          <Route path="/new-post" exact component={NewPost} />
+        </Switch>
+      </div>
+    );
+  }
+}
+
+class Posts extends Component {
+  render() {
+    return (
+      <div className="Posts">
+        {/* test 3: if matches any route that begins with "/";
+            anything following "/" will be assigned to the "id" 
+            property*/}
+        <Route path="/:id" exact component={FullPost} />
+      </div>
+    );
+  }
+}
+```
+In the above case, if the URL `/5` is specified, this will never be passed down to the Posts component because the Posts component is called by the route in the Blog component, which is only called if the path is *exactly* `/`.
+
+One solution would be to simply remove the `exact` property from the route in the Blog component, so that the Posts component is always called, however this will cause the additional problem that the `/new-post` route will never be called (since the `Switch` element only allows one of the routes to pass).
+
+A better solution would be to remove the `exact` property *and* change the order of the routes in the `Switch` element:
+```jsx
+  <div className="Blog">
+    <Switch>
+      {/* test 1: if starts with "/new-post" */}
+      <Route path="/new-post" exact component={NewPost} />
+      
+      {/* test 2: else if starts with "/" */}
+      <Route path="/" component={Posts} />
+    </Switch>
+  </div>
+```
+In this case, a URL of `/5` will fail `test 1` but pass `test 2`, which in turn will mean that `test 3` is called in the Posts component.
+
+However, an issue remains.  In the following example, `test2` tests for `/posts`, rather than `/`:
+```jsx
+  <div className="Blog">
+    <Switch>
+      {/* test 1: if starts with "/new-post" */}
+      <Route path="/new-post" exact component={NewPost} />
+      
+      {/* test 2: else if starts with "/posts" */}
+      <Route path="/posts" component={Posts} />
+    </Switch>
+  </div>
+```
+This means that all relevant paths need to be updated to be `/posts`, including `test 3`:
+```
+  <div className="Posts">
+    {/* test 3: if matches any route that begins with "/posts";
+        anything following "/posts" will be assigned to the "id" 
+        property*/}
+    <Route path="/posts/:id" exact component={FullPost} />
+  </div>
+```
+This is cumbersome, particularly if the Posts component might be moved or re-used elsewhere.
+
+The solution is to get the url dynamically, using the route props:
+```
+  <div className="Posts">
+    {/* test 3: if matches any route that begins with this.props.match.url;
+        anything following this.props.match.url will be assigned to the "id" 
+        property*/}
+    <Route path={this.props.match.url + '/:id'} exact component={FullPost} />
+  </div>
+```
+
+**Redirect Component**
+
+A simple way to redirect a user is to provide duplicate routes, e.g.:
+```jsx
+  <div className="Blog">
+    <Switch>
+      <Route path="/new-post" exact component={NewPost} />
+      <Route path="/posts" component={Posts} />
+      <Route path="/" component={Posts} />
+    </Switch>
+  </div>
+```
+
+There is, however, a more elegant solution using the Redirect component:
+```jsx
+  <div className="Blog">
+    <Switch>
+      <Route path="/new-post" exact component={NewPost} />
+      <Route path="/posts" component={Posts} />
+      <Redirect from="/" to="/posts" />
+    </Switch>
+  </div>
+```
+Note: if used outside of a Switch element, only the `to` property can be used.  This syntax is typically used in conjunction with a condition, e.g.
+```jsx
+  render() {
+    let redirect = null;
+    if (this.state.submitted) {
+      redirect = <Redirect to="/posts" />;
+    }
+    return (
+      <div className="NewPost">
+        {redirect}
+      </div>
+    );
+  }
+```
+
+**Alternative Redirect Using History**
+
+An alternative method of redirecting is to push the new page onto the history:
+```
+  axios.post('/posts', data).then((response) => {
+    this.props.history.push('/posts');
+  });
 ```
 </div>
 </div>
