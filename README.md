@@ -2565,14 +2565,64 @@ The `render` property of the Route component is only really intended for small u
 
 Generally, and particularly for larger sections, the `component` property should be used.
 
-**Route Parameters**
+**Parsing URL Parameters**
 
-Often it is not possible to hardwire a specific path in the Link.  In these cases, a route parameter can be used. A route parameters is effectively a wildcard that copies a section of the link into a variable.  
+*Parsing the Route*
+
+Often it is not possible to hardwire a specific path in the Route.  In these cases, a route parameter can be used. A route parameters is effectively a wildcard that copies a section of the link into a variable.  
 
 An example might be:
    * `<Route path="/:id" exact component={FullPost} />`
 
 The crucial feature is the `:`, which indicates that everything following it should be copied into a variable called `id`.
+
+Note that Route components are evaluated in sequence, so care must be taken to ensure that this generic form of route parsing is done last, e.g.:
+```jsx
+  {/* test 1: if matches "/" exactly */}
+  <Route path="/" exact component={Posts} />
+
+  {/* test 2: else if matches any route that begins with "/new-post" */}
+  <Route path="/new-post" exact component={NewPost} />
+  
+  {/* test 3: else matches any route that begins with "/";
+      anything following "/" will be assigned to the "id" 
+      property*/}
+  <Route path="/:id" exact component={FullPost} />
+```
+
+*Parsing the Query/Search Parameters*
+
+To extract search (also referred to as "query") parameters (i.e. `?something=somevalue`, or `<Link to={{ pathname: '/my-path', search: '?start=5' }}`, `props.location.search` is used, however this only returns something like `?start=5`.
+
+To convert this string to a more useful key-value pair, use `URLSearchParams`, e.g.
+```jsx
+componentDidMount() {
+    const query = new URLSearchParams(this.props.location.search);
+    for (let param of query.entries()) {
+        console.log(param); // yields ['start', '5']
+    }
+}
+```
+`URLSearchParams` is a built-in object, shipping with vanilla JavaScript. It returns an object, which exposes the entries()  method. entries() returns an Iterator - basically a construct which can be used in a for...of...  loop (as shown above).
+
+When looping through query.entries() , you get arrays where the first element is the key name (e.g. start ) and the second element is the assigned value (e.g. 5 ).
+
+*Parsing the Fragment/Hash Parameter*
+
+The hash, or fragment, of a path is passed using the following:
+
+`<Link to="/my-path#start-position">Go to Start</Link>`
+
+or,
+```jsx
+<Link 
+    to={{
+        pathname: '/my-path',
+        hash: 'start-position'
+    }}
+    >Go to Start</Link>
+```
+This value can be accessed using `props.location.hash`.
 
 **Link Component**
 
@@ -2712,7 +2762,7 @@ export default withRouter(post);
 
 **NavLink Component**
 
-An extension of the Link component is the NavLink component.  With regard to linking, these behave exactly the same, however NavLink allows styling to be applied to a link.  It also enables the correct focus to be maintained, for accessibility.
+An extension of the Link component is the NavLink component.  Both components behave exactly the same when it comes to linking, however NavLink also allows styling to be applied to a link.  It also enables the correct focus to be maintained, for accessibility.
 
 When NavLink is used in place of Link, the resulting `a` tag is decorated with two new properties:
    * `aria-current="page"`: this indicates that this is the link for the current page and is chiefly used by screen-readers.
