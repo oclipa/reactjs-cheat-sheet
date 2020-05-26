@@ -2598,7 +2598,7 @@ An alternative approach is to use the Switch component.  If Route tags are place
   <Route path="/" exact component={Posts} />
 
   <Switch>
-    {/* test 2: else if matches any route that begins with "/new-post" */}
+    {/* test 2: if matches any route that begins with "/new-post" */}
     <Route path="/new-post" exact component={NewPost} />
 
     {/* test 3: else if matches any route that begins with "/";
@@ -2832,6 +2832,25 @@ An example might be:
 For further information see here:
    * [https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42](https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42)
 
+**Progammatic Navigation**
+
+In the event that navigate must happen in response to some event (rather than directly to user input), the `history` prop can be used.  For example,
+```jsx
+  postSelectedHandler = (id) => {
+    this.props.history.push({ pathname: '/' + id });
+  };
+  
+  render() {
+    return (
+      <Post
+        key={post.id}
+        title={post.title}
+        author={post.author}
+        clicked={() => this.postSelectedHandler(post.id)}
+      />
+    );
+  }
+```
 </div>
 </div>
 <div id="npm">
