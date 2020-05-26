@@ -2491,8 +2491,9 @@ Two packages are required to enable routing (although strictly speaking you only
    * `import { BrowserRouter } from 'react-router-dom';`
    * `import { Router } from 'react-router-dom';`
    * `import { Link } from 'react-router-dom';`
-   * `import { withRouter } from 'react-router-dom';`
    * `import { NavLink } from 'react-router-dom';`
+   * `import { withRouter } from 'react-router-dom';`
+   * `import { Switch } from 'react-router-dom';`
    
 **BrowserRouter Component**
 
@@ -2576,19 +2577,37 @@ An example might be:
 
 The crucial feature is the `:`, which indicates that everything following it should be copied into a variable called `id`.
 
-Note that Route components are evaluated in sequence, so care must be taken to ensure that this generic form of route parsing is done last, e.g.:
+Note that Route components are evaluated in sequence, so care must be taken with the order of route parsing to ensure that the results are expected, e.g.:
 ```jsx
   {/* test 1: if matches "/" exactly */}
   <Route path="/" exact component={Posts} />
 
-  {/* test 2: else if matches any route that begins with "/new-post" */}
+  {/* test 2: if matches any route that begins with "/new-post" */}
   <Route path="/new-post" exact component={NewPost} />
   
-  {/* test 3: else matches any route that begins with "/";
+  {/* test 3: if matches any route that begins with "/";
       anything following "/" will be assigned to the "id" 
       property*/}
   <Route path="/:id" exact component={FullPost} />
 ```
+In this case, both `test 2` and `test 3` will match `/new-post`, so both of their components will be displayed.
+
+An alternative approach is to use the Switch component.  If Route tags are placed inside Switch tags, only the first match succeeds, e.g.:
+```jsx
+  {/* test 1: if matches "/" exactly */}
+  <Route path="/" exact component={Posts} />
+
+  <Switch>
+    {/* test 2: else if matches any route that begins with "/new-post" */}
+    <Route path="/new-post" exact component={NewPost} />
+
+    {/* test 3: else if matches any route that begins with "/";
+        anything following "/" will be assigned to the "id" 
+        property*/}
+    <Route path="/:id" exact component={FullPost} />
+  </Switch>
+```
+In this case, only `test 2` will match `/new-post`, since `test 3` will not be called.
 
 *Parsing the Query/Search Parameters*
 
