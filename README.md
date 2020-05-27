@@ -2614,7 +2614,7 @@ In this case, only `test 2` will match `/new-post`, since `test 3` will not be c
 
 *Parsing the Query/Search Parameters*
 
-To extract search (also referred to as "query") parameters (i.e. `?something=somevalue`, or `<Link to={{ pathname: '/my-path', search: '?start=5' }}`, `props.location.search` is used, however this only returns something like `?start=5`.
+To extract search (also referred to as "query") parameters (i.e. `?something=somevalue`, or `<Link to={ { pathname: '/my-path', search: '?start=5' } }`, `props.location.search` is used, however this only returns something like `?start=5`.
 
 To convert this string to a more useful key-value pair, use `URLSearchParams`, e.g.
 ```jsx
@@ -2669,11 +2669,11 @@ class Blog extends Component {
               </li>
               <li>
                 {/* 'to' can also be a javascript object */}
-                <Link to={{
+                <Link to={ {
                   pathname: '/new-post',
                   hash: '#submit',
                   search: '?quick-submit=true'
-                }}>New Post</Link>
+                } }>New Post</Link>
               </li>
             </ul>
           </nav>
@@ -2807,15 +2807,15 @@ An example might be:
   to="/user"
   
   {/* inline styling */}
-  activeStyle={{
+  activeStyle={ {
     background: 'red',
     color: 'white',
-  }}
+  } }
   
   {/* override the search property of the current location */}
-  location={{
+  location={ {
     search: '?id=2',
-  }}
+  } }
   
   {/* this link is marked as active if match.isExact is true
       and the current search params contain 'id' (which it
