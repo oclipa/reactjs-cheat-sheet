@@ -2638,10 +2638,10 @@ The hash, or fragment, of a path is passed using the following:
 or,
 ```jsx
 <Link 
-    to={{
+    to={ {
         pathname: '/my-path',
         hash: 'start-position'
-    }}
+    } }
     >Go to Start</Link>
 ```
 This value can be accessed using `props.location.hash`.
@@ -3064,13 +3064,11 @@ There are two main issues to be aware of what deploying a react app to a server:
 
 * `[sudo] npm install create-react-app -g`
   * Command-line tool that creates the basic framework for a react app.
+* `[sudo] npm install yarn -g`
+  * Command-line tool that creates the basic framework for a react app.
 
-**Locally Installed (i.e. per project)**
+**Locally Installed Production (i.e. per project; required for production)**
 
-* `npm install eslint`
-   * Linting tool for javascript
-* `npm install prettier`
-   * Code formatter
 * `npm install prop-types`
    * Enables use of PropTypes for validation of properties
 * `npm install radium`
@@ -3084,6 +3082,14 @@ There are two main issues to be aware of what deploying a react app to a server:
    * This is a promise-based HTTP client.
 * `npm install react-router react-router-dom`
    * Enables routing
+
+**Locally Installed Development (i.e. per project; only required for development)**
+* `npm install eslint --save-dev`
+   * Linting tool for javascript
+   * NOTE: this is included as a dependency of `create-react-app`, so there is no necessarily any need to install this separately.
+* `npm install prettier --save-dev`
+   * Code formatter
+
 </div>
 </div>
 
