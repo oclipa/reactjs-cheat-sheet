@@ -3016,7 +3016,40 @@ class NewPost extends Component {
 }
 ```
 
+An additional solution might be:
+
+*ProtectedRoute.js*
+```jsx
+class ProtectedRoute extends Component {
+  render() {
+    const { component: Component, ...props } = this.props
+
+    return (
+      <Route 
+        {...props} 
+        render={props => (
+          this.state.authenticated ?
+            <Component {...props} /> :
+            <Redirect to='/login' />
+        )} 
+      />
+    )
+  }
+}
+```
+*Blog.js*
+```jsx
+  <div className="Blog">
+    <Switch>
+      <ProtectedRoute path="/new-post" exact component={NewPost} />
+      <Route path="/posts" component={Posts} />
+      <Redirect from="/" to="/posts" />
+    </Switch>
+  </div>
+```
+
 A crucial concept to understand when using react-router is that components can only be accessed if the developer has chosen to render them; if they are not rendered (for example, because they don't meet some condition), they will be inaccessible.
+
 
 **Handling 404 Errors**
 
