@@ -3069,6 +3069,8 @@ There are two main issues to be aware of what deploying a react app to a server:
 
 * `npm install eslint`
    * Linting tool for javascript
+* `npm install prettier`
+   * Code formatter
 * `npm install prop-types`
    * Enables use of PropTypes for validation of properties
 * `npm install radium`
@@ -3080,7 +3082,8 @@ There are two main issues to be aware of what deploying a react app to a server:
    * Doesn't really allow a clear separation between style and logic.
 * `npm install axios`
    * This is a promise-based HTTP client.
-
+* `npm install react-router react-router-dom`
+   * Enables routing
 </div>
 </div>
 
