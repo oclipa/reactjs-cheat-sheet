@@ -2576,9 +2576,11 @@ Generally, and particularly for larger sections, the `component` property should
 Often it is not possible to hardwire a specific path in the route.  In these cases, a route parameter can be used. A route parameter is effectively a wildcard that copies a section of the link into a variable.  
 
 An example might be:
-   * `<Route path="/:id" exact component={FullPost} />`
+   * `<Route path="/:id/:title" component={MyComponent} />`
 
-The crucial feature is the `:`, which indicates that everything following it should be copied into a variable called `id`.
+The crucial features are the `:` delimiters.  These indicate that everything following them (until the next '/') should be copied into the specified variable.  So, in the above case, the path `/4/Lessons` would be parsed as `id = "4"; title = "Lessons"`.
+
+The parsed variables are passed to the linked component (`MyComponent`) and can be accessed using `this.props.match.params.id; this.props.match.params.title`.
 
 Note that `Route` components are evaluated in sequence, so care must be taken with the order of parsing to ensure that the results are as expected, e.g.:
 ```jsx
