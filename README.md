@@ -2486,9 +2486,9 @@ There are three stages to routing:
 1. Read the config
 1. Render the appropriate component
 
-Two packages are required to enable routing (although strictly speaking you only really need react-router-dom, which wraps react-router):
+Routing is enabled by installing and importing the react-router-dom package:
 
-* Install: `npm install react-router react-router-dom`
+* Install: `npm install react-router-dom`
 * Import: 
    * `import { BrowserRouter } from 'react-router-dom';`
    * `import { Router } from 'react-router-dom';`
@@ -3115,13 +3115,13 @@ There are two main issues to be aware of what deploying a react app to a server:
    * Doesn't really allow a clear separation between style and logic.
 * `npm install axios`
    * This is a promise-based HTTP client.
-* `npm install react-router react-router-dom`
+* `npm install react-router-dom`
    * Enables routing
 
 **Locally Installed Development (i.e. per project; only required for development)**
 * `npm install eslint --save-dev`
    * Linting tool for javascript
-   * NOTE: this is included as a dependency of `create-react-app`, so there is no necessarily any need to install this separately.
+   * NOTE: this is included as a dependency of `create-react-app` and so can be skipped if CRA is installed.
 * `npm install prettier --save-dev`
    * Code formatter
 
