@@ -2565,9 +2565,11 @@ class Blog extends Component {
 }
 ```
 
-The `render` property of the `Route` component is only really intended for small updates to a page, such as simple messages or images.
+The `render` property of the `Route` component is only really used in two use-cases:
+1. Making small updates to a page, such as simple messages or images (e.g. `render={() => <h1>Hello!</h1>}`)
+1. Enabling props to be passed to a component (e.g. `render={ () => <ContactData address={this.state.address} />}`)
 
-Generally, and particularly for larger sections, the `component` property should be used.
+Generally, and particularly for larger sections, the `component` property should be preferred.
 
 **Parsing URL Parameters**
 
