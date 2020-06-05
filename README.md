@@ -1654,6 +1654,30 @@ const person = (props) => {
   )
 };
 ```
+
+**Preventing Event Propagation**
+
+To prevent an event being propagated, e.g. preventing a form a being submitted when Submit is clicked, or preventing a link being followed when the link is clicked, use `event.preventDefault()`.
+
+For example:
+
+```
+  submitNameHandler = (event) => {
+    event.preventDefault();
+    // this event will not be propagated further
+  };
+  
+  render() {
+    return (
+      <div>
+        <form>
+          <input type="text" name="name" placeholder="Your name" />
+          <button onClick={this.submitNameHandler}>Submit</button>
+        </form>
+      </div>
+    );
+  }
+```
 </div>
 </div>
 
