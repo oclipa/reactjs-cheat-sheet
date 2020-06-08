@@ -619,7 +619,7 @@ return (
 
 -------------------------------------------------------------------------------------------------------
 
-* Using an Wrapper function that wraps all other elements.
+* Using a Wrapper function that wraps all other elements.
    * Caveat: In some places this function is referred to as `Aux`, however this is a reserved word on Windows and should be avoided (unless you can guarantee that Windows will never be used for development).
 
 *Wrapper.js*
@@ -3154,7 +3154,778 @@ There are two main issues to be aware of what deploying a react app to a server:
 </div>
 </div>
 
+<div id="forms">
+<button type="button" class="collapsible">+ Forms</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* *Form.js*
+* *Form.module.css*
+* *Input.js*
+* *Input.module.css*
+* *Button.js*
+* *Button.module.css*
+
+</div>
+</div>
+
+<div id="validation">
+<button type="button" class="collapsible">+ Form Validation</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Add `validationRules`, `valid` and 'touched' values to the form state:
+
+```jsx
+  state = {
+    orderForm: {
+      name: {
+        elementType: 'input',
+        elementConfig: {
+          type: 'text',
+          placeholder: 'Your Name',
+        },
+        value: '',
+        validationRules: {
+          required: true,
+        },
+        valid: false,
+        touched: false
+      },
+      zipCode: {
+        elementType: 'input',
+        elementConfig: {
+          type: 'text',
+          placeholder: 'Zip Code',
+        },
+        value: '',
+        validationRules: {
+          required: true,
+          minLength: 5,
+          maxLength: 5,
+        },
+        valid: false,
+        touched: false
+      }
+      deliverymethod: {
+        elementType: 'select',
+        elementConfig: {
+          options: [
+            { value: 'fastest', displayValue: 'Fastest' },
+            { value: 'cheapest', displayValue: 'Cheapest' },
+          ],
+        },
+        value: '',
+        validation: {}, // no rules
+        valid: true, // always valid
+        touched: false
+      },
+    },
+    formIsValid: false, 
+  };
+```
+
+Add function to validate values against rules:
+
+```jsx
+  checkValidity(value, rules) {
+    let isValid = true;
+
+    if (rules) {
+      if (rules.required) {
+        isValid = value.trim() !== '' && isValid;
+      }
+
+      if (rules.minLength) {
+        isValid = value.length >= rules.minLength && isValid;
+      }
+
+      if (rules.maxLength) {
+        isValid = value.length <= rules.maxLength && isValid;
+      }
+    }
+
+    return isValid;
+  }
+```
+
+As the form is updated, check the validity of the entered values, and the form as a whole.  
+
+Also indicate that the user has interacted with the element.
+
+```jsx
+  inputChangedHandler = (event, inputIdentifier) => {
+
+    // create copy of order form state
+    const updatedOrderForm = { ...this.state.orderForm };
+
+    // create copy of order form element state
+    const updatedFormElement = { ...updatedOrderForm[inputIdentifier] };
+
+    // update the order form element value
+    updatedFormElement.value = event.target.value;
+    
+    // check that form is valid
+    updatedFormElement.valid = this.checkValidity(
+      updatedFormElement.value,
+      updatedFormElement.validationRules
+    );
+    
+    // indicate that the user has interacted with the element
+    updatedFormElement.touched = true;
+    
+    // update the order form with the updated order form element
+    updatedOrderForm[inputIdentifier] = updatedFormElement;
+
+    // check if all elements of form are valid
+    let formIsValid = true;
+    for (const inputIdentifier in updatedOrderForm) {
+      formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
+    }
+
+    // update state with new order form
+    this.setState({ orderForm: updatedOrderForm, formIsValid: formIsValid });
+  };
+```
+
+Add the following properties to each Input element in the form:
+   * `shouldValidate` - avoid validating element if not necessary
+   * `invalid` - flag to indicate current state of the entered value
+   * `errorMessage` - message to be displayed if validation fails
+   * `touched` - flag to indicate user has interacted with element
+   * `changed` - handler for validation of element
+
+Also add a `disabled` property to the `Button`, to prevent the user submitting an invalid form (note: because we use a custom `Button`, we need to pass the disabled property to the underlying `button` element).
+
+```jsx
+  render() {
+    
+    ...
+    
+    let form = (
+      <form onSubmit={this.orderHandler}>
+        {formElementsArray.map((formElement) => (
+          <Input
+            key={formElement.id}
+            elementType={formElement.config.elementType}
+            elementConfig={formElement.config.elementConfig}
+            value={formElement.config.value}
+            shouldValidate={formElement.config.validation}
+            invalid={!formElement.config.valid}
+            errorMessage="Please enter a valid {formElement.config.elementType}"
+            touched={formElement.config.touched}
+            changed={(event) => this.inputChangedHandler(event, formElement.id)}
+          />
+        ))}
+        <Button btnType="Success" disabled={!this.state.formIsValid}>SUBMIT</Button>
+      </form>
+    );
+
+    return (
+      <div>
+        {form}
+      </div>
+    );
+  }
+```
+
+*Button.js*
+
+```
+const Button = (props) => (
+  <button
+    disabled={props.disabled}
+    className={[classes.Button, classes[props.btnType]].join(' ')}
+    onClick={props.clicked}
+  >
+    {props.children}
+  </button>
+);
+```
+
+*Button.module.css*
+
+```
+...
+
+.Button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+...
+```
+
+In *Input.js*, for each element, add an `Invalid` style class that can be enabled if validation fails (and user has interacted with the element).  Also, optionally, add a validation error message, with it's own `ValidationError` style class.
+
+Finally, add an `onChange` property that will do the validation as the user updates the element.
+
+```
+import classes from './Input.module.css';
+
+const Input = (props) => {
+  let inputElement = null;
+
+  // add the Invalid class to the styling if
+  // validation fails
+  const inputClasses = [classes.InputElement];
+  if (props.invalid && props.shouldValidate && props.touched) {
+    inputClasses.push(classes.Invalid);
+  }
+
+  switch (props.elementType) {
+    case 'input':
+      inputElement = (
+        <input
+          className={inputClasses.join(' ')}
+          {...props.elementConfig}
+          value={props.value}
+          onChange={props.changed}
+        />
+      );
+      break;
+      
+    ...other cases...
   
+  }
+  
+  let validationError = null;
+  if (props.invalid && props.shouldValidate && props.touched) {
+    validationError = <p className={classes.ValidationError}>{props.errorMessage}</p>;
+  }
+  
+  return (
+    <div className={classes.Input}>
+      {inputElement}
+      {validationError}
+    </div>
+  );
+};
+```
+
+*Input.module.css*
+
+```
+.Input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+...other classes...
+
+.Invalid {
+  border: 1px solid red;
+  background-color: #fda49a;
+}
+
+.ValidationError {
+  color: red;
+  margin: 5px 0;
+} 
+```
+
+**Further Reading:**
+
+* [https://validatejs.org/](https://validatejs.org/)
+* [https://react.rocks/tag/Validation](https://react.rocks/tag/Validation)
+* [https://www.npmjs.com/package/react-validation](https://www.npmjs.com/package/react-validation)
+* [https://github.com/christianalfoni/formsy-react](https://github.com/christianalfoni/formsy-react)
+
+</div>
+</div>
+
+<div id="spinner">
+<button type="button" class="collapsible">+ Creating A Simple Spinner</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Spinner.js*
+
+```
+import React from 'react';
+import classes from './Spinner.module.css';
+
+const Spinner = (props) => <div className={classes.Loader}>Loading...</div>;
+
+export default Spinner;
+```
+
+*Spinner.module.css*
+
+Generate the CSS using the following tool:
+* [https://projects.lukehaas.me/css-loaders/](https://projects.lukehaas.me/css-loaders/)
+
+*MyPage.js*
+
+```
+import React, { Component } from 'react';
+import axios from 'axios';
+
+import Input from './Input';
+import Button from './Button';
+import Spinner from './Spinner';
+
+class MyPage extends Component {
+  state = {
+    loading: false,
+  };
+
+  submitHandler = (event) => {
+  
+    this.setState({ loading: true });
+    
+    axios
+      .post('https://mydatabase/my-data.json', data)
+      .then((response) => {
+        this.setState({ loading: false });
+        this.props.history.push('/');
+      })
+      .catch((error) => {
+        this.setState({ loading: false });
+      });
+  };
+  
+  render() {
+    let content = (
+      <form onSubmit={this.submitHandler}>
+        <Input />
+        <Button>
+          SUBMIT
+        </Button>
+      </form>
+    );
+    
+    if (this.state.loading) {
+      content = <Spinner />;
+    }
+
+    return (
+      <div>
+        <h4>Enter your Data</h4>
+        {content}
+      </div>
+    );
+  }
+}
+
+export default MyPage;
+```
+
+</div>
+</div>
+
+<div id="hamburger">
+<button type="button" class="collapsible">+ Creating A Simple Hamburger Icon</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A "Hamburger Button" is the nickname given to the icon that is commonly used for toggling a menu, particularly on mobile apps.  The name comes from the resemblance with a hamburger.
+
+*HamburgerButton.js*
+
+```
+import React from 'react';
+import classes from './HamburgerButton.module.css';
+
+const HamburgerButton = (props) => (
+  <div className={classes.HamburgerButton} onClick={props.clicked}>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+);
+
+export default HamburgerButton;
+```
+
+*HamburgerButton.module.css*
+
+```
+.HamburgerButton {
+  width: 40px;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.HamburgerButton div {
+  width: 90%;
+  height: 3px;
+  background-color: white;
+}
+
+@media (min-width: 500px) {
+  .HamburgerButton {
+      display: none;
+  }
+}
+```
+</div>
+</div>
+
+<div id="backdrop">
+<button type="button" class="collapsible">+ Creating A Simple Backdrop</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In this context, a backdrop refers to an overlay that is displayed to hide the background while something else is displayed in the foreground (e.g. a message dialog, or a slide-in dialog). 
+
+*Backdrop.js*
+
+```
+import React from 'react';
+import classes from './Backdrop.module.css';
+
+const Backdrop = (props) =>
+  props.show ? <div className={classes.Backdrop} onClick={props.clicked}></div> : null;
+
+export default Backdrop;
+
+```
+
+*Backdrop.module.css*
+
+```
+.Backdrop {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 500px), (max-height: 500px) {
+  .Backdrop {
+    width: 500px;
+    height: 715px;
+  }
+}
+```
+</div>
+</div>
+
+<div id="modal">
+<button type="button" class="collapsible">+ Creating A Simple Modal Pop-Up</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In this context, a backdrop refers to an overlay that is displayed to hide the background while something else is displayed in the foreground (e.g. a message dialog, or a slide-in dialog). 
+
+*Modal.js*
+
+```
+import React, { Component } from 'react';
+import classes from './Modal.module.css';
+import Wrapper from './Wrapper';
+import Backdrop from './Backdrop';
+
+class Modal extends Component {
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
+  }
+
+  render() {
+    return (
+      <Wrapper>
+        <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
+        <div
+          className={classes.Modal}
+          style={{
+            transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
+            opacity: this.props.show ? '1' : '0',
+          }}
+        >
+          {this.props.children}
+        </div>
+      </Wrapper>
+    );
+  }
+}
+
+export default Modal;
+```
+
+*Backdrop.module.css*
+
+```
+.Backdrop {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 500px), (max-height: 500px) {
+  .Backdrop {
+    width: 500px;
+    height: 715px;
+  }
+}
+```
+
+*MyPage.js*
+
+```
+class MyPage extends Component {
+  state = {
+    data: {},
+    showData: false
+  };
+  
+  modelOpenedHandler = (data) => {
+    this.setState({ data: data, showData: true });
+  };
+  
+  modalClosedHandler = () => {
+    this.setState({ showData: false });
+  };
+  
+  render() {
+    let myData = (
+        <MyData data={this.state.data} />
+      );
+    }
+
+    if (this.state.loading) {
+      myData = <Spinner />;
+    }
+
+    return (
+      <Wrapper>
+        <Modal show={this.state.showData} modalClosed={this.modalClosedHandler}>
+          {myData}
+        </Modal>
+        <Content modelOpened={this.modalOpenedHandler} />
+      </Wrapper>
+    );
+  }
+}
+```
+
+</div>
+</div>
+
+<div id="sidedrawer">
+<button type="button" class="collapsible">+ Creating A Simple Toolbar And Side Drawer</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Layout.js*
+
+```
+import React, { Component } from 'react';
+
+import classes from './Layout.module.css';
+
+import Wrapper from './Wrapper';
+import Toolbar from './Toolbar';
+import SideDrawer from './SideDrawer';
+
+class Layout extends Component {
+  state = {
+    showSideDrawer: false,
+  };
+
+  sideDrawerToggleHandler = () => {
+    this.setState((prevState) => {
+      return { showSideDrawer: !prevState.showSideDrawer };
+    });
+  };
+
+  render() {
+    return (
+      <Wrapper>
+        <Toolbar toggle={this.sideDrawerToggleHandler} />
+
+        <SideDrawer open={this.state.showSideDrawer} closed={this.sideDrawerToggleHandler} />
+
+        <main className={classes.Content}>{this.props.children}</main>
+      </Wrapper>
+    );
+  }
+}
+
+export default Layout;
+```
+
+*Layout.module.css*
+
+```
+.Content {
+  margin-top: 72px;
+  width: 100%;
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 350px), (max-height: 300px) {
+  .Content {
+    width: 350px;
+    height: 600px;
+    background-color: red;
+  }
+}
+```
+
+*Toolbar.js*
+
+```
+import React from 'react';
+
+import classes from './Toolbar.module.css';
+
+import Logo from './Logo';
+import NavigationItems from '../NavigationItems';
+import HamburgerButton from './HamburgerButton'
+
+const Toolbar = (props) => (
+  <header className={classes.Toolbar}>
+    <div className={[classes.HamburgerButton, classes.MobileOnly].join(' ')}>
+      <HamburgerButton clicked={props.toggle} />
+    </div>
+    <div className={classes.Logo}>
+      <Logo />
+    </div>
+    <nav className={classes.DesktopOnly}>
+      <NavigationItems/>
+    </nav>
+  </header>
+);
+
+export default Toolbar;
+```
+
+*Toolbar.module.css*
+
+```
+.Toolbar {
+  height: 56px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #703b09;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 90;
+}
+
+.Toolbar nav {
+  height: 100%;
+}
+
+.Logo {
+  height: 80%;
+}
+
+.HamburgerButton {
+  height: 100%;
+}
+
+/* If width > 500px */
+@media (max-width: 500px) {
+  .DesktopOnly {
+    display: none;
+  }
+}
+
+/* If width < 499px */
+@media (min-width: 499px) {
+  .MobileOnly {
+    display: none;
+  }
+}
+```
+
+*SideDrawer.js*
+
+```
+import React from 'react';
+
+import classes from './SideDrawer.module.css';
+
+import Wrapper from './Wrapper';
+import Backdrop from '../Backdrop';
+import Logo from './Logo';
+import NavigationItems from './NavigationItems';
+
+const SideDrawer = (props) => {
+  let attachedClasses = [classes.SideDrawer, classes.Close];
+  if (props.open) {
+    attachedClasses = [classes.SideDrawer, classes.Open];
+  }
+
+  return (
+    <Wrapper>
+      <Backdrop show={props.open} clicked={props.closed} />
+      <div className={attachedClasses.join(' ')}>
+        <div className={classes.Logo}>
+          <Logo />
+        </div>
+        <nav>
+          <NavigationItems />
+        </nav>
+      </div>
+    </Wrapper>
+  );
+};
+
+export default SideDrawer;
+```
+
+*SideDrawer.module.css*
+
+```
+.SideDrawer {
+  position: fixed;
+  width: 280px;
+  max-width: 70%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  background-color: white;
+  padding: 32px 16px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-out;
+}
+
+@media (min-width: 500px) {
+  .SideDrawer {
+    display: none;
+  }
+}
+
+.Open {
+  transform: translateX(0);
+}
+
+.Close {
+  transform: translateX(-100%);
+}
+
+.Logo {
+  position: relative;
+  height: 11%;
+  width: 45%;
+  max-width: 100%;
+  margin-bottom: 32px;
+}
+```
+
+</div>
+</div>
+
+
 &nbsp;
 
 -------------------------------------------------------------------------------------------------------
