@@ -3172,7 +3172,7 @@ There are two main issues to be aware of what deploying a react app to a server:
 <button type="button" class="collapsible">+ Form Validation</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Add `validationRules`, `valid` and 'touched' values to the form state:
+Add `validationRules`, `valid` and `touched` values to the form state:
 
 ```jsx
   state = {
@@ -3329,7 +3329,7 @@ Also add a `disabled` property to the `Button`, to prevent the user submitting a
 
 *Button.js*
 
-```
+```jsx
 const Button = (props) => (
   <button
     disabled={props.disabled}
@@ -3343,7 +3343,7 @@ const Button = (props) => (
 
 *Button.module.css*
 
-```
+```css
 ...
 
 .Button:disabled {
@@ -3358,7 +3358,7 @@ In *Input.js*, for each element, add an `Invalid` style class that can be enable
 
 Finally, add an `onChange` property that will do the validation as the user updates the element.
 
-```
+```jsx
 import classes from './Input.module.css';
 
 const Input = (props) => {
@@ -3403,7 +3403,7 @@ const Input = (props) => {
 
 *Input.module.css*
 
-```
+```css
 .Input {
   width: 100%;
   padding: 10px;
@@ -3439,7 +3439,7 @@ const Input = (props) => {
 
 *Spinner.js*
 
-```
+```jsx
 import React from 'react';
 import classes from './Spinner.module.css';
 
@@ -3455,7 +3455,7 @@ Generate the CSS using the following tool:
 
 *MyPage.js*
 
-```
+```jsx
 import React, { Component } from 'react';
 import axios from 'axios';
 
@@ -3520,7 +3520,7 @@ A "Hamburger Button" is the nickname given to the icon that is commonly used for
 
 *HamburgerButton.js*
 
-```
+```jsx
 import React from 'react';
 import classes from './HamburgerButton.module.css';
 
@@ -3537,7 +3537,7 @@ export default HamburgerButton;
 
 *HamburgerButton.module.css*
 
-```
+```css
 .HamburgerButton {
   width: 40px;
   height: 100%;
@@ -3573,7 +3573,7 @@ In this context, a backdrop refers to an overlay that is displayed to hide the b
 
 *Backdrop.js*
 
-```
+```jsx
 import React from 'react';
 import classes from './Backdrop.module.css';
 
@@ -3586,7 +3586,7 @@ export default Backdrop;
 
 *Backdrop.module.css*
 
-```
+```css
 .Backdrop {
   width: 100%;
   height: 100%;
@@ -3616,7 +3616,7 @@ In this context, a backdrop refers to an overlay that is displayed to hide the b
 
 *Modal.js*
 
-```
+```jsx
 import React, { Component } from 'react';
 import classes from './Modal.module.css';
 import Wrapper from './Wrapper';
@@ -3651,7 +3651,7 @@ export default Modal;
 
 *Backdrop.module.css*
 
-```
+```css
 .Backdrop {
   width: 100%;
   height: 100%;
@@ -3673,7 +3673,7 @@ export default Modal;
 
 *MyPage.js*
 
-```
+```jsx
 class MyPage extends Component {
   state = {
     data: {},
@@ -3719,7 +3719,7 @@ class MyPage extends Component {
 
 *Layout.js*
 
-```
+```jsx
 import React, { Component } from 'react';
 
 import classes from './Layout.module.css';
@@ -3757,7 +3757,7 @@ export default Layout;
 
 *Layout.module.css*
 
-```
+```css
 .Content {
   margin-top: 72px;
   width: 100%;
@@ -3775,7 +3775,7 @@ export default Layout;
 
 *Toolbar.js*
 
-```
+```jsx
 import React from 'react';
 
 import classes from './Toolbar.module.css';
@@ -3803,7 +3803,7 @@ export default Toolbar;
 
 *Toolbar.module.css*
 
-```
+```css
 .Toolbar {
   height: 56px;
   width: 100%;
@@ -3848,7 +3848,7 @@ export default Toolbar;
 
 *SideDrawer.js*
 
-```
+```jsx
 import React from 'react';
 
 import classes from './SideDrawer.module.css';
@@ -3884,7 +3884,7 @@ export default SideDrawer;
 
 *SideDrawer.module.css*
 
-```
+```css
 .SideDrawer {
   position: fixed;
   width: 280px;
