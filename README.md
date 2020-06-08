@@ -3612,8 +3612,6 @@ export default Backdrop;
 <button type="button" class="collapsible">+ Creating A Simple Modal Pop-Up</button>   
 <div class="content" style="display: none;" markdown="1">
 
-In this context, a backdrop refers to an overlay that is displayed to hide the background while something else is displayed in the foreground (e.g. a message dialog, or a slide-in dialog). 
-
 *Modal.js*
 
 ```jsx
@@ -3934,8 +3932,6 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* [React Router](https://devhints.io/react-router)
-* Form Validation
 * [Redux](https://devhints.io/redux)
 * Authentication
 * Testing
