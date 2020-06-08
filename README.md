@@ -14,7 +14,7 @@
 
 -------------------------------------------------------------------------------------------------------
 
-### Theory
+### In Theory
 
 <div id="howto">
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
@@ -149,7 +149,7 @@ Some examples of common patterns can be found here:
 
 ------------------------------------------------------------------------------------------------------
 
-### Practice
+### In Practice
 
 <div id="nodejs">
 <button type="button" class="collapsible">+ Using NodeJS and create-react-app</button>
@@ -3923,6 +3923,14 @@ export default SideDrawer;
 </div>
 </div>
 
+### Redux
+
+<div id="redux-basics">
+<button type="button" class="collapsible">+ Basics</button>   
+<div class="content" style="display: none;" markdown="1">
+  
+</div>
+</div>
 
 &nbsp;
 
