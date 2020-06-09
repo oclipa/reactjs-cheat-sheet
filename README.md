@@ -209,6 +209,10 @@ Some examples of common patterns can be found here:
    * This is a promise-based HTTP client.
 * `npm install react-router-dom`
    * Enables routing
+* `npm install redux`
+   * Enables enhanced state management
+* `npm install react-redux`
+   * Allows redux store to be hoked up to react application
 
 **Locally Installed Development (i.e. per project; only required for development)**
 * `npm install eslint --save-dev`
@@ -3442,6 +3446,9 @@ const Input = (props) => {
 <button type="button" class="collapsible">+ Basics</button>   
 <div class="content" style="display: none;" markdown="1">
 
+* Install: `npm install redux`
+* Import: `import PropTypes from 'redux';`
+
 **Redux Lifecycle**
 
 <a href="assets/redux-lifecycle.png" target="_blank" style="width: 80%"><img src="assets/redux-lifecycle.png" /></a>
@@ -3496,7 +3503,121 @@ store.dispatch({ type: 'ADD_COUNTER', value: 10 });
 console.log(store.getState());
 
 ```
+</div>
+</div>
 
+<div id="redux-basics">
+<button type="button" class="collapsible">+ Redux in React</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* Install: `npm install redux`
+* Import: `import { createStore } from 'redux';`
+
+* Install: `npm install react-redux`
+* Import: `import { Provider, connect } from 'react-redux';`
+
+Usually, the Store is created in the *index.js* file (where the `<App />` is added to the DOM).
+
+There are four main stages when hooking the Store up to a React application:
+   * Import the Reducer
+   * Create the Store using the Reducer
+   * Inject the Store into the App using a Provider (imported from `react-redux`)
+   * Indicate which components are interested in which state properties using the `connect` function (imported from `react-redux`)
+
+*index.js* 
+
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import './index.css';
+import App from './App';
+import registerServiceWorker from './registerServiceWorker';
+
+import reducer from './store/reducer';
+
+const store = createStore(reducer);
+
+ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
+registerServiceWorker();
+```
+
+The Reducer is normally defined in a separate file, which is typically `src/store/reducer.js`
+
+*reducer.js*
+
+```
+const initialState= {
+  counter: 0
+}
+
+const reducer = (state = initialState, action) => {
+  if (action.type === 'INCREMENT') {
+    return {
+      counter: state.counter + 1,
+    };
+  }
+  return state;
+}
+
+export default reducer;
+```
+
+To subscribe to the Store in React, the `connect()()` function is used (imported from `react-redux`):
+
+*Counter.js*
+
+```
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import CounterControl from './CounterControl';
+import CounterOutput from './CounterOutput';
+
+class Counter extends Component {
+  // local state is no longer needed
+  // state = {
+  //   counter: 0,
+  // };
+
+  render() {
+    return (
+      <div>
+        {/* get counter value from Redux store */}
+        <CounterOutput value={this.props.ctr} />
+        <CounterControl label="Increment" clicked={this.props.onIncrementCounter} />
+      
+        ...etc...
+        
+      </div>
+    );
+  }
+}
+
+// define function to indicate the state properties
+// in which this component is interested
+const mapStateToProps = (state) => {
+  return {
+    // maps state.counter to this.props.ctr
+    ctr: state.counter,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onIncrementCounter: () => dispatch({type: 'INCREMENT'})
+  }
+}
+
+// the connect()() function basically says:
+// the Counter component will use the
+// state properties defined in mapStateToProps,
+// and will update the state using the functions
+// defined in mapDispatchToProps; please expose 
+// the properties and functions via this.props.
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+
+```
 </div>
 </div>
 
