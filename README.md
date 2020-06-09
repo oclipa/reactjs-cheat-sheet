@@ -183,6 +183,45 @@ Some examples of common patterns can be found here:
 </div>
 </div>
 
+<div id="npm">
+<button type="button" class="collapsible">+ Popular NPM Packages</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Globally Installed**
+
+* `[sudo] npm install create-react-app -g`
+  * Command-line tool that creates the basic framework for a react app.
+* `[sudo] npm install yarn -g`
+  * Command-line tool that creates the basic framework for a react app.
+
+**Locally Installed Production (i.e. per project; required for production)**
+
+* `npm install prop-types`
+   * Enables use of PropTypes for validation of properties
+* `npm install radium`
+   * Uses an HOC that can be used to style components.
+   * Requires pseudo-CSS for inline CSS (the same as standard react).
+* `npm install styled-components`
+   * Uses tagged template literals to style components.
+   * Allows inline CSS to be specified as normal (rather than in the pseudo-CSS required by standard React or Radium).
+   * Doesn't really allow a clear separation between style and logic.
+* `npm install axios`
+   * This is a promise-based HTTP client.
+* `npm install react-router-dom`
+   * Enables routing
+
+**Locally Installed Development (i.e. per project; only required for development)**
+* `npm install eslint --save-dev`
+   * Linting tool for javascript
+   * NOTE: this is included as a dependency of `create-react-app` and so can be skipped if CRA is installed.
+* `npm install prettier --save-dev`
+   * Code formatter
+* `npm install eslint-config-prettier --save-dev`
+   * Allows ESLine and Prettier to work together
+
+</div>
+</div>
+
 <div id="simple-app">  
 <button type="button" class="collapsible">+ Example of a Simple App</button> 
 <div class="content" style="display: none;" markdown="1">
@@ -3114,42 +3153,6 @@ There are two main issues to be aware of what deploying a react app to a server:
    * If this is not explicitly specified, the `basename` is assumed to be `/` (the server root, e.g. example.com/).
    * If the react app is not located at the server root (e.g. example.com/my-app) and `basename` is not specified, specifying a route in the app (e.g. /posts/) will fail (because the server reads this as example.com/posts/ rather than example.com/my-app/posts/).
    * To avoid this, the `BrowserRouter` element should always be specified as `<BrowserRouter basename="/my-app">`
-
-</div>
-</div>
-<div id="npm">
-<button type="button" class="collapsible">+ Popular NPM Packages</button>   
-<div class="content" style="display: none;" markdown="1">
-
-**Globally Installed**
-
-* `[sudo] npm install create-react-app -g`
-  * Command-line tool that creates the basic framework for a react app.
-* `[sudo] npm install yarn -g`
-  * Command-line tool that creates the basic framework for a react app.
-
-**Locally Installed Production (i.e. per project; required for production)**
-
-* `npm install prop-types`
-   * Enables use of PropTypes for validation of properties
-* `npm install radium`
-   * Uses an HOC that can be used to style components.
-   * Requires pseudo-CSS for inline CSS (the same as standard react).
-* `npm install styled-components`
-   * Uses tagged template literals to style components.
-   * Allows inline CSS to be specified as normal (rather than in the pseudo-CSS required by standard React or Radium).
-   * Doesn't really allow a clear separation between style and logic.
-* `npm install axios`
-   * This is a promise-based HTTP client.
-* `npm install react-router-dom`
-   * Enables routing
-
-**Locally Installed Development (i.e. per project; only required for development)**
-* `npm install eslint --save-dev`
-   * Linting tool for javascript
-   * NOTE: this is included as a dependency of `create-react-app` and so can be skipped if CRA is installed.
-* `npm install prettier --save-dev`
-   * Code formatter
 
 </div>
 </div>
