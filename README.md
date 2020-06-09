@@ -3707,7 +3707,7 @@ export const DELETE_RESULT = 'DELETE_RESULT';
 </div>
 
 <div id="redux-combine">
-<button type="button" class="collapsible">+Combining Reducers</button>   
+<button type="button" class="collapsible">+ Combining Reducers</button>   
 <div class="content" style="display: none;" markdown="1">
 
 Rather than locating all reducer functions in a single file, they can be split across multiple files and then combined using the `combineReducers` function, provided by Redux.
@@ -3870,7 +3870,7 @@ const mapDispatchToProps = (dispatch) => {
 </div>
 
 <div id="redux-when">
-<button type="button" class="collapsible">+When To Use Redux</button>   
+<button type="button" class="collapsible">+ When To Use Redux</button>   
 <div class="content" style="display: none;" markdown="1">
 
 The following diagram gives a high-level overview of when it is generally considered wise to use Redux, although a quick summary would be: use Redux for managing current client/user state, but it is not normally used for managing UI state, and should certainly not be used for persistant state (i.e. it is not a replacement for a database).
