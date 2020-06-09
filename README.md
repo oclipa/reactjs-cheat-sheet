@@ -3506,17 +3506,15 @@ console.log(store.getState());
 </div>
 </div>
 
-<div id="redux-basics">
+<div id="react-redux">
 <button type="button" class="collapsible">+ Redux in React</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Install: `npm install redux`
-* Import: `import { createStore } from 'redux';`
+   * Install: `npm install redux`
+   * Import: `import { createStore, combineReducers } from 'redux';`
 
-* Install: `npm install react-redux`
-* Import: `import { Provider, connect } from 'react-redux';`
-
-Usually, the Store is created in the *index.js* file (where the `<App />` is added to the DOM).
+   * Install: `npm install react-redux`
+   * Import: `import { Provider, connect } from 'react-redux';`
 
 There are four main stages when hooking the Store up to a React application:
    * Import the Reducer
@@ -3524,9 +3522,13 @@ There are four main stages when hooking the Store up to a React application:
    * Inject the Store into the App using a Provider (imported from `react-redux`)
    * Indicate which components are interested in which state properties using the `connect` function (imported from `react-redux`)
 
+**Simple Example of Redux in a React App**
+
+Usually, the Store is created in the *index.js* file (where the `<App />` is added to the DOM).
+
 *index.js* 
 
-```
+```jsx
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
@@ -3543,22 +3545,74 @@ ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementB
 registerServiceWorker();
 ```
 
-The Reducer is normally defined in a separate file, which is typically `src/store/reducer.js`
+The Reducer is normally defined in a separate file, which is typically `src/store/reducer.js`.
+
+Note: great care must be taken to ensure that the state is always updated immutably!
 
 *reducer.js*
 
-```
+```jsx
+import * as actionTypes from './actions';
+
 const initialState= {
-  counter: 0
+  counter: 0,
+  results: [],
 }
 
 const reducer = (state = initialState, action) => {
-  if (action.type === 'INCREMENT') {
-    return {
-      counter: state.counter + 1,
-    };
+  switch (action.type) {
+    case actionTypes.INCREMENT: {
+      // spread existing state into new object, 
+      // then override counter value
+      return {
+        ...state,
+        counter: state.counter + 1,
+      };
+    }
+    case actionTypes.DECREMENT: {
+      return {
+        ...state,
+        counter: state.counter - 1,
+      };
+    }
+    case actionTypes.ADD': {
+      return {
+        ...state,
+        counter: state.counter + action.val,
+      };
+    }
+    case actionTypes.SUBTRACT:
+      return {
+        ...state,
+        counter: state.counter - action.val,
+      };
+    case actionTypes.STORE_RESULT: {
+      // spread existing state into new object, 
+      // then override results by calling concat(),
+      // which returns a new array with the value added,
+      // leaving the original array untouched
+      // (do not use push(), which will change the existing state)
+      return {
+        ...state,
+        results: state.results.concat({ id: new Date(), value: state.counter }),
+      };
+    }
+    case actionTypes.DELETE_RESULT: {
+      // spread existing state into new object, 
+      // then override results by calling filter(),
+      // which returns a new array with only the values
+      // that match the filter function.
+      // The original array is untouched.
+      // (do not use push(), which will change the existing state)
+      const updatedArray = state.results.filter((result) => result.id !== action.id);
+      return {
+        ...state,
+        results: updatedArray,
+      };
+    }
+    default:
+      return state;
   }
-  return state;
 }
 
 export default reducer;
@@ -3568,11 +3622,12 @@ To subscribe to the Store in React, the `connect()()` function is used (imported
 
 *Counter.js*
 
-```
+```jsx
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import CounterControl from './CounterControl';
 import CounterOutput from './CounterOutput';
+import * as actionTypes from './actions';
 
 class Counter extends Component {
   // local state is no longer needed
@@ -3586,9 +3641,18 @@ class Counter extends Component {
         {/* get counter value from Redux store */}
         <CounterOutput value={this.props.ctr} />
         <CounterControl label="Increment" clicked={this.props.onIncrementCounter} />
-      
-        ...etc...
-        
+        <CounterControl label="Decrement" clicked={this.props.onDecrementCounter} />
+        <CounterControl label="Add 5" clicked={this.props.onAddCounter.bind(this, 5)} />
+        <CounterControl label="Subtract 5" clicked={this.props.onSubtractCounter.bind(this, 5)} />
+        <hr />
+        <button onClick={this.props.onStoreResult}>Store Result</button>
+        <ul>
+          {this.props.storedResults.map((strResult) => (
+            <li key={strResult.id} onClick={this.props.onDeleteResult.bind(this, strResult.id)}>
+              {strResult.value}
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
@@ -3600,14 +3664,21 @@ const mapStateToProps = (state) => {
   return {
     // maps state.counter to this.props.ctr
     ctr: state.counter,
+    // maps state.results to this.props.storedResults
+    storedResults: state.results,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onIncrementCounter: () => dispatch({type: 'INCREMENT'})
-  }
-}
+    onIncrementCounter: () => dispatch({ type: actionTypes.INCREMENT }),
+    onDecrementCounter: () => dispatch({ type: actionTypes.DECREMENT }),
+    onAddCounter: (num) => dispatch({ type: actionTypes.ADD, val: num }),
+    onSubtractCounter: (num) => dispatch({ type: actionTypes.SUBTRACT, val: num }),
+    onStoreResult: () => dispatch({ type: actionTypes.STORE_RESULT }),
+    onDeleteResult: (id) => dispatch({ type: actionTypes.DELETE_RESULT, id: id }),
+  };
+};
 
 // the connect()() function basically says:
 // the Counter component will use the
@@ -3618,6 +3689,178 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(Counter);
 
 ```
+
+To reduce bugs due to typos, action strings are stored as const values in a separate file, which can then be imported:
+
+*actions.js*
+
+```jsx
+export const INCREMENT = 'INCREMENT';
+export const DECREMENT = 'DECREMENT';
+export const ADD = 'ADD';
+export const SUBTRACT = 'SUBTRACT';
+export const STORE_RESULT = 'STORE_RESULT';
+export const DELETE_RESULT = 'DELETE_RESULT';
+```
+
+**Combining Reducers**
+
+Rather than locating all reducer functions in a single file, they can be split across multiple files and then combined using the `combineReducers` function, provided by Redux.
+
+For example, in the following example, *reducer.js* (from above) is split into *counter.js* and *result.js* and then combined:
+
+*counter.js*
+
+```jsx
+import * as actionTypes from './actions';
+
+// only need to include state properties relevant
+// to the reducers in this file
+const initialState = {
+  counter: 0,
+};
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case actionTypes.INCREMENT: {
+      return {
+        ...state,
+        counter: state.counter + 1,
+      };
+    }
+    case actionTypes.DECREMENT: {
+      return {
+        ...state,
+        counter: state.counter - 1,
+      };
+    }
+    case actionTypes.ADD: {
+      return {
+        ...state,
+        counter: state.counter + action.val,
+      };
+    }
+    case actionTypes.SUBTRACT:
+      return {
+        ...state,
+        counter: state.counter - action.val,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+export default reducer;
+```
+
+*result.js*
+
+```jsx
+import * as actionTypes from './actions';
+
+// only need to include state properties relevant
+// to the reducers in this file
+const initialState = {
+  results: [],
+};
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case actionTypes.STORE_RESULT: {
+      return {
+        ...state,
+        results: state.results.concat({ id: new Date(), value: action.result }),
+      };
+    }
+    case actionTypes.DELETE_RESULT: {
+      const updatedArray = state.results.filter((result) => result.id !== action.id);
+      return {
+        ...state,
+        results: updatedArray,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+export default reducer;
+```
+
+*index.js*
+
+```jsx
+...etc...
+
+import { createStore, combineReducers } from 'redux';
+
+...etc...
+
+// import the reducers
+import counterReducer from './counter';
+import resultReducer from './result';
+
+// expose individual reducers as rootReducer properties
+const rootReducer = combineReducers({
+  ctr: counterReducer,
+  res: resultReducer
+});
+
+// create the store
+const store = createStore(rootReducer);
+
+...etc...
+
+```
+
+When combining reducers, one issue to be aware of is that the individual reducers can no longer directly access the combined state.  The normal workaround for this is to pass any shared state properties as part of the action payload.
+
+*Counter.js*
+
+```jsx
+...etc...
+
+class Counter extends Component {
+  render() {
+    return (
+      <div>
+      
+        ...etc...
+        
+        // pass current counter value to the event handler
+        <button onClick={this.props.onStoreResult.bind(this, this.props.ctr)}>Store Result</button>
+      
+        ...etc...
+        
+      </div>
+    );
+  }
+}
+
+// expose individual reducer state properties as local props
+const mapStateToProps = (state) => {
+  return {
+    ctr: state.ctr.counter,
+    storedResults: state.res.results,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    ...etc...
+
+    // pass the current counter result to the action payload 
+    onStoreResult: (ctrResult) => dispatch({ type: actionTypes.STORE_RESULT, result: ctrResult }),
+
+    ...etc...
+  };
+};
+
+...etc...
+
+```
+
 </div>
 </div>
 
