@@ -3433,6 +3433,21 @@ const Input = (props) => {
 </div>
 </div>
 
+### Redux
+
+<div id="redux-basics">
+<button type="button" class="collapsible">+ Basics</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Redux Lifecycle**
+
+<a href="assets/redux-lifecycle.png" target="_blank" style="width: 80%"><img src="assets/redux-lifecycle.png" /></a>
+  
+</div>
+</div>
+
+### Code Examples
+
 <div id="spinner">
 <button type="button" class="collapsible">+ Creating A Simple Spinner</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -3920,15 +3935,6 @@ export default SideDrawer;
 }
 ```
 
-</div>
-</div>
-
-### Redux
-
-<div id="redux-basics">
-<button type="button" class="collapsible">+ Basics</button>   
-<div class="content" style="display: none;" markdown="1">
-  
 </div>
 </div>
 
