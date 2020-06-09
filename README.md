@@ -3445,7 +3445,58 @@ const Input = (props) => {
 **Redux Lifecycle**
 
 <a href="assets/redux-lifecycle.png" target="_blank" style="width: 80%"><img src="assets/redux-lifecycle.png" /></a>
-  
+
+**A Simple Redux Example**
+
+This example is standalone code; it does not require react.
+
+To run this: `node redux-basics.js`
+
+*redux-basics.js*
+
+```js
+const redux = require('redux'); // nodejs syntax
+const createStore = redux.createStore;
+
+const initialState = {
+  counter: 0,
+};
+
+// Reducer
+const rootReducer = (state = initialState, action) => {
+  if (action.type === 'INC_COUNTER') {
+    return {
+      ...state, // get existing state
+      counter: state.counter + 1, // overwrite counter
+    };
+  }
+
+  if (action.type === 'ADD_COUNTER') {
+    return {
+      ...state, // get existing state
+      counter: state.counter + action.value, // overwrite counter
+    };
+  }
+
+  return state;
+};
+
+// Store
+const store = createStore(rootReducer);
+console.log(store.getState());
+
+// Subscription
+store.subscribe(() => {
+  console.log('[Subscription]', store.getState());
+});
+
+// Dispatching Action
+store.dispatch({ type: 'INC_COUNTER' });
+store.dispatch({ type: 'ADD_COUNTER', value: 10 });
+console.log(store.getState());
+
+```
+
 </div>
 </div>
 
