@@ -3145,6 +3145,129 @@ For example:
 ```
 Note that the catch-all `Route` does not have a path specified, so it will always render if all of the previous routes fail.
 
+**Code Splitting/Lazy Loading**
+
+Rather than load the entire application when the user first visits the site, it is more efficient (for large applications) to only load the components as the user requests them.  This is known as code splitting or lazy loading.
+
+To achieve this, a new HOC is created:
+
+*asyncComponent.js*
+
+```jsx
+import React, { Component } from 'react';
+
+// importComponent will be a function
+// reference that returns a Promise
+const asyncComponent = (importComponent) => {
+
+  // function component returns a class component
+  return class extends Component {
+    // state.component will store the component
+    // to be rendered.  Initially this is false.
+    state = {
+      component: null,
+    };
+
+    componentDidMount() {
+      // comp will be the component being loaded dynamically
+      // state.component is set to comp
+      importComponent().then((comp) => {
+        this.setState({ component: comp.default });
+      });
+    }
+
+    render() {
+      // get state.component (which could be null)
+      const C = this.state.component;
+
+      // if state.component exists, return it (with any props)
+      return C ? <C {...this.props} /> : null;
+    }
+  };
+};
+
+export default asyncComponent;
+```
+Wherever we want to eventually render the lazily loaded component, we instead import the `asyncComponent` and initialize it:
+
+*Blog.js*
+
+```jsx
+import asyncComponent from './asyncComponent';
+
+// This is known as a dynamic import.
+// The import statement will only be called 
+// when AsyncNewPost is rendered to the screen.
+const AsyncNewPost = asyncComponent(() => {
+  return import('./NewPost');
+});
+
+class Blog extends Component {
+  state = {
+    auth: true,
+  };
+  
+  ...check auth...
+  
+  render() {
+    return (
+        <Switch>
+          {this.state.auth ? <Route path="/new-post" exact component={AsyncNewPost} /> : null}
+          <Route render={() => <h1>Not Authorized</h1>} />
+        </Switch>
+      </div>
+    );
+  }
+}
+
+```
+
+**Lazy Loading with React Suspense**
+
+*At time of writing, this is not supported for server-side apps*
+
+Since React 16.6, a new approach to lazy loading was added.  There are two parts:
+   * The `React.lazy()` method - this returns a promise that can be "pending" or "resolved".
+   * The `Suspense` component - this handles the promise, either rendering a fallback message/spinner if the promise is still pending, or displaying the component if the promise is resolved.
+
+```jsx
+import React, { Component, Suspense } from 'react';
+import User from './User';
+
+// When the Posts component is rendered, 
+// React.lazy() returns a promise while
+// the Posts component is fetched.
+const Posts = React.lazy(() => import('./containers/Posts'));
+
+class App extends Component {
+  state = { showPosts: false };
+
+  modeHandler = () => {
+    this.setState((prevState) => {
+      return { showPosts: !prevState.showPosts };
+    });
+  };
+
+  render() {
+    return (
+      <React.Fragment>
+        <button onClick={this.modeHandler}>Toggle Mode</button>
+
+        {this.state.showPosts ? (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Posts />
+          </Suspense>
+        ) : (
+          <User />
+        )}
+      </React.Fragment>
+    );
+  }
+}
+
+export default App;
+```
+
 **Routing & Server Deployment**
 
 There are two main issues to be aware of what deploying a react app to a server:
