@@ -3619,7 +3619,7 @@ There are two main issues to be aware of what deploying a react app to a server:
 ### Redux
 
 <div id="redux-basics">
-<button type="button" class="collapsible">+ Basics</button>   
+<button type="button" class="collapsible">+ Redux Basics</button>   
 <div class="content" style="display: none;" markdown="1">
 
 * Install: `npm install redux`
@@ -4049,7 +4049,10 @@ const mapDispatchToProps = (dispatch) => {
 <button type="button" class="collapsible">+ When To Use Redux</button>   
 <div class="content" style="display: none;" markdown="1">
 
-The following diagram gives a high-level overview of when it is generally considered wise to use Redux, although a quick summary would be: use Redux for managing current client/user state, but it is not normally used for managing UI state, and should certainly not be used for persistant state (i.e. it is not a replacement for a database).
+The following diagram gives a high-level overview of when it is generally considered wise to use Redux, although a quick summary would be: 
+   * Use for managing current client/user state.
+   * Not normally used for managing UI state.
+   * Do not use for persistant state (i.e. it is not a replacement for a database).
 
 <a href="assets/when-to-use-redux.png" target="_blank" style="width: 80%"><img src="assets/when-to-use-redux.png" /></a>
 
