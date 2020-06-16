@@ -2540,747 +2540,6 @@ class MyApp extends Component {
 
 export default withErrorHandler(MyApp, db);
 ```
-
-</div>
-</div>
-<div id="routing">
-<button type="button" class="collapsible">+ Routing</button>   
-<div class="content" style="display: none;" markdown="1">
-Routing is the functionality that allows a single page to serve multiples pages as if the user was browsing separate URLs.
-  
-There are three stages to routing:
-1. Parse the URL
-1. Read the config
-1. Render the appropriate component
-
-Routing is enabled by installing and importing the react-router-dom package:
-
-* Install: `npm install react-router-dom`
-* Import: 
-   * `import { BrowserRouter } from 'react-router-dom';`
-   * `import { Router } from 'react-router-dom';`
-   * `import { Link } from 'react-router-dom';`
-   * `import { NavLink } from 'react-router-dom';`
-   * `import { withRouter } from 'react-router-dom';`
-   * `import { Switch } from 'react-router-dom';`
-   * `import { Redirect } from 'react-router-dom';`
-   
-**BrowserRouter Component**
-
-To implement routing, the first thing step is to, in either App.js or index.js files, wrap the part of the app that supports routing with the `BrowserRouter` component:
-
-```jsx
-import React from 'react';
-import Blog from 'Blog';
-import { BrowserRouter } from 'react-router-dom';
-
-function App () {
-  return (
-    <BrowserRouter>
-      <div className="App">
-        <Blog />
-      </div>
-    </BrowserRouter>
-  );
-}
-
-export default App;
-```
-
-**Route Component**
-
-The next step is to  add the `Route` component to components where the contents should be dependent on the path, e.g.:
-```jsx
-import React, { Component } from "react";
-import { Route } from "react-router-dom";
-import Posts from "Posts";
-import NewPost from "NewPost";
-
-class Blog extends Component {
-  render() {
-    return (
-      <div className="Blog">
-        <header>
-          <nav>
-            <ul>
-              <li>
-                <a href="/">Home</a>
-              </li>
-              <li>
-                <a href="/new-post">New Post</a>
-              </li>
-            </ul>
-          </nav>
-        </header>
-        
-        {/* path = the relative path to handle 
-            exact = by default, the component will match paths that 
-                    start with the path value; the property forces 
-                    exact matching
-            render = the function to be called if the path matches
-            component = the component to be called if the path matches */}
-        <Route path="/" exact render={() => <h1>Home</h1>} />
-        <Route path="/" exact component={Posts} />
-        <Route path="/new-post" component={NewPost} />
-        
-        {/* The Route component can reference the same path
-            multiple times in the same page */}
-        <Route path="/" render={() => <h1>Home 2</h1>} />
-      </div>
-    );
-  }
-}
-```
-
-The `render` property of the `Route` component is only really used in two use-cases:
-1. Making small updates to a page, such as simple messages or images (e.g. `render={() => <h1>Hello!</h1>}`)
-1. Enabling props to be passed to a component (e.g. `render={ () => <ContactData address={this.state.address} />}`)
-
-Generally, and particularly for larger sections, the `component` property should be preferred.
-
-**Parsing URL Parameters**
-
-*Parsing the Route*
-
-Often it is not possible to hardwire a specific path in the route.  In these cases, a route parameter can be used. A route parameter is effectively a wildcard that copies a section of the link into a variable.  
-
-An example might be:
-   * `<Route path="/:id/:title" component={MyComponent} />`
-
-The crucial features are the `:` delimiters.  These indicate that everything following them (until the next '/') should be copied into the specified variable.  So, in the above case, the path `/4/Lessons` would be parsed as `id = "4"; title = "Lessons"`.
-
-The parsed variables are passed to the linked component (`MyComponent`) and can be accessed using `this.props.match.params.id; this.props.match.params.title`.
-
-Note that `Route` components are evaluated in sequence, so care must be taken with the order of parsing to ensure that the results are as expected, e.g.:
-```jsx
-  {/* test 1: if matches "/" exactly */}
-  <Route path="/" exact component={Posts} />
-
-  {/* test 2: if matches any route that begins with "/new-post" */}
-  <Route path="/new-post" exact component={NewPost} />
-  
-  {/* test 3: if matches any route that begins with "/";
-      anything following "/" will be assigned to the "id" 
-      property*/}
-  <Route path="/:id" exact component={FullPost} />
-```
-In this case, both `test 2` and `test 3` will match `/new-post`, so both of their components will be displayed.
-
-An alternative approach is to use the `Switch` component.  If `Route` elements are placed inside a `Switch` element, only the first match succeeds, e.g.:
-```jsx
-  {/* test 1: if matches "/" exactly */}
-  <Route path="/" exact component={Posts} />
-
-  <Switch>
-    {/* test 2: if matches any route that begins with "/new-post" */}
-    <Route path="/new-post" exact component={NewPost} />
-
-    {/* test 3: else if matches any route that begins with "/";
-        anything following "/" will be assigned to the "id" 
-        property*/}
-    <Route path="/:id" exact component={FullPost} />
-  </Switch>
-```
-In this case, only `test 2` will match `/new-post`, since `test 3` will not be called.
-
-*Parsing the Query/Search Parameters*
-
-To extract search (also referred to as "query") parameters (i.e. `?something=somevalue`, or `<Link to={ { pathname: '/my-path', search: '?start=5' } }`, `props.location.search` is used, however this only returns something like `?start=5`.
-
-To convert this string to a more useful key-value pair, use `URLSearchParams`, e.g.
-```jsx
-componentDidMount() {
-    const query = new URLSearchParams(this.props.location.search);
-    for (let param of query.entries()) {
-        console.log(param); // yields ['start', '5']
-    }
-}
-```
-`URLSearchParams` is a built-in object, shipping with vanilla JavaScript. It returns an object, which exposes the entries()  method. entries() returns an Iterator - basically a construct which can be used in a for...of...  loop (as shown above).
-
-When looping through query.entries(), you get arrays where the first element is the key name (e.g. start ) and the second element is the assigned value (e.g. 5 ).
-
-*Parsing the Fragment/Hash Parameter*
-
-The hash, or fragment, of a path is passed using the following:
-
-`<Link to="/my-path#start-position">Go to Start</Link>`
-
-or,
-```jsx
-<Link 
-    to={ {
-        pathname: '/my-path',
-        hash: 'start-position'
-    } }
-    >Go to Start</Link>
-```
-This value can be accessed using `props.location.hash`.
-
-**Link Component**
-
-If a link is specified using the familiar `<a href="">` element, this will force the entire page to be re-fetched from the server.  Typically this is not desirable; in modern web apps it is more typical to only refresh those sections of the page that have changed.
-
-To avoid the full page refresh, the `Link` component is used:
-```jsx
-import React, { Component } from "react";
-import Posts from "Posts";
-import NewPost from "NewPost";
-
-class Blog extends Component {
-  render() {
-    return (
-      <div className="Blog">
-        <header>
-          <nav>
-            <ul>
-              <li>
-                {/* 'to' can be a simple string */}
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                {/* 'to' can also be a javascript object */}
-                <Link to={ {
-                  pathname: '/new-post',
-                  hash: '#submit',
-                  search: '?quick-submit=true'
-                } }>New Post</Link>
-              </li>
-            </ul>
-          </nav>
-        </header>
-        
-        <Route path="/" exact component={Posts} />
-        <Route path="/new-post" component={NewPost} />
-      </div>
-    );
-  }
-}
-```
-
-Note: `Link` paths are *always* absolute, regardless of whether "/new-post" or "new-post" is used.  In the latter case, this will be converted to "/new-post".
-
-If you want to use a relative path, you need to build this dynamically based on knowledge of the current path, e.g. if you are currently at /posts and want to go to /posts/new-post, you would construct a path using `pathname: currentUrl + '/new-post'`.
-
-If the current path was accessed via a `Link`, the current path can be accessed using the local props (in this case, `this.props.match.url`).
-
-**Route Props**
-
-If the props of a component that has been called from a `Link` are examined, it can be seen that a wealth of information is available for use in the component:
-```jsx
-class NewPost extends Component {
-  ...
-  componentDidMount() {
-    console.log(this.props);
-  }  
-  ...
-}
-```
-
-```jsx
-{history: {…}, location: {…}, match: {…}, staticContext: undefined}
-  history:
-    action: "PUSH"
-    block: ƒ block(prompt)
-    createHref: ƒ createHref(location)
-    go: ƒ go(n)
-    goBack: ƒ goBack()
-    goForward: ƒ goForward()
-    length: 21
-    listen: ƒ listen(listener)
-    location: {pathname: "/new-post", hash: "#submit", search: "?quick-submit=true", key: "5mpy2d"}
-    push: ƒ push(path, state)
-    replace: ƒ replace(path, state)
-    __proto__: Object
-  location:
-    hash: "#submit"
-    key: "5mpy2d"
-    pathname: "/new-post"
-    search: "?quick-submit=true"
-    __proto__: Object
-  match:
-    isExact: true
-    params: {}
-    path: "/new-post"
-    url: "/new-post"
-    __proto__: Object
-  staticContext: undefined
-  __proto__: Object
-```
-However, these extra properties are not passed down, by default, to children of the component.  
-
-There are two approaches to passing these properties further down the chain:
-
-**...props**
-
-One approach is to use the spread operator to add the props to the child components:
-
-```jsx
-  render() {
-        return (
-          <Post
-            key={post.id}
-            title={post.title}
-            author={post.author}
-            {...this.props} 
-            {/* or, {this.props.myProp} for a specific property /*}
-            clicked={() => this.postSelectedHandler(post.id)}
-          />
-        );
-    }
-```
-
-**withRouter() HOC**
-
-A more sophisticated approach is to use the `withRouter` HOC, which, when wrapped around a component, ensures that the component receives the route props.
-
-```jsx
-import React from 'react';
-import { withRouter } from 'react-router-dom';
-
-const post = (props) => {
-  console.log(props);
-  return (
-    <article className="Post" onClick={props.clicked}>
-      <h1>{props.title}</h1>
-      <div className="Info">
-        <div className="Author">{props.author}</div>
-      </div>
-    </article>
-  );
-};
-
-export default withRouter(post);
-```
-
-**NavLink Component**
-
-An extension of the `Link` component is the `NavLink` component.  Both components behave exactly the same when it comes to linking, however `NavLink` also allows styling to be applied to a link.  It also enables the correct focus to be maintained, for accessibility.
-
-When `NavLink` is used in place of `Link`, the resulting `a` element is decorated with two new properties:
-   * `aria-current="page"`: this indicates that this is the link for the current page and is chiefly used by screen-readers.
-      * For further details, see: [https://tink.uk/using-the-aria-current-attribute/](https://tink.uk/using-the-aria-current-attribute/)
-   * `class="active"`: this provides a class that can be used for styling.
-      * The class name can be changed using the `activeClassName` property.
-
-e.g. `<NavLink to="/">Home</NavLink>` translates to `<a aria-current="page" class="active" href="/">Home</a>`.
-
-Additional `NavLink` properties include:
-   * `activeStyle`, which allows inline CSS to be specified as a javascript object
-   * `isActive`, which indicates that the link should be flagged as the active link (overriding the default).
-   * `location`, which overrides the current location property.
-
-An example might be:
-
-```jsx
-<NavLink
-  {/* the link */}
-  to="/user"
-  
-  {/* inline styling */}
-  activeStyle={ {
-    background: 'red',
-    color: 'white',
-  } }
-  
-  {/* override the search property of the current location */}
-  location={ {
-    search: '?id=2',
-  } }
-  
-  {/* this link is marked as active if match.isExact is true
-      and the current search params contain 'id' (which it
-      will do because location.search has been overridden) */}
-  isActive={(match, location) => {
-    if (!match) {
-      return false;
-    }
-    const searchParams = new URLSearchParams(location.search);
-    return match.isExact && searchParams.has('id');
-  }}
->
-  User
-</NavLink>
-```
-
-For further information see here:
-   * [https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42](https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42)
-
-**Progammatic Navigation**
-
-In the event that navigate must happen in response to some event (rather than directly to user input), the `history` prop can be used.  For example,
-```jsx
-  postSelectedHandler = (id) => {
-    this.props.history.push({ pathname: '/' + id });
-  };
-  
-  render() {
-    return (
-      <Post
-        key={post.id}
-        title={post.title}
-        author={post.author}
-        clicked={() => this.postSelectedHandler(post.id)}
-      />
-    );
-  }
-```
-
-**Nested Routes**
-
-Routes can be specified anywhere in the app as long as the components fall under the `BrowserRoute` tags.  This means that it is possible for routes to be nested (i.e. a `Route` calls a component that contains another `Route`).  This can be problematic since all of the routes, no matter where they are located, are still evaluated sequentially.  This can lead to a route being "blocked" by a preceding route.
-
-For example:
-```jsx
-class Blog extends Component {
-  render() {
-    return (
-      <div className="Blog">
-        <Switch>
-          {/* test 1: if matches "/" exactly */}
-          <Route path="/" exact component={Posts} />
-
-          {/* test 2: else if starts with "/new-post" */}
-          <Route path="/new-post" exact component={NewPost} />
-        </Switch>
-      </div>
-    );
-  }
-}
-
-class Posts extends Component {
-  render() {
-    return (
-      <div className="Posts">
-        {/* test 3: if matches any route that begins with "/";
-            anything following "/" will be assigned to the "id" 
-            property*/}
-        <Route path="/:id" exact component={FullPost} />
-      </div>
-    );
-  }
-}
-```
-In the above case, if the URL `/5` is specified, this will never be passed down to the `Posts` component because `Posts` is called by the `Route` in the `Blog` component, which is only called if the path is *exactly* `/`.
-
-One solution would be to simply remove the `exact` property from the blog `Route`, so that `Posts` is always called. However, this will cause the additional problem that the `/new-post` route will never be called (since the `Switch` element only allows the first matched `Route` to pass).
-
-A better solution would be to remove the `exact` property *and* change the order of the routes in the `Switch` element:
-```jsx
-  <div className="Blog">
-    <Switch>
-      {/* test 1: if starts with "/new-post" */}
-      <Route path="/new-post" exact component={NewPost} />
-      
-      {/* test 2: else if starts with "/" */}
-      <Route path="/" component={Posts} />
-    </Switch>
-  </div>
-```
-In this case, a URL of `/5` will fail `test 1` but pass `test 2`, which in turn will mean that `test 3` is called in the `Posts` component.
-
-However, an issue remains.  In the following example, `test2` tests for `/posts`, rather than `/`:
-```jsx
-  <div className="Blog">
-    <Switch>
-      {/* test 1: if starts with "/new-post" */}
-      <Route path="/new-post" exact component={NewPost} />
-      
-      {/* test 2: else if starts with "/posts" */}
-      <Route path="/posts" component={Posts} />
-    </Switch>
-  </div>
-```
-This means that all relevant paths need to be updated to be `/posts`, including `test 3`:
-```
-  <div className="Posts">
-    {/* test 3: if matches any route that begins with "/posts";
-        anything following "/posts" will be assigned to the "id" 
-        property*/}
-    <Route path="/posts/:id" exact component={FullPost} />
-  </div>
-```
-This is cumbersome, particularly if the `Posts` component might be moved or re-used elsewhere.
-
-The solution is to get the url dynamically, using the route props:
-```
-  <div className="Posts">
-    {/* test 3: if matches any route that begins with this.props.match.url;
-        anything following this.props.match.url will be assigned to the "id" 
-        property*/}
-    <Route path={this.props.match.url + '/:id'} exact component={FullPost} />
-  </div>
-```
-
-**Redirect Component**
-
-A simple way to redirect a user is to provide duplicate routes, e.g.:
-```jsx
-  <div className="Blog">
-    <Switch>
-      <Route path="/new-post" exact component={NewPost} />
-      <Route path="/posts" component={Posts} />
-      <Route path="/" component={Posts} />
-    </Switch>
-  </div>
-```
-
-There is, however, a more elegant solution using the `Redirect` component:
-```jsx
-  <div className="Blog">
-    <Switch>
-      <Route path="/new-post" exact component={NewPost} />
-      <Route path="/posts" component={Posts} />
-      <Redirect from="/" to="/posts" />
-    </Switch>
-  </div>
-```
-Note: if used outside of a `Switch` element, only the `to` property can be used.  This syntax is typically used in conjunction with a condition, e.g.
-```jsx
-  render() {
-    let redirect = null;
-    if (this.state.submitted) {
-      redirect = <Redirect to="/posts" />;
-    }
-    return (
-      <div className="NewPost">
-        {redirect}
-      </div>
-    );
-  }
-```
-
-**Alternative Redirect Using History**
-
-An alternative method of redirecting is to push the new page onto the history:
-```
-  axios.post('/posts', data).then((response) => {
-    this.props.history.push('/posts');
-  });
-```
-This essentially moves the browser forward, so that subsequently clicking "Back" will take the user to the preceeding page.
-
-This is different from the `Redirect` component, which actually replaces the current page in the history, so clicking "Back" will effectively take the user *two* pages back.
-
-This latter behaviour can be reproduced using the `history.replace()`.
-
-**Guards**
-
-A guard is essentially a conditional statement that controls access to a component, such as a `Route`, or is called in a lifecycle method to prevent access when a component is loaded.
-
-For example:
-```jsx
-  <div className="Blog">
-    <Switch>
-      {this.state.auth ? <Route path="/new-post" exact component={NewPost} /> : null}
-      <Route path="/posts" component={Posts} />
-      <Redirect from="/" to="/posts" />
-    </Switch>
-  </div>
-```
-Or, alternatively:
-```jsx
-class NewPost extends Component {
-  componentDidMount() {
-    if (notAuth) this.props.history.replace('/posts');
-  }
-}
-```
-
-An additional solution might be:
-
-*ProtectedRoute.js*
-```jsx
-class ProtectedRoute extends Component {
-  render() {
-    const { component: Component, ...props } = this.props
-
-    return (
-      <Route 
-        {...props} 
-        render={props => (
-          this.state.authenticated ?
-            <Component {...props} /> :
-            <Redirect to='/login' />
-        )} 
-      />
-    )
-  }
-}
-```
-*Blog.js*
-```jsx
-  <div className="Blog">
-    <Switch>
-      <ProtectedRoute path="/new-post" exact component={NewPost} />
-      <Route path="/posts" component={Posts} />
-      <Redirect from="/" to="/posts" />
-    </Switch>
-  </div>
-```
-
-A crucial concept to understand when using react-router is that components can only be accessed if the developer has chosen to render them; if they are not rendered (for example, because they don't meet some condition), they will be inaccessible.
-
-
-**Handling 404 Errors**
-
-The simplest way to handle a 404 error (resource not found) is to provide a catch-all `Route` that handles any case where the path is unknown.
-
-For example:
-```jsx
-  // this.state.auth = false;
-  
-  <div className="Blog">
-    <Switch>
-      {/* test 1: if starts with "/new-post" and user is authorized to access this */}
-      {this.state.auth ? <Route path="/new-post" exact component={NewPost} /> : null}
-
-      {/* test 2: else if starts with "/posts" */}
-      <Route path="/posts" component={Posts} />
-      
-      {/* test 3: else if nothing matched, display an error message */}
-      <Route render={() => <h1>Not found</h1>} />
-    </Switch>
-  </div>
-```
-Note that the catch-all `Route` does not have a path specified, so it will always render if all of the previous routes fail.
-
-**Code Splitting/Lazy Loading**
-
-Rather than load the entire application when the user first visits the site, it is more efficient (for large applications) to only load the components as the user requests them.  This is known as code splitting or lazy loading.
-
-To achieve this, a new HOC is created:
-
-*asyncComponent.js*
-
-```jsx
-import React, { Component } from 'react';
-
-// importComponent will be a function
-// reference that returns a Promise
-const asyncComponent = (importComponent) => {
-
-  // function component returns a class component
-  return class extends Component {
-    // state.component will store the component
-    // to be rendered.  Initially this is false.
-    state = {
-      component: null,
-    };
-
-    componentDidMount() {
-      // comp will be the component being loaded dynamically
-      // state.component is set to comp
-      importComponent().then((comp) => {
-        this.setState({ component: comp.default });
-      });
-    }
-
-    render() {
-      // get state.component (which could be null)
-      const C = this.state.component;
-
-      // if state.component exists, return it (with any props)
-      return C ? <C {...this.props} /> : null;
-    }
-  };
-};
-
-export default asyncComponent;
-```
-Wherever we want to eventually render the lazily loaded component, we instead import the `asyncComponent` and initialize it:
-
-*Blog.js*
-
-```jsx
-import asyncComponent from './asyncComponent';
-
-// This is known as a dynamic import.
-// The import statement will only be called 
-// when AsyncNewPost is rendered to the screen.
-const AsyncNewPost = asyncComponent(() => {
-  return import('./NewPost');
-});
-
-class Blog extends Component {
-  state = {
-    auth: true,
-  };
-  
-  ...check auth...
-  
-  render() {
-    return (
-        <Switch>
-          {this.state.auth ? <Route path="/new-post" exact component={AsyncNewPost} /> : null}
-          <Route render={() => <h1>Not Authorized</h1>} />
-        </Switch>
-      </div>
-    );
-  }
-}
-
-```
-
-**Lazy Loading with React Suspense**
-
-*At time of writing, this is not supported for server-side apps*
-
-Since React 16.6, a new approach to lazy loading was added.  There are two parts:
-   * The `React.lazy()` method - this returns a promise that can be "pending" or "resolved".
-   * The `Suspense` component - this handles the promise, either rendering a fallback message/spinner if the promise is still pending, or displaying the component if the promise is resolved.
-
-```jsx
-import React, { Component, Suspense } from 'react';
-import User from './User';
-
-// When the Posts component is rendered, 
-// React.lazy() returns a promise while
-// the Posts component is fetched.
-const Posts = React.lazy(() => import('./containers/Posts'));
-
-class App extends Component {
-  state = { showPosts: false };
-
-  modeHandler = () => {
-    this.setState((prevState) => {
-      return { showPosts: !prevState.showPosts };
-    });
-  };
-
-  render() {
-    return (
-      <React.Fragment>
-        <button onClick={this.modeHandler}>Toggle Mode</button>
-
-        {this.state.showPosts ? (
-          <Suspense fallback={<div>Loading...</div>}>
-            <Posts />
-          </Suspense>
-        ) : (
-          <User />
-        )}
-      </React.Fragment>
-    );
-  }
-}
-
-export default App;
-```
-
-**Routing & Server Deployment**
-
-There are two main issues to be aware of what deploying a react app to a server:
-1. Always return index.html
-   * The server knows nothing about the routes in a react app, which means that the server cannot redirect the browser to the requested part of the app.
-   * The solution is to ensure that the server is configured to *always* return index.html, since index.html will then load the react app, which can, in turn, interpret the requested path.
-   * This happens by default on the NPM development server.
-1. Always provide a `basename` for the `BrowserRouter`
-   * `BrowserRouter` assumes that all routes requested in the app are relative to the root `basename` property.
-   * If this is not explicitly specified, the `basename` is assumed to be `/` (the server root, e.g. example.com/).
-   * If the react app is not located at the server root (e.g. example.com/my-app) and `basename` is not specified, specifying a route in the app (e.g. /posts/) will fail (because the server reads this as example.com/posts/ rather than example.com/my-app/posts/).
-   * To avoid this, the `BrowserRouter` element should always be specified as `<BrowserRouter basename="/my-app">`
-
 </div>
 </div>
 
@@ -3559,6 +2818,800 @@ const Input = (props) => {
 * [https://react.rocks/tag/Validation](https://react.rocks/tag/Validation)
 * [https://www.npmjs.com/package/react-validation](https://www.npmjs.com/package/react-validation)
 * [https://github.com/christianalfoni/formsy-react](https://github.com/christianalfoni/formsy-react)
+
+</div>
+</div>
+
+### Routing
+
+<div id="routing">
+<button type="button" class="collapsible">+ Routing Basics</button>   
+<div class="content" style="display: none;" markdown="1">
+Routing is the functionality that allows a single page to serve multiples pages as if the user was browsing separate URLs.
+  
+There are three stages to routing:
+1. Parse the URL
+1. Read the config
+1. Render the appropriate component
+
+Routing is enabled by installing and importing the react-router-dom package:
+
+* Install: `npm install react-router-dom`
+* Import: 
+   * `import { BrowserRouter } from 'react-router-dom';`
+   * `import { Router } from 'react-router-dom';`
+   * `import { Link } from 'react-router-dom';`
+   * `import { NavLink } from 'react-router-dom';`
+   * `import { withRouter } from 'react-router-dom';`
+   * `import { Switch } from 'react-router-dom';`
+   * `import { Redirect } from 'react-router-dom';`
+</div>
+</div>
+
+<div id="browser-router">
+<button type="button" class="collapsible">+ BrowserRouter Component</button>   
+<div class="content" style="display: none;" markdown="1">   
+
+To implement routing, the first thing step is to, in either App.js or index.js files, wrap the part of the app that supports routing with the `BrowserRouter` component:
+
+```jsx
+import React from 'react';
+import Blog from 'Blog';
+import { BrowserRouter } from 'react-router-dom';
+
+function App () {
+  return (
+    <BrowserRouter>
+      <div className="App">
+        <Blog />
+      </div>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
+</div>
+</div>
+
+<div id="route">
+<button type="button" class="collapsible">+ Route Component</button>   
+<div class="content" style="display: none;" markdown="1">   
+
+The next step is to  add the `Route` component to components where the contents should be dependent on the path, e.g.:
+```jsx
+import React, { Component } from "react";
+import { Route } from "react-router-dom";
+import Posts from "Posts";
+import NewPost from "NewPost";
+
+class Blog extends Component {
+  render() {
+    return (
+      <div className="Blog">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                <a href="/">Home</a>
+              </li>
+              <li>
+                <a href="/new-post">New Post</a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        
+        {/* path = the relative path to handle 
+            exact = by default, the component will match paths that 
+                    start with the path value; the property forces 
+                    exact matching
+            render = the function to be called if the path matches
+            component = the component to be called if the path matches */}
+        <Route path="/" exact render={() => <h1>Home</h1>} />
+        <Route path="/" exact component={Posts} />
+        <Route path="/new-post" component={NewPost} />
+        
+        {/* The Route component can reference the same path
+            multiple times in the same page */}
+        <Route path="/" render={() => <h1>Home 2</h1>} />
+      </div>
+    );
+  }
+}
+```
+
+The `render` property of the `Route` component is only really used in two use-cases:
+1. Making small updates to a page, such as simple messages or images (e.g. `render={() => <h1>Hello!</h1>}`)
+1. Enabling props to be passed to a component (e.g. `render={ () => <ContactData address={this.state.address} />}`)
+
+Generally, and particularly for larger sections, the `component` property should be preferred.
+</div>
+</div>
+
+<div id="parse-url">
+<button type="button" class="collapsible">+ Parsing URL Parameters</button>   
+<div class="content" style="display: none;" markdown="1">   
+
+*Parsing the Route*
+
+Often it is not possible to hardwire a specific path in the route.  In these cases, a route parameter can be used. A route parameter is effectively a wildcard that copies a section of the link into a variable.  
+
+An example might be:
+   * `<Route path="/:id/:title" component={MyComponent} />`
+
+The crucial features are the `:` delimiters.  These indicate that everything following them (until the next '/') should be copied into the specified variable.  So, in the above case, the path `/4/Lessons` would be parsed as `id = "4"; title = "Lessons"`.
+
+The parsed variables are passed to the linked component (`MyComponent`) and can be accessed using `this.props.match.params.id; this.props.match.params.title`.
+
+Note that `Route` components are evaluated in sequence, so care must be taken with the order of parsing to ensure that the results are as expected, e.g.:
+```jsx
+  {/* test 1: if matches "/" exactly */}
+  <Route path="/" exact component={Posts} />
+
+  {/* test 2: if matches any route that begins with "/new-post" */}
+  <Route path="/new-post" exact component={NewPost} />
+  
+  {/* test 3: if matches any route that begins with "/";
+      anything following "/" will be assigned to the "id" 
+      property*/}
+  <Route path="/:id" exact component={FullPost} />
+```
+In this case, both `test 2` and `test 3` will match `/new-post`, so both of their components will be displayed.
+
+An alternative approach is to use the `Switch` component.  If `Route` elements are placed inside a `Switch` element, only the first match succeeds, e.g.:
+```jsx
+  {/* test 1: if matches "/" exactly */}
+  <Route path="/" exact component={Posts} />
+
+  <Switch>
+    {/* test 2: if matches any route that begins with "/new-post" */}
+    <Route path="/new-post" exact component={NewPost} />
+
+    {/* test 3: else if matches any route that begins with "/";
+        anything following "/" will be assigned to the "id" 
+        property*/}
+    <Route path="/:id" exact component={FullPost} />
+  </Switch>
+```
+In this case, only `test 2` will match `/new-post`, since `test 3` will not be called.
+
+*Parsing the Query/Search Parameters*
+
+To extract search (also referred to as "query") parameters (i.e. `?something=somevalue`, or `<Link to={ { pathname: '/my-path', search: '?start=5' } }`, `props.location.search` is used, however this only returns something like `?start=5`.
+
+To convert this string to a more useful key-value pair, use `URLSearchParams`, e.g.
+```jsx
+componentDidMount() {
+    const query = new URLSearchParams(this.props.location.search);
+    for (let param of query.entries()) {
+        console.log(param); // yields ['start', '5']
+    }
+}
+```
+`URLSearchParams` is a built-in object, shipping with vanilla JavaScript. It returns an object, which exposes the entries()  method. entries() returns an Iterator - basically a construct which can be used in a for...of...  loop (as shown above).
+
+When looping through query.entries(), you get arrays where the first element is the key name (e.g. start ) and the second element is the assigned value (e.g. 5 ).
+
+*Parsing the Fragment/Hash Parameter*
+
+The hash, or fragment, of a path is passed using the following:
+
+`<Link to="/my-path#start-position">Go to Start</Link>`
+
+or,
+```jsx
+<Link 
+    to={ {
+        pathname: '/my-path',
+        hash: 'start-position'
+    } }
+    >Go to Start</Link>
+```
+This value can be accessed using `props.location.hash`.
+</div>
+</div>
+
+<div id="link">
+<button type="button" class="collapsible">+ Link Component</button>   
+<div class="content" style="display: none;" markdown="1">
+
+If a link is specified using the familiar `<a href="">` element, this will force the entire page to be re-fetched from the server.  Typically this is not desirable; in modern web apps it is more typical to only refresh those sections of the page that have changed.
+
+To avoid the full page refresh, the `Link` component is used:
+```jsx
+import React, { Component } from "react";
+import Posts from "Posts";
+import NewPost from "NewPost";
+
+class Blog extends Component {
+  render() {
+    return (
+      <div className="Blog">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                {/* 'to' can be a simple string */}
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                {/* 'to' can also be a javascript object */}
+                <Link to={ {
+                  pathname: '/new-post',
+                  hash: '#submit',
+                  search: '?quick-submit=true'
+                } }>New Post</Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        
+        <Route path="/" exact component={Posts} />
+        <Route path="/new-post" component={NewPost} />
+      </div>
+    );
+  }
+}
+```
+
+Note: `Link` paths are *always* absolute, regardless of whether "/new-post" or "new-post" is used.  In the latter case, this will be converted to "/new-post".
+
+If you want to use a relative path, you need to build this dynamically based on knowledge of the current path, e.g. if you are currently at /posts and want to go to /posts/new-post, you would construct a path using `pathname: currentUrl + '/new-post'`.
+
+If the current path was accessed via a `Link`, the current path can be accessed using the local props (in this case, `this.props.match.url`).
+</div>
+</div>
+
+<div id="route-props">
+<button type="button" class="collapsible">+ Route Props</button>   
+<div class="content" style="display: none;" markdown="1">
+
+If the props of a component that has been called from a `Link` are examined, it can be seen that a wealth of information is available for use in the component:
+```jsx
+class NewPost extends Component {
+  ...
+  componentDidMount() {
+    console.log(this.props);
+  }  
+  ...
+}
+```
+
+```jsx
+{history: {…}, location: {…}, match: {…}, staticContext: undefined}
+  history:
+    action: "PUSH"
+    block: ƒ block(prompt)
+    createHref: ƒ createHref(location)
+    go: ƒ go(n)
+    goBack: ƒ goBack()
+    goForward: ƒ goForward()
+    length: 21
+    listen: ƒ listen(listener)
+    location: {pathname: "/new-post", hash: "#submit", search: "?quick-submit=true", key: "5mpy2d"}
+    push: ƒ push(path, state)
+    replace: ƒ replace(path, state)
+    __proto__: Object
+  location:
+    hash: "#submit"
+    key: "5mpy2d"
+    pathname: "/new-post"
+    search: "?quick-submit=true"
+    __proto__: Object
+  match:
+    isExact: true
+    params: {}
+    path: "/new-post"
+    url: "/new-post"
+    __proto__: Object
+  staticContext: undefined
+  __proto__: Object
+```
+However, these extra properties are not passed down, by default, to children of the component.  
+
+There are two approaches to passing these properties further down the chain:
+
+**...props**
+
+One approach is to use the spread operator to add the props to the child components:
+
+```jsx
+  render() {
+        return (
+          <Post
+            key={post.id}
+            title={post.title}
+            author={post.author}
+            {...this.props} 
+            {/* or, {this.props.myProp} for a specific property /*}
+            clicked={() => this.postSelectedHandler(post.id)}
+          />
+        );
+    }
+```
+
+**withRouter() HOC**
+
+A more sophisticated approach is to use the `withRouter` HOC, which, when wrapped around a component, ensures that the component receives the route props.
+
+```jsx
+import React from 'react';
+import { withRouter } from 'react-router-dom';
+
+const post = (props) => {
+  console.log(props);
+  return (
+    <article className="Post" onClick={props.clicked}>
+      <h1>{props.title}</h1>
+      <div className="Info">
+        <div className="Author">{props.author}</div>
+      </div>
+    </article>
+  );
+};
+
+export default withRouter(post);
+```
+</div>
+</div>
+
+<div id="navlink">
+<button type="button" class="collapsible">+ NavLink Component</button>   
+<div class="content" style="display: none;" markdown="1">
+
+An extension of the `Link` component is the `NavLink` component.  Both components behave exactly the same when it comes to linking, however `NavLink` also allows styling to be applied to a link.  It also enables the correct focus to be maintained, for accessibility.
+
+When `NavLink` is used in place of `Link`, the resulting `a` element is decorated with two new properties:
+   * `aria-current="page"`: this indicates that this is the link for the current page and is chiefly used by screen-readers.
+      * For further details, see: [https://tink.uk/using-the-aria-current-attribute/](https://tink.uk/using-the-aria-current-attribute/)
+   * `class="active"`: this provides a class that can be used for styling.
+      * The class name can be changed using the `activeClassName` property.
+
+e.g. `<NavLink to="/">Home</NavLink>` translates to `<a aria-current="page" class="active" href="/">Home</a>`.
+
+Additional `NavLink` properties include:
+   * `activeStyle`, which allows inline CSS to be specified as a javascript object
+   * `isActive`, which indicates that the link should be flagged as the active link (overriding the default).
+   * `location`, which overrides the current location property.
+
+An example might be:
+
+```jsx
+<NavLink
+  {/* the link */}
+  to="/user"
+  
+  {/* inline styling */}
+  activeStyle={ {
+    background: 'red',
+    color: 'white',
+  } }
+  
+  {/* override the search property of the current location */}
+  location={ {
+    search: '?id=2',
+  } }
+  
+  {/* this link is marked as active if match.isExact is true
+      and the current search params contain 'id' (which it
+      will do because location.search has been overridden) */}
+  isActive={(match, location) => {
+    if (!match) {
+      return false;
+    }
+    const searchParams = new URLSearchParams(location.search);
+    return match.isExact && searchParams.has('id');
+  }}
+>
+  User
+</NavLink>
+```
+
+For further information see here:
+   * [https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42](https://www.codementor.io/@packt/using-the-link-and-navlink-components-to-navigate-to-a-route-rieqipp42)
+</div>
+</div>
+
+<div id="prog-nav">
+<button type="button" class="collapsible">+ Progammatic Navigation</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In the event that navigate must happen in response to some event (rather than directly to user input), the `history` prop can be used.  For example,
+```jsx
+  postSelectedHandler = (id) => {
+    this.props.history.push({ pathname: '/' + id });
+  };
+  
+  render() {
+    return (
+      <Post
+        key={post.id}
+        title={post.title}
+        author={post.author}
+        clicked={() => this.postSelectedHandler(post.id)}
+      />
+    );
+  }
+```
+</div>
+</div>
+
+<div id="nested-routes">
+<button type="button" class="collapsible">+ Nested Routes</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Routes can be specified anywhere in the app as long as the components fall under the `BrowserRoute` tags.  This means that it is possible for routes to be nested (i.e. a `Route` calls a component that contains another `Route`).  This can be problematic since all of the routes, no matter where they are located, are still evaluated sequentially.  This can lead to a route being "blocked" by a preceding route.
+
+For example:
+```jsx
+class Blog extends Component {
+  render() {
+    return (
+      <div className="Blog">
+        <Switch>
+          {/* test 1: if matches "/" exactly */}
+          <Route path="/" exact component={Posts} />
+
+          {/* test 2: else if starts with "/new-post" */}
+          <Route path="/new-post" exact component={NewPost} />
+        </Switch>
+      </div>
+    );
+  }
+}
+
+class Posts extends Component {
+  render() {
+    return (
+      <div className="Posts">
+        {/* test 3: if matches any route that begins with "/";
+            anything following "/" will be assigned to the "id" 
+            property*/}
+        <Route path="/:id" exact component={FullPost} />
+      </div>
+    );
+  }
+}
+```
+In the above case, if the URL `/5` is specified, this will never be passed down to the `Posts` component because `Posts` is called by the `Route` in the `Blog` component, which is only called if the path is *exactly* `/`.
+
+One solution would be to simply remove the `exact` property from the blog `Route`, so that `Posts` is always called. However, this will cause the additional problem that the `/new-post` route will never be called (since the `Switch` element only allows the first matched `Route` to pass).
+
+A better solution would be to remove the `exact` property *and* change the order of the routes in the `Switch` element:
+```jsx
+  <div className="Blog">
+    <Switch>
+      {/* test 1: if starts with "/new-post" */}
+      <Route path="/new-post" exact component={NewPost} />
+      
+      {/* test 2: else if starts with "/" */}
+      <Route path="/" component={Posts} />
+    </Switch>
+  </div>
+```
+In this case, a URL of `/5` will fail `test 1` but pass `test 2`, which in turn will mean that `test 3` is called in the `Posts` component.
+
+However, an issue remains.  In the following example, `test2` tests for `/posts`, rather than `/`:
+```jsx
+  <div className="Blog">
+    <Switch>
+      {/* test 1: if starts with "/new-post" */}
+      <Route path="/new-post" exact component={NewPost} />
+      
+      {/* test 2: else if starts with "/posts" */}
+      <Route path="/posts" component={Posts} />
+    </Switch>
+  </div>
+```
+This means that all relevant paths need to be updated to be `/posts`, including `test 3`:
+```
+  <div className="Posts">
+    {/* test 3: if matches any route that begins with "/posts";
+        anything following "/posts" will be assigned to the "id" 
+        property*/}
+    <Route path="/posts/:id" exact component={FullPost} />
+  </div>
+```
+This is cumbersome, particularly if the `Posts` component might be moved or re-used elsewhere.
+
+The solution is to get the url dynamically, using the route props:
+```
+  <div className="Posts">
+    {/* test 3: if matches any route that begins with this.props.match.url;
+        anything following this.props.match.url will be assigned to the "id" 
+        property*/}
+    <Route path={this.props.match.url + '/:id'} exact component={FullPost} />
+  </div>
+```
+</div>
+</div>
+
+<div id="redirect">
+<button type="button" class="collapsible">+ Redirect Component</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A simple way to redirect a user is to provide duplicate routes, e.g.:
+```jsx
+  <div className="Blog">
+    <Switch>
+      <Route path="/new-post" exact component={NewPost} />
+      <Route path="/posts" component={Posts} />
+      <Route path="/" component={Posts} />
+    </Switch>
+  </div>
+```
+
+There is, however, a more elegant solution using the `Redirect` component:
+```jsx
+  <div className="Blog">
+    <Switch>
+      <Route path="/new-post" exact component={NewPost} />
+      <Route path="/posts" component={Posts} />
+      <Redirect from="/" to="/posts" />
+    </Switch>
+  </div>
+```
+Note: if used outside of a `Switch` element, only the `to` property can be used.  This syntax is typically used in conjunction with a condition, e.g.
+```jsx
+  render() {
+    let redirect = null;
+    if (this.state.submitted) {
+      redirect = <Redirect to="/posts" />;
+    }
+    return (
+      <div className="NewPost">
+        {redirect}
+      </div>
+    );
+  }
+```
+
+**Alternative Redirect Using History**
+
+An alternative method of redirecting is to push the new page onto the history:
+```
+  axios.post('/posts', data).then((response) => {
+    this.props.history.push('/posts');
+  });
+```
+This essentially moves the browser forward, so that subsequently clicking "Back" will take the user to the preceeding page.
+
+This is different from the `Redirect` component, which actually replaces the current page in the history, so clicking "Back" will effectively take the user *two* pages back.
+
+This latter behaviour can be reproduced using the `history.replace()`.
+</div>
+</div>
+
+<div id="guards">
+<button type="button" class="collapsible">+ Guards</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A guard is essentially a conditional statement that controls access to a component, such as a `Route`, or is called in a lifecycle method to prevent access when a component is loaded.
+
+For example:
+```jsx
+  <div className="Blog">
+    <Switch>
+      {this.state.auth ? <Route path="/new-post" exact component={NewPost} /> : null}
+      <Route path="/posts" component={Posts} />
+      <Redirect from="/" to="/posts" />
+    </Switch>
+  </div>
+```
+Or, alternatively:
+```jsx
+class NewPost extends Component {
+  componentDidMount() {
+    if (notAuth) this.props.history.replace('/posts');
+  }
+}
+```
+
+An additional solution might be:
+
+*ProtectedRoute.js*
+```jsx
+class ProtectedRoute extends Component {
+  render() {
+    const { component: Component, ...props } = this.props
+
+    return (
+      <Route 
+        {...props} 
+        render={props => (
+          this.state.authenticated ?
+            <Component {...props} /> :
+            <Redirect to='/login' />
+        )} 
+      />
+    )
+  }
+}
+```
+*Blog.js*
+```jsx
+  <div className="Blog">
+    <Switch>
+      <ProtectedRoute path="/new-post" exact component={NewPost} />
+      <Route path="/posts" component={Posts} />
+      <Redirect from="/" to="/posts" />
+    </Switch>
+  </div>
+```
+
+A crucial concept to understand when using react-router is that components can only be accessed if the developer has chosen to render them; if they are not rendered (for example, because they don't meet some condition), they will be inaccessible.
+</div>
+</div>
+
+<div id="error-404">
+<button type="button" class="collapsible">+ Handling 404 Errors</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The simplest way to handle a 404 error (resource not found) is to provide a catch-all `Route` that handles any case where the path is unknown.
+
+For example:
+```jsx
+  // this.state.auth = false;
+  
+  <div className="Blog">
+    <Switch>
+      {/* test 1: if starts with "/new-post" and user is authorized to access this */}
+      {this.state.auth ? <Route path="/new-post" exact component={NewPost} /> : null}
+
+      {/* test 2: else if starts with "/posts" */}
+      <Route path="/posts" component={Posts} />
+      
+      {/* test 3: else if nothing matched, display an error message */}
+      <Route render={() => <h1>Not found</h1>} />
+    </Switch>
+  </div>
+```
+Note that the catch-all `Route` does not have a path specified, so it will always render if all of the previous routes fail.
+</div>
+</div>
+
+<div id="lazy-load">
+<button type="button" class="collapsible">+ Code Splitting/Lazy Loading</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Rather than load the entire application when the user first visits the site, it is more efficient (for large applications) to only load the components as the user requests them.  This is known as code splitting or lazy loading.
+
+To achieve this, a new HOC is created:
+
+*asyncComponent.js*
+
+```jsx
+import React, { Component } from 'react';
+
+// importComponent will be a function
+// reference that returns a Promise
+const asyncComponent = (importComponent) => {
+
+  // function component returns a class component
+  return class extends Component {
+    // state.component will store the component
+    // to be rendered.  Initially this is false.
+    state = {
+      component: null,
+    };
+
+    componentDidMount() {
+      // comp will be the component being loaded dynamically
+      // state.component is set to comp
+      importComponent().then((comp) => {
+        this.setState({ component: comp.default });
+      });
+    }
+
+    render() {
+      // get state.component (which could be null)
+      const C = this.state.component;
+
+      // if state.component exists, return it (with any props)
+      return C ? <C {...this.props} /> : null;
+    }
+  };
+};
+
+export default asyncComponent;
+```
+Wherever we want to eventually render the lazily loaded component, we instead import the `asyncComponent` and initialize it:
+
+*Blog.js*
+
+```jsx
+import asyncComponent from './asyncComponent';
+
+// This is known as a dynamic import.
+// The import statement will only be called 
+// when AsyncNewPost is rendered to the screen.
+const AsyncNewPost = asyncComponent(() => {
+  return import('./NewPost');
+});
+
+class Blog extends Component {
+  state = {
+    auth: true,
+  };
+  
+  ...check auth...
+  
+  render() {
+    return (
+        <Switch>
+          {this.state.auth ? <Route path="/new-post" exact component={AsyncNewPost} /> : null}
+          <Route render={() => <h1>Not Authorized</h1>} />
+        </Switch>
+      </div>
+    );
+  }
+}
+
+```
+
+**Lazy Loading with React Suspense**
+
+*At time of writing, this is not supported for server-side apps*
+
+Since React 16.6, a new approach to lazy loading was added.  There are two parts:
+   * The `React.lazy()` method - this returns a promise that can be "pending" or "resolved".
+   * The `Suspense` component - this handles the promise, either rendering a fallback message/spinner if the promise is still pending, or displaying the component if the promise is resolved.
+
+```jsx
+import React, { Component, Suspense } from 'react';
+import User from './User';
+
+// When the Posts component is rendered, 
+// React.lazy() returns a promise while
+// the Posts component is fetched.
+const Posts = React.lazy(() => import('./containers/Posts'));
+
+class App extends Component {
+  state = { showPosts: false };
+
+  modeHandler = () => {
+    this.setState((prevState) => {
+      return { showPosts: !prevState.showPosts };
+    });
+  };
+
+  render() {
+    return (
+      <React.Fragment>
+        <button onClick={this.modeHandler}>Toggle Mode</button>
+
+        {this.state.showPosts ? (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Posts />
+          </Suspense>
+        ) : (
+          <User />
+        )}
+      </React.Fragment>
+    );
+  }
+}
+
+export default App;
+```
+</div>
+</div>
+
+<div id="route-deploy">
+<button type="button" class="collapsible">+ Routing & Server Deployment</button>   
+<div class="content" style="display: none;" markdown="1">
+
+There are two main issues to be aware of what deploying a react app to a server:
+1. Always return index.html
+   * The server knows nothing about the routes in a react app, which means that the server cannot redirect the browser to the requested part of the app.
+   * The solution is to ensure that the server is configured to *always* return index.html, since index.html will then load the react app, which can, in turn, interpret the requested path.
+   * This happens by default on the NPM development server.
+1. Always provide a `basename` for the `BrowserRouter`
+   * `BrowserRouter` assumes that all routes requested in the app are relative to the root `basename` property.
+   * If this is not explicitly specified, the `basename` is assumed to be `/` (the server root, e.g. example.com/).
+   * If the react app is not located at the server root (e.g. example.com/my-app) and `basename` is not specified, specifying a route in the app (e.g. /posts/) will fail (because the server reads this as example.com/posts/ rather than example.com/my-app/posts/).
+   * To avoid this, the `BrowserRouter` element should always be specified as `<BrowserRouter basename="/my-app">`
 
 </div>
 </div>
