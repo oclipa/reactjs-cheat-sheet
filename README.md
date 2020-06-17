@@ -4113,7 +4113,10 @@ const store = createStore(rootReducer,
 
 ...etc...
 ```
-
+<div id="redux-devtools">
+<button type="button" class="collapsible">+ DevTools</button>   
+<div class="content" style="display: none;" markdown="1">
+  
 </div>
 </div>
 
