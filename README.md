@@ -3686,7 +3686,7 @@ console.log(store.getState());
 <div class="content" style="display: none;" markdown="1">
 
    * Install: `npm install redux`
-   * Import: `import { createStore, combineReducers } from 'redux';`
+   * Import: `import { createStore, combineReducers, applyMiddleware } from 'redux';`
 
    * Install: `npm install react-redux`
    * Import: `import { Provider, connect } from 'react-redux';`
@@ -4054,6 +4054,65 @@ The following diagram gives a high-level overview of when it is generally consid
    * Do not use for persistant state (i.e. it is not a replacement for a database).
 
 <a href="assets/when-to-use-redux.png" target="_blank" style="width: 80%"><img src="assets/when-to-use-redux.png" /></a>
+
+</div>
+</div>
+
+### Advanced Redux Topics
+
+<div id="redux-middleware">
+<button type="button" class="collapsible">+ Middleware</button>   
+<div class="content" style="display: none;" markdown="1">
+In the context of Redux, middleware is a function that can be inserted into a redux implementation to react to, or alter, an action before it is received by the reducer.
+
+The middleware is defined in index.js:
+  
+*index.js*
+
+```jsx
+// add logger middleware function, to which
+// we pass the redux store
+const logger = store => {
+  // return another function, to which we
+  // pass a 'next' argument.
+  // 'next' will be a function which can be
+  // executed to let the action continue
+  // its journey onto the reducer.
+  return next => {
+    // return yet another function, to which
+    // is passed an 'action' argument.
+    // This function will be executed automatically.
+    return action => {
+      // this is the code we actually want to execute
+
+      console.log('[Middleware] Dispatching', action);
+      // this allows the action to continue to 
+      // the reducer (the action could be
+      // changed in this middleware - with care!)
+      const result = next(action);
+
+      console.log('[Middleware] next state', store.getState());
+
+      // return the result of the action
+      return result;
+    }
+  }
+}
+```
+Once defined, the middleware is registered with Redux using the `applyMiddleware()` function.  Multiple middleware functions can be passed into the `applyMiddleware()` function.
+
+*index.js*
+
+```jsx
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+
+...etc...
+
+const store = createStore(rootReducer, 
+                  applyMiddleware(logger, other1, other2, ...etc...));
+
+...etc...
+```
 
 </div>
 </div>
