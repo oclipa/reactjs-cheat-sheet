@@ -3622,16 +3622,15 @@ There are two main issues to be aware of what deploying a react app to a server:
 <button type="button" class="collapsible">+ Redux Basics</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Install: `npm install redux`
-* Import: `import PropTypes from 'redux';`
-
 **Redux Lifecycle**
 
 <a href="assets/redux-lifecycle.png" target="_blank" style="width: 80%"><img src="assets/redux-lifecycle.png" /></a>
 
-**A Simple Redux Example**
+**A Simple Non-React Redux Example**
 
 This example is standalone code; it does not require react.
+
+* Install: `npm install redux`
 
 To run this: `node redux-basics.js`
 
