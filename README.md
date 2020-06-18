@@ -4987,3 +4987,21 @@ export default SideDrawer;
     loadJS("../collapse.js");
 
 </script>
+
+<!-- Default Statcounter code for reactjs-cheat-sheet
+https://oclipa.github.io/reactjs-cheat-sheet/ -->
+<script type="text/javascript">
+var sc_project=12343799; 
+var sc_invisible=1; 
+var sc_security="1747bed3"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics
+Made Easy - StatCounter" href="https://statcounter.com/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/12343799/0/1747bed3/1/"
+alt="Web Analytics Made Easy -
+StatCounter"></a></div></noscript>
+<!-- End of Statcounter Code -->
