@@ -4113,10 +4113,58 @@ const store = createStore(rootReducer,
 
 ...etc...
 ```
+</div>
+</div>
+
 <div id="redux-devtools">
-<button type="button" class="collapsible">+ DevTools</button>   
+<button type="button" class="collapsible">+ Redux DevTools</button>   
 <div class="content" style="display: none;" markdown="1">
-  
+
+A useful tool for debugging Redux is the Redux DevTools extension for Chrome.  This can be found here:
+   * [https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en)
+
+Further information and instructions can be found here:
+   * [https://github.com/zalmoxisus/redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
+
+To allow this extension to debug an app, the Redux store needs to be configured in the following manner:
+
+```jsx
+import { createStore, combineReducers, 
+            applyMiddleware, compose } from 'redux';
+
+...etc...
+
+// simple case:
+// const store = createStore(
+//   rootReducer, 
+//   typeof window !== 'undefined' && 
+//     window.__REDUX_DEVTOOLS_EXTENSION__ && 
+//       window.__REDUX_DEVTOOLS_EXTENSION__()
+// );
+
+// enhancer or middleware case:
+const composeEnhancers =
+  (typeof window !== 'undefined' && 
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || 
+  compose;
+
+const store = createStore(
+  rootReducer, 
+  composeEnhancers(
+    applyMiddleware(logger, other1, other2, ...etc...)
+  )
+);
+
+...etc...
+```
+
+NOTE: the `compose` function is similar to the `combineReducers` function, however it works on enhancers and middleware, rather than reducers.
+
+&nbsp;
+&nbsp;
+An alternative is the following, which allows diagnostics to be accessed programmatically in an app:
+   * [https://github.com/reduxjs/redux-devtools](https://github.com/reduxjs/redux-devtools)
+
 </div>
 </div>
 
