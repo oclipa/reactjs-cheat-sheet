@@ -212,7 +212,9 @@ Some examples of common patterns can be found here:
 * `npm install redux`
    * Enables enhanced state management
 * `npm install react-redux`
-   * Allows redux store to be hoked up to react application
+   * Allows redux store to be hooked up to react application
+* `npm install redux-thunk`
+   * Enables both complex synchronous logic and simple asynchronous logic when accessing a redux store.
 
 **Locally Installed Development (i.e. per project; only required for development)**
 * `npm install eslint --save-dev`
@@ -3865,7 +3867,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Counter);
 
 ```
 
-To reduce bugs due to typos, action strings are stored as const values in a separate file, which can then be imported:
+To reduce bugs due to typos, action types are stored as const values in a separate file, which can then be imported:
 
 *actions.js*
 
@@ -4164,7 +4166,112 @@ NOTE: the `compose` function is similar to the `combineReducers` function, howev
 &nbsp;
 An alternative is the following, which allows diagnostics to be accessed programmatically in an app:
    * [https://github.com/reduxjs/redux-devtools](https://github.com/reduxjs/redux-devtools)
+</div>
+</div>
 
+<div id="redux-action-creators">
+<button type="button" class="collapsible">+ Action Creators</button>   
+<div class="content" style="display: none;" markdown="1">
+  
+A more flexible approach to defining action types is to use action creators, rather than just simple properties.  This approach allows additional actions to be triggered when a particular action type is referenced.
+
+*actions.js*
+
+```jsx
+export const INCREMENT = 'INCREMENT';
+
+export const increment = () => {
+  return {
+    type: INCREMENT,
+  };
+};
+```
+
+Now, rather than import the action types directly, the creator function is imported instead:
+
+*Counter.js*
+
+```jsx
+import * as actionCreators from '../../store/actions';
+
+...etc...
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onIncrementCounter: () => dispatch(actionCreators.increment())
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+```
+</div>
+</div>
+
+<div id="redux-async">
+<button type="button" class="collapsible">+ Asynchronous Redux</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Redux Thunk is a library which adds a middleware to a project that allows an action creator to return a function (which will eventually dispatch an action).
+
+Further details can be found here:
+   * [https://github.com/reduxjs/redux-thunk](https://github.com/reduxjs/redux-thunk)
+
+To use Redux Thunk:
+
+* Install: `npm install redux-thunk`
+* Import: `import thunk from 'redux-thunk';`
+
+`redux-thunk` is middleware and so it registered with the store using `applyMiddleware` in index.js:
+
+*index.js*
+
+```jsx
+import thunk from 'redux-thunk';
+
+...etc...
+
+const store = createStore(
+  rootReducer, 
+  composeEnhancers(
+    applyMiddleware(logger, thunk)
+  )
+);
+
+...etc...
+```
+To make use of Redux Thunk, both synchronous and asynchronous versions of an action are defined, with the asynchronous version calling the synchronous version when it is ready to do so.
+
+*actions.js*
+
+```jsx
+export const STORE_RESULT = 'STORE_RESULT';
+
+// synchronous action
+// returns immediately
+export const saveResult = (result) => {
+  return {
+    type: STORE_RESULT,
+    result: result,
+  };
+};
+
+// asynchronous action
+// returns eventually
+export const storeResult = (result) => {
+  // because redux-thunk is middleware,
+  // this function allows it so intercept the
+  // action and then return the result at a
+  // later time
+  return (dispatch) => {
+    // simulate a server query use setTimeout
+    setTimeout(() => {
+      // when the timeout ends, the dispatch
+      // function calls the synchronous action.
+      dispatch(saveResult(result));
+    }, 2000);
+  };
+};
+```
 </div>
 </div>
 
