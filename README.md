@@ -4338,6 +4338,83 @@ export const storeResult = (result) => {
 </div>
 </div>
 
+<div id="redux-transform-logic">
+<button type="button" class="collapsible">+ Transforming Data</button>   
+<div class="content" style="display: none;" markdown="1">
+
+When transforming data/state, there are two places this can be done:
+
+**In the Action Creator**
+
+```jsx
+export const saveResult = (result) => {
+
+  const updatedResult = /* transform result */
+
+  return {
+    type: actionTypes.STORE_RESULT,
+    result: updatedResult,
+  };
+};
+```
+
+This has the advantage that it can run asynchronous code, but the is goes against the core redux concept that only reducers should update the state.
+
+**In the Reducer**
+
+```jsx
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case actionTypes.STORE_RESULT: {
+      return {
+        ...state,
+        results: state.results.concat(
+          { 
+            id: new Date(), 
+            value: /* transform action.result */ 
+           }
+         ),
+      };
+    }
+    default:
+      return state;
+  }
+};
+```
+
+This has the advantage that it follows the concept that only reducers should update the state, however they can only handle pure, synchronous code.
+
+**Which approach to use?**
+
+In general, **transformation logic should put in the reducer**, since this is what reducers are intended for, however in some cases it may make sense to include some transformation logic in the action creator.  
+
+For example, if the response from a server needs to be cleaned up before being passed to the rest of the logic it makes sense to do this in the action creator (which receives the raw response), however if properties of the response need to changed this should happen in the reducer (which converts the received data into state).
+
+Avoid putting large amount of transform logic in both the reducer and the action creator, since this can make maintenance of the code difficult.
+
+**Caveat: getState**
+
+A feature of Redux Thunk that can make putting transform logic in the action creator more attractive is that it can pass a getState function into the action creator.  This can then be used to perform actions based on the current state.
+
+```jsx
+export const storeResult = (result) => {
+  return (dispatch, getState) => {
+    setTimeout(() => {
+    
+      const oldCounter = getState().ctr.counter;
+      console.log(oldCounter);
+      
+      dispatch(saveResult(result));
+    }, 2000);
+  };
+};
+```
+
+Although this is useful, it is recommended to avoid doing this too often.  If possible, it would be better to design the app so that  any state properties that are required into the action creator can be passed in as arguments instead.
+
+</div>
+</div>
+
 ### Code Examples
 
 <div id="spinner">
