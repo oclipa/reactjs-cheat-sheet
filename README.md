@@ -4415,6 +4415,16 @@ Although this is useful, it is recommended to avoid doing this too often.  If po
 </div>
 </div>
 
+<div id="redux-transform-logic">
+<button type="button" class="collapsible">+ Further Redux</button>   
+<div class="content" style="display: none;" markdown="1">
+
+To delve into Redux in more depth (since it has far more uses than those discussed above), take a look at the following site:
+   * [https://redux.js.org/](https://redux.js.org/)
+
+</div>
+</div>
+
 ### Code Examples
 
 <div id="spinner">
