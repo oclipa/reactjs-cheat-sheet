@@ -3729,7 +3729,7 @@ Note: great care must be taken to ensure that the state is always updated immuta
 *reducer.js*
 
 ```jsx
-import * as actionTypes from './actions';
+import * as actionTypes from './actions/actions';
 
 const initialState= {
   counter: 0,
@@ -3804,7 +3804,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import CounterControl from './CounterControl';
 import CounterOutput from './CounterOutput';
-import * as actionTypes from './actions';
+import * as actionTypes from './actions/actions';
 
 class Counter extends Component {
   // local state is no longer needed
@@ -3869,7 +3869,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Counter);
 
 To reduce bugs due to typos, action types are stored as const values in a separate file, which can then be imported:
 
-*actions.js*
+*actions/actions.js*
 
 ```jsx
 export const INCREMENT = 'INCREMENT';
@@ -3891,10 +3891,10 @@ Rather than locating all reducer functions in a single file, they can be split a
 
 For example, in the following example, *reducer.js* (from above) is split into *counter.js* and *result.js* and then combined:
 
-*counter.js*
+*reducers/counter.js*
 
 ```jsx
-import * as actionTypes from './actions';
+import * as actionTypes from '../action/actions';
 
 // only need to include state properties relevant
 // to the reducers in this file
@@ -3936,10 +3936,10 @@ const reducer = (state = initialState, action) => {
 export default reducer;
 ```
 
-*result.js*
+*reducers/result.js*
 
 ```jsx
-import * as actionTypes from './actions';
+import * as actionTypes from '../actions/actions';
 
 // only need to include state properties relevant
 // to the reducers in this file
@@ -3980,8 +3980,8 @@ import { createStore, combineReducers } from 'redux';
 ...etc...
 
 // import the reducers
-import counterReducer from './counter';
-import resultReducer from './result';
+import counterReducer from './reducers/counter';
+import resultReducer from './reducers/result';
 
 // expose individual reducers as rootReducer properties
 const rootReducer = combineReducers({
@@ -4175,7 +4175,7 @@ An alternative is the following, which allows diagnostics to be accessed program
   
 A more flexible approach to defining action types is to use action creators, rather than just simple properties.  This approach allows additional actions to be triggered when a particular action type is referenced.
 
-*actions.js*
+*actions/actions.js*
 
 ```jsx
 export const INCREMENT = 'INCREMENT';
@@ -4192,7 +4192,7 @@ Now, rather than import the action types directly, the creator function is impor
 *Counter.js*
 
 ```jsx
-import * as actionCreators from '../../store/actions';
+import * as actionCreators from './actions/actions';
 
 ...etc...
 
@@ -4204,6 +4204,71 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(Counter);
 ```
+
+**Note**
+
+It is common to split the action creators into multiple files, in a similar manner to reducers:
+
+*actions/actions.js*
+
+```jsx
+export const INCREMENT = 'INCREMENT';
+export const STORE_RESULT = 'STORE_RESULT';
+```
+
+*actions/counter.js*
+
+```jsx
+import * as actionTypes from './actions';
+
+export const increment = () => {
+  return {
+    type: actionTypes.INCREMENT,
+  };
+};
+```
+
+*actions/result.js*
+
+```jsx
+import * as actionTypes from './actions';
+
+export const storeResult = (result) => {
+  return {
+    type: actionTypes.STORE_RESULT,
+    result: result,
+  };
+};
+```
+
+These can now be imported via an intermediary index file: 
+
+*actions/index.js*
+
+```jsx
+export {
+  add,
+  subtract,
+  increment,
+  decrement
+} from './counter';
+
+export {
+  storeResult,
+  deleteResult
+} from './result';
+```
+
+The index file can then be imported into the files that want to reference the actions:
+
+*Counter.js*
+
+```jsx
+import * as actionCreators from './actions/index';
+
+...etc...
+```
+
 </div>
 </div>
 
@@ -4241,16 +4306,14 @@ const store = createStore(
 ```
 To make use of Redux Thunk, both synchronous and asynchronous versions of an action are defined, with the asynchronous version calling the synchronous version when it is ready to do so.
 
-*actions.js*
+*actions/result.js*
 
 ```jsx
-export const STORE_RESULT = 'STORE_RESULT';
-
 // synchronous action
 // returns immediately
 export const saveResult = (result) => {
   return {
-    type: STORE_RESULT,
+    type: actionsTypes.STORE_RESULT,
     result: result,
   };
 };
