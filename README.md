@@ -500,7 +500,7 @@ class Welcome extends React.Component {
 1. This is only available to Class components.
 1. Lifecycle Hooks have nothing to do with React Hooks!
 
-<a href="assets/reactjs-component-lifecycle.png" target="_blank"><img src="assets/reactjs-component-lifecycle.png" style="width: inherit"/></a>
+<a href="assets/reactjs-component-lifecycle.png" target="_blank"><img src="assets/reactjs-component-lifecycle.png" style="width: 100%"/></a>
 
 <br/>[Original Image](https://twitter.com/dan_abramov/status/981712092611989509/photo/1)
 &copy; Dan Abramov: [https://overreacted.io/](https://overreacted.io/)
@@ -3626,7 +3626,7 @@ There are two main issues to be aware of what deploying a react app to a server:
 
 **Redux Lifecycle**
 
-<a href="assets/redux-lifecycle.png" target="_blank"><img src="assets/redux-lifecycle.png" style="width: inherit" /></a>
+<a href="assets/redux-lifecycle.png" target="_blank"><img src="assets/redux-lifecycle.png" style="width: 100%" /></a>
 
 **A Simple Non-React Redux Example**
 
@@ -4055,7 +4055,7 @@ The following diagram gives a high-level overview of when it is generally consid
    * Not normally used for managing UI state.
    * Do not use for persistant state (i.e. it is not a replacement for a database).
 
-<a href="assets/when-to-use-redux.png" target="_blank"><img src="assets/when-to-use-redux.png" style="width: inherit" /></a>
+<a href="assets/when-to-use-redux.png" target="_blank"><img src="assets/when-to-use-redux.png" style="width: 100%" /></a>
 
 </div>
 </div>
