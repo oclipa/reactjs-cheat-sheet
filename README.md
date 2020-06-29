@@ -2834,8 +2834,6 @@ const Input = (props) => {
 </div>
 </div>
 
-### Routing
-
 <div id="routing">
 <button type="button" class="collapsible">+ Routing</button>   
 <div class="content" style="display: none;" markdown="1">
