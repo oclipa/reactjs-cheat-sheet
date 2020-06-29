@@ -15,7 +15,7 @@
 -------------------------------------------------------------------------------------------------------
 
 <div id="howto">
-<button type="button" class="collapsible">+ Theory</button>
+<button type="button" class="collapsible">+ In Theory</button>
 <div class="content" style="display: none;" markdown="1">
   
 <div id="howto">
