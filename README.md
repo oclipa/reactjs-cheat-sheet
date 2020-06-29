@@ -14,8 +14,10 @@
 
 -------------------------------------------------------------------------------------------------------
 
-### In Theory
-
+<div id="howto">
+<button type="button" class="collapsible">+ Theory</button>
+<div class="content" style="display: none;" markdown="1">
+  
 <div id="howto">
 <button type="button" class="collapsible">+ How To Approach Building An App In React</button>
 <div class="content" style="display: none;" markdown="1">
@@ -147,10 +149,15 @@ Some examples of common patterns can be found here:
 </div>
 </div>
 
+</div>
+</div>
+
 ------------------------------------------------------------------------------------------------------
 
-### In Practice
-
+<div id="in-practice">
+<button type="button" class="collapsible">+ In Practice</button>
+<div class="content" style="display: none;" markdown="1">
+  
 <div id="nodejs">
 <button type="button" class="collapsible">+ Using NodeJS and create-react-app</button>
 <div class="content" style="display: none;" markdown="1">
@@ -2824,9 +2831,16 @@ const Input = (props) => {
 </div>
 </div>
 
+</div>
+</div>
+
 ### Routing
 
 <div id="routing">
+<button type="button" class="collapsible">+ Routing</button>   
+<div class="content" style="display: none;" markdown="1">
+
+<div id="routing-basics">
 <button type="button" class="collapsible">+ Routing Basics</button>   
 <div class="content" style="display: none;" markdown="1">
 Routing is the functionality that allows a single page to serve multiples pages as if the user was browsing separate URLs.
@@ -3618,7 +3632,12 @@ There are two main issues to be aware of what deploying a react app to a server:
 </div>
 </div>
 
-### Redux
+</div>
+</div>
+
+<div id="redux">
+<button type="button" class="collapsible">+ Redux</button>   
+<div class="content" style="display: none;" markdown="1">
 
 <div id="redux-basics">
 <button type="button" class="collapsible">+ Redux Basics</button>   
@@ -4060,11 +4079,17 @@ The following diagram gives a high-level overview of when it is generally consid
 </div>
 </div>
 
-### Advanced Redux Topics
+</div>
+</div>
+
+<div id="redux-middleware">
+<button type="button" class="collapsible">+ Advanced Redux Topics</button>   
+<div class="content" style="display: none;" markdown="1">
 
 <div id="redux-middleware">
 <button type="button" class="collapsible">+ Middleware</button>   
 <div class="content" style="display: none;" markdown="1">
+
 In the context of Redux, middleware is a function that can be inserted into a redux implementation to react to, or alter, an action before it is received by the reducer.
 
 The middleware is defined in index.js:
@@ -4425,7 +4450,12 @@ To delve into Redux in more depth (since it has far more uses than those discuss
 </div>
 </div>
 
-### Code Examples
+</div>
+</div>
+
+<div id="code-examples">
+<button type="button" class="collapsible">+ Code Examples</button>   
+<div class="content" style="display: none;" markdown="1">
 
 <div id="spinner">
 <button type="button" class="collapsible">+ Creating A Simple Spinner</button>   
@@ -4913,6 +4943,9 @@ export default SideDrawer;
   margin-bottom: 32px;
 }
 ```
+
+</div>
+</div>
 
 </div>
 </div>
