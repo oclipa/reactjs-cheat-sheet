@@ -4972,35 +4972,18 @@ To achieve this, the client application needs the following updates:
 </div>
 </div>
 
-<div id="auth-basics">
-<button type="button" class="collapsible">+ Basics </button>   
+<div id="auth-signup">
+<button type="button" class="collapsible">+ Sign-Up & Sign-In Views</button>   
 <div class="content" style="display: none;" markdown="1">
 
-1. User signs in via sign-in page
-1. Authentication data is sent to server (e.g. email & password)
-  * Typically any server that has a stateless RESTful API
-1. Server returns a token (typically in JSON format)
-1. Client stores token in local storage
-1. User requests access to protected resources by passing token to server
-   * Server can verify if token was created by the server
+**Verification of Email Addresses**
 
-To achieve this, the client application needs the following updates:
-* Sign-up & Sign-in Views
-* Guarded routes (so cannot access them without being authenticated)
-* Ability to pass authentication to the backend
-
-</div>
-</div>
-
-<div id="auth-signin">
-<button type="button" class="collapsible">+ Sign-up & Sign-in Views </button>   
-<div class="content" style="display: none;" markdown="1">
-
-Notes regarding verification of email addresses:
 * The purpose of validating an email address is to confirm that the user didn't accidently enter an invalid value (such as their name). It will be unlikely to catch someone doing this on purpose.
 * There is no such thing as the perfect regex for email addresses because email addresses vary so widely.  The only way to truly confirm an email address is to send it an email with a verification link. 
 * It is easy to disable javascript validation, so client-side verification cannot be relied on (except as a first pass).  Verification also needs to be done on the server.
 * It is generally best to use the simplest "good enough" regex for validating email addresses.  A regex such as `/^\S+@\S+$/i` will catch most user errors but will fail for addresses like "me@here@there.com", which are valid email addresses.  If edge cases like these are a concern, it is better to skip the regex and just go straight to the "email with a link" step.
+
+**Implementation**
 
 *Auth.js*
 
@@ -5045,6 +5028,7 @@ class Auth extends Component {
         touched: false,
       },
     },
+    isSignup: true,
   };
 
   checkValidity(value, rules) {
@@ -5095,6 +5079,12 @@ class Auth extends Component {
     this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value);
   };
 
+  switchAuthModeHandler = () => {
+    this.setState((prevState) => {
+      return { isSignup: !prevState.isSignup };
+    });
+  };
+  
   render() {
     const formElementsArray = [];
     for (const key in this.state.controls) {
@@ -5123,6 +5113,9 @@ class Auth extends Component {
           {form}
           <Button btnType="Success">SUBMIT</Button>
         </form>
+        <Button clicked={this.switchAuthModeHandler} btnType="Danger">
+          SWITCH TO {this.state.isSignup ? 'SIGN-IN' : 'SIGN-UP'}
+        </Button>
       </div>
     );
   }
@@ -5130,7 +5123,7 @@ class Auth extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (email, password) => dispatch(actions.auth(email, password)),
+    onAuth: (email, password, isSignup) => dispatch(actions.auth(email, password, isSignup)),
   };
 };
 
@@ -5194,7 +5187,7 @@ export const authFail = (error) => {
   };
 };
 
-export const auth = (email, password) => {
+export const auth = (email, password, isSignup) => {
   return (dispatch) => {
     dispatch(authStart());
     
@@ -5207,11 +5200,9 @@ export const auth = (email, password) => {
 </div>
 </div>
 
-<div id="auth-signin">
-<button type="button" class="collapsible">+ Firebase Authentication REST API </button>   
+<div id="auth-firebase">
+<button type="button" class="collapsible">+ Firebase Authentication </button>   
 <div class="content" style="display: none;" markdown="1">
-
-In this case, Firebase is used, however the principles should be the same for any stateless, RESTful API.
 
 Reference information for authentication in Firebase can be found here:
 * [https://firebase.google.com/docs/reference/rest/auth](https://firebase.google.com/docs/reference/rest/auth)
@@ -5260,13 +5251,22 @@ export const authSuccess = (authData) => { ...etc... };
 
 export const authFail = (error) => { ...etc... };
 
-export const auth = (email, password) => {
+export const auth = (email, password, isSignup) => {
+
+  let doAuth = (email, password) => {
+    return fire.auth().createUserWithEmailAndPassword(email, password);
+  };
+
+  if (!isSignUp) {
+    doAuth = (email, password) => {
+      return fire.auth().signInWithEmailAndPassword(email, password);
+    };
+  }
+
   return (dispatch) => {
     dispatch(authStart());
 
-    fire
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+    doAuth(email, password)
       .then((response) => {
         console.log(response);
         dispatch(authSuccess(response.data));
@@ -5296,7 +5296,7 @@ export const firebaseConfig = {
 };
 ```
 
-**Securing The Firebase Config**
+**Securing the Firebase Config**
 
 The firebase configuration settings are not designed to be hidden; no matter what steps you take, the settings will be publically available once loaded into a browser.
 
@@ -5312,6 +5312,58 @@ Rather than obfuscation, firebase security depends on the correct access permiss
 
 These steps are discussed in deeper depth in the following document:
 * [https://medium.com/@impaachu/how-to-secure-your-firebase-project-even-when-your-api-key-is-publicly-available-a462a2a58843](https://medium.com/@impaachu/how-to-secure-your-firebase-project-even-when-your-api-key-is-publicly-available-a462a2a58843)
+
+</div>
+</div>
+
+<div id="auth-generic">
+<button type="button" class="collapsible">+ Generic Authentication </button>   
+<div class="content" style="display: none;" markdown="1">
+
+In the case of other backends, a more generic approach is to use Axios.
+
+**Implementation**
+
+*actions/auth.js*
+
+```jsx
+import axios from 'axios';
+
+export const authStart = () => { ...etc... };
+
+export const authSuccess = (authData) => { ...etc... };
+
+export const authFail = (error) => { ...etc... };
+
+export const auth = (email, password, isSignup) => {
+  return (dispatch) => {
+    dispatch(authStart());
+
+    // check API docs for URLs
+    let url = isSignup ? "[signup-end-point-url]" : "[signin-end-point-url]";
+    
+    // check API docs for payload contents
+    const authData = {
+      email: email,
+      password: password,
+    };
+
+    axios
+      .post(
+        url,
+        authData
+      )
+      .then((response) => {
+        console.log(response);
+        dispatch(authSuccess(response.data));
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err));
+      });
+  };
+};
+```
 
 </div>
 </div>
