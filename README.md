@@ -5074,11 +5074,16 @@ class Auth extends Component {
     this.setState({ controls: updatedControls });
   };
 
-  submitHandler = (event) => {
+  submitHandler = ( event ) => {
     event.preventDefault();
-    this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value);
-  };
+    this.props.onAuth( this.state.controls.email.value, this.state.controls.password.value, this.state.isSignup );
+  }
 
+  signOutHandler = (event) => {
+    event.preventDefault();
+    this.props.onSignOut();
+  };
+  
   switchAuthModeHandler = () => {
     this.setState((prevState) => {
       return { isSignup: !prevState.isSignup };
@@ -5116,6 +5121,9 @@ class Auth extends Component {
         <Button clicked={this.switchAuthModeHandler} btnType="Danger">
           SWITCH TO {this.state.isSignup ? 'SIGN-IN' : 'SIGN-UP'}
         </Button>
+        <Button clicked={this.signOutHandler} btnType="Success">
+          SIGN OUT
+        </Button>
       </div>
     );
   }
@@ -5124,6 +5132,7 @@ class Auth extends Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     onAuth: (email, password, isSignup) => dispatch(actions.auth(email, password, isSignup)),
+    onSignOut: () => dispatch(actions.signOut()),
   };
 };
 
@@ -5139,6 +5148,13 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import Auth from './Auth';
 
 function App() {
+
+  useEffect(() => {
+  
+    /* react to changes in login state here */
+  
+  }, []);
+
   return (
     <div>
       <BrowserRouter>
@@ -5160,6 +5176,7 @@ function App() {
 export const AUTH_START = 'AUTH_START';
 export const AUTH_SUCCESS = 'AUTH_SUCCESS';
 export const AUTH_FAIL = 'AUTH_FAIL';
+export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
 ```
 
 *actions/auth.js*
@@ -5187,6 +5204,12 @@ export const authFail = (error) => {
   };
 };
 
+export const authSignOut = () => {
+  return {
+    type: actionTypes.AUTH_SIGN_OUT,
+  };
+};
+
 export const auth = (email, password, isSignup) => {
   return (dispatch) => {
     dispatch(authStart());
@@ -5195,6 +5218,88 @@ export const auth = (email, password, isSignup) => {
     
   };
 };
+
+export const signOut = () => {
+  return (dispatch) => {
+  
+    /* sign-out action will go here */
+    
+  };
+};
+```
+
+*reducers/auth.js*
+
+```jsx
+import * as actionTypes from '../actions/actionTypes';
+import { updateObject } from '../utility';
+
+const initialState = {
+  authData: null,
+  error: null,
+  loading: false,
+};
+
+const authStart = (state, action) => {
+  return updateObject(state, { error: null, loading: true });
+};
+
+const authSuccess = (state, action) => {
+  return updateObject(state, {
+    authData: action.authData,
+    error: null,
+    loading: false,
+  });
+};
+
+const authFail = (state, action) => {
+  return updateObject(state, { error: action.error, loading: false });
+};
+
+const authSignOut = (state, action) => {
+  return updateObject(state, initialState);
+};
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case actionTypes.AUTH_START: {
+      return authStart(state, action);
+    }
+    case actionTypes.AUTH_SUCCESS: {
+      return authSuccess(state, action);
+    }
+    case actionTypes.AUTH_FAIL: {
+      return authFail(state, action);
+    }
+    case actionTypes.AUTH_SIGN_OUT: {
+      return authSignOut(state, action);
+    }
+    default:
+      return state;
+  }
+};
+
+export default reducer;
+```
+
+*index.js*
+
+```jsx
+
+...etc...
+
+import authReducer from './reducers/auth';
+
+...etc...
+
+const rootReducer = combineReducers({
+  ...etc...
+  auth: authReducer,
+});
+
+const store = createStore(rootReducer, ...etc...);
+
+...etc...
 ```
 
 </div>
@@ -5231,6 +5336,68 @@ The configuration details for the firebase connection can be obtained from:
 
 **Implementation**
 
+*App.js*
+
+```jsx
+import React, { useEffect } from 'react';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import Auth from './Auth';
+
+function App() {
+
+  // this will be triggered the first time the page is
+  // rendered (because it passes an empty array)
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        console.log('Authenticated!', user);
+      } else {
+        console.log('Denied!');
+      }
+    });
+  }, []);
+
+  return (
+    <div>
+      <BrowserRouter>
+        <Layout>
+          <Switch>
+            ...etc...
+            <Route path="/auth" component={Auth} />
+            ...etc...
+          </Switch>
+        </Layout>
+      </BrowserRouter>
+    </div>
+  );
+```
+
+*reducers/auth.js*
+
+```jsx
+...etc...
+
+const initialState = {
+  user: null,
+  error: null,
+  loading: false,
+};
+
+...etc...
+
+const authSuccess = (state, action) => {
+  return updateObject(state, {
+    user: action.user,
+    error: null,
+    loading: false,
+  });
+};
+
+...etc...
+```
+
 *actions/auth.js*
 
 ```jsx
@@ -5247,9 +5414,16 @@ const fire = firebase.initializeApp(firebaseConfig);
 
 export const authStart = () => { ...etc... };
 
-export const authSuccess = (authData) => { ...etc... };
+export const authSuccess = (user) => {
+  return {
+    type: actionTypes.AUTH_SUCCESS,
+    user: user,
+  };
+};
 
 export const authFail = (error) => { ...etc... };
+
+export const authSignOut = () => { ...etc... };
 
 export const auth = (email, password, isSignup) => {
 
@@ -5268,8 +5442,22 @@ export const auth = (email, password, isSignup) => {
 
     doAuth(email, password)
       .then((response) => {
-        console.log(response);
-        dispatch(authSuccess(response.data));
+        dispatch(authSuccess(response.user));
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err));
+      });
+  };
+};
+
+export const signOut = () => {
+  return (dispatch) => {
+    fire
+      .auth()
+      .signOut()
+      .then((response) => {
+        dispatch(authSignOut());
       })
       .catch((err) => {
         console.log(err);
@@ -5324,6 +5512,32 @@ In the case of other backends, a more generic approach is to use Axios.
 
 **Implementation**
 
+*reducers/auth.js*
+
+```jsx
+...etc...
+
+const initialState = {
+  token: null,
+  userId: null,
+  error: null,
+  loading: false,
+};
+
+...etc...
+
+const authSuccess = (state, action) => {
+  return updateObject(state, {
+    token: action.idToken,
+    userId: action.userId,
+    error: null,
+    loading: false,
+  });
+};
+
+...etc...
+```
+
 *actions/auth.js*
 
 ```jsx
@@ -5331,9 +5545,17 @@ import axios from 'axios';
 
 export const authStart = () => { ...etc... };
 
-export const authSuccess = (authData) => { ...etc... };
+export const authSuccess = (token, userId) => {
+  return {
+    type: actionTypes.AUTH_SUCCESS,
+    idToken: token,
+    userId: userId
+  };
+};
 
 export const authFail = (error) => { ...etc... };
+
+export const authSignOut = () => { ...etc... };
 
 export const auth = (email, password, isSignup) => {
   return (dispatch) => {
@@ -5354,8 +5576,25 @@ export const auth = (email, password, isSignup) => {
         authData
       )
       .then((response) => {
-        console.log(response);
-        dispatch(authSuccess(response.data));
+        dispatch(authSuccess(response.data.idToken, response.data.localId));
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err));
+      });
+  };
+};
+
+export const signOut = () => {
+  return (dispatch) => {
+  
+    // check API docs for URLs
+    axios
+      .post(
+        [signout-end-point-url]
+      )
+      .then((response) => {
+        dispatch(authSignOut());
       })
       .catch((err) => {
         console.log(err);
