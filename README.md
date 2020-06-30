@@ -4952,8 +4952,8 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Authentication In Single Page Applications </button>   
 <div class="content" style="display: none;" markdown="1">
 
-<div id="auth-signin">
-<button type="button" class="collapsible">+ Sign-In & Sign-Up Pages </button>   
+<div id="auth-basics">
+<button type="button" class="collapsible">+ Basics </button>   
 <div class="content" style="display: none;" markdown="1">
 
 1. User signs in via sign-in page
@@ -4968,6 +4968,350 @@ To achieve this, the client application needs the following updates:
 * Sign-up & Sign-in Views
 * Guarded routes (so cannot access them without being authenticated)
 * Ability to pass authentication to the backend
+
+</div>
+</div>
+
+<div id="auth-basics">
+<button type="button" class="collapsible">+ Basics </button>   
+<div class="content" style="display: none;" markdown="1">
+
+1. User signs in via sign-in page
+1. Authentication data is sent to server (e.g. email & password)
+  * Typically any server that has a stateless RESTful API
+1. Server returns a token (typically in JSON format)
+1. Client stores token in local storage
+1. User requests access to protected resources by passing token to server
+   * Server can verify if token was created by the server
+
+To achieve this, the client application needs the following updates:
+* Sign-up & Sign-in Views
+* Guarded routes (so cannot access them without being authenticated)
+* Ability to pass authentication to the backend
+
+</div>
+</div>
+
+<div id="auth-signin">
+<button type="button" class="collapsible">+ Sign-up & Sign-in Views </button>   
+<div class="content" style="display: none;" markdown="1">
+
+Notes regarding verification of email addresses:
+* The purpose of validating an email address is to confirm that the user didn't accidently enter an invalid value (such as their name). It will be unlikely to catch someone doing this on purpose.
+* There is no such thing as the perfect regex for email addresses because email addresses vary so widely.  The only way to truly confirm an email address is to send it an email with a verification link. 
+* It is easy to disable javascript validation, so client-side verification cannot be relied on (except as a first pass).  Verification also needs to be done on the server.
+* It is generally best to use the simplest "good enough" regex for validating email addresses.  A regex such as `/^\S+@\S+$/i` will catch most user errors but will fail for addresses like "me@here@there.com", which are valid email addresses.  If edge cases like these are a concern, it is better to skip the regex and just go straight to the "email with a link" step.
+
+*Auth.js*
+
+```jsx
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import * as actions from './actions/auth';
+import Input from './Input';
+import Button from './Button';
+import classes from './Auth.module.css';
+
+class Auth extends Component {
+  state = {
+    controls: {
+      email: {
+        elementType: 'input',
+        elementConfig: {
+          type: 'email',
+          placeholder: 'Email Address',
+        },
+        value: '',
+        validation: {
+          required: true,
+          isEmail: true,
+        },
+        valid: false,
+        touched: false,
+      },
+      password: {
+        elementType: 'input',
+        elementConfig: {
+          type: 'password',
+          placeholder: 'Password',
+        },
+        value: '',
+        validation: {
+          required: true,
+          minLength: 6,
+        },
+        valid: false,
+        touched: false,
+      },
+    },
+  };
+
+  checkValidity(value, rules) {
+    let isValid = true;
+
+    if (rules) {
+      if (rules.required) {
+        isValid = value.trim() !== '' && isValid;
+      }
+
+      if (rules.minLength) {
+        isValid = value.length >= rules.minLength && isValid;
+      }
+
+      if (rules.maxLength) {
+        isValid = value.length <= rules.maxLength && isValid;
+      }
+
+      if (rules.isEmail) {
+        const EMAIL_REGEX = /^\S+@\S+$/i;
+        isValid = EMAIL_REGEX.test(value) && isValid;
+      }
+
+      if (rules.isNumeric) {
+        const NUMBER_REGEX = /^\d+$/;
+        isValid = NUMBER_REGEX.test(value) && isValid;
+      }
+    }
+
+    return isValid;
+  }
+
+  inputChangedHandler = (event, controlName) => {
+    const updatedControls = {
+      ...this.state.controls,
+      [controlName]: {
+        ...this.state.controls[controlName],
+        value: event.target.value,
+        valid: this.checkValidity(event.target.value, this.state.controls[controlName].validation),
+        touched: true,
+      },
+    };
+    this.setState({ controls: updatedControls });
+  };
+
+  submitHandler = (event) => {
+    event.preventDefault();
+    this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value);
+  };
+
+  render() {
+    const formElementsArray = [];
+    for (const key in this.state.controls) {
+      formElementsArray.push({
+        id: key,
+        config: this.state.controls[key],
+      });
+    }
+
+    const form = formElementsArray.map((formElement) => (
+      <Input
+        key={formElement.id}
+        elementType={formElement.config.elementType}
+        elementConfig={formElement.config.elementConfig}
+        value={formElement.config.value}
+        invalid={!formElement.config.valid}
+        shouldValidate={formElement.config.validation}
+        touched={formElement.config.touched}
+        changed={(event) => this.inputChangedHandler(event, formElement.id)}
+      />
+    ));
+
+    return (
+      <div className={classes.Auth}>
+        <form onSubmit={this.submitHandler}>
+          {form}
+          <Button btnType="Success">SUBMIT</Button>
+        </form>
+      </div>
+    );
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onAuth: (email, password) => dispatch(actions.auth(email, password)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Auth);
+
+```
+
+*App.js*
+
+```jsx
+import React from 'react';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import Auth from './Auth';
+
+function App() {
+  return (
+    <div>
+      <BrowserRouter>
+        <Layout>
+          <Switch>
+            ...etc...
+            <Route path="/auth" component={Auth} />
+            ...etc...
+          </Switch>
+        </Layout>
+      </BrowserRouter>
+    </div>
+  );
+```
+
+*actions/actionTypes.js*
+
+```jsx
+export const AUTH_START = 'AUTH_START';
+export const AUTH_SUCCESS = 'AUTH_SUCCESS';
+export const AUTH_FAIL = 'AUTH_FAIL';
+```
+
+*actions/auth.js*
+
+```jsx
+import * as actionTypes from './actionTypes';
+
+export const authStart = () => {
+  return {
+    type: actionTypes.AUTH_START,
+  };
+};
+
+export const authSuccess = (authData) => {
+  return {
+    type: actionTypes.AUTH_SUCCESS,
+    authData: authData,
+  };
+};
+
+export const authFail = (error) => {
+  return {
+    type: actionTypes.AUTH_FAIL,
+    error: error,
+  };
+};
+
+export const auth = (email, password) => {
+  return (dispatch) => {
+    dispatch(authStart());
+    
+    /* authentication action will go here */
+    
+  };
+};
+```
+
+</div>
+</div>
+
+<div id="auth-signin">
+<button type="button" class="collapsible">+ Firebase Authentication REST API </button>   
+<div class="content" style="display: none;" markdown="1">
+
+In this case, Firebase is used, however the principles should be the same for any stateless, RESTful API.
+
+Reference information for authentication in Firebase can be found here:
+* [https://firebase.google.com/docs/reference/rest/auth](https://firebase.google.com/docs/reference/rest/auth)
+
+The firebase module needs to be installed:
+* Install: `npm install firebase`
+* Import: `import firebase from 'firebase/app'; import 'firebase/auth';`
+
+NOTE: It is recommended that you only the packages you actually need, rather than importing the entire firebase module.
+
+**Register App With Firebase**
+
+Before performing authentication using firebase, the application needs to be registered with the project.  The current steps to do this are:
+1. Open the firebase control panel for the project
+1. Open "Project Overview" (top-left)
+1. Click "+ Add app" (just under the project name, in the main panel)
+1. Click "</>" (for web app)
+1. When prompted, give the app a nickname and click "Register app".
+1. Further information will be provided regarding installing and using the SDK, however this can be ignored for the following purposes.
+
+The configuration details for the firebase connection can be obtained from:
+1. Open "Project settings" (the cog, in the top left)
+1. Scroll down to identify the web app
+1. Under "Firebase SDK snippet", click "Config"
+1. Copy the snippet into `auth.js`
+
+**Implementation**
+
+*actions/auth.js*
+
+```jsx
+// import the firebase authentication package
+import firebase from 'firebase/app';
+import 'firebase/auth';
+
+// for security, store config in a separate file
+// and exclude this from source control.
+import { firebaseConfig } from '../firebase-config';
+
+// initialize connection to firebase
+const fire = firebase.initializeApp(firebaseConfig);
+
+export const authStart = () => { ...etc... };
+
+export const authSuccess = (authData) => { ...etc... };
+
+export const authFail = (error) => { ...etc... };
+
+export const auth = (email, password) => {
+  return (dispatch) => {
+    dispatch(authStart());
+
+    fire
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((response) => {
+        console.log(response);
+        dispatch(authSuccess(response.data));
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err));
+      });
+  };
+};
+```
+
+*firebase-config.js*
+
+```jsx
+// Obtain configuration from "Project Settings" 
+// in firebase console
+export const firebaseConfig = {
+  apiKey: '...',
+  authDomain: '...',
+  databaseURL: '...',
+  projectId: '...',
+  storageBucket: '...',
+  messagingSenderId: '...',
+  appId: '...',
+  measurementId: '...',
+};
+```
+
+**Securing The Firebase Config**
+
+The firebase configuration settings are not designed to be hidden; no matter what steps you take, the settings will be publically available once loaded into a browser.
+
+In any event, if you want to avoid making the configuration accessible in source control, the standard approach is to store the config in a separate file.  This file can then be excluded from source control.  
+
+In the case of git, add the following to `.gitignore`:
+`relative/path/to/fire.js`
+
+Rather than obfuscation, firebase security depends on the correct access permissions being setup for the project.  There are two main steps that should be taken:
+1. Configure the database to only allow connections from the production domain.
+   * For localhost testing, create a separate database instance under a different google id.
+1. Setup proper access rules for the database and storage.
+
+These steps are discussed in deeper depth in the following document:
+* [https://medium.com/@impaachu/how-to-secure-your-firebase-project-even-when-your-api-key-is-publicly-available-a462a2a58843](https://medium.com/@impaachu/how-to-secure-your-firebase-project-even-when-your-api-key-is-publicly-available-a462a2a58843)
 
 </div>
 </div>
