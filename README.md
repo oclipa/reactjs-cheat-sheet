@@ -4948,6 +4948,33 @@ export default SideDrawer;
 </div>
 </div>
 
+<div id="auth">
+<button type="button" class="collapsible">+ Authentication In Single Page Applications </button>   
+<div class="content" style="display: none;" markdown="1">
+
+<div id="auth-signin">
+<button type="button" class="collapsible">+ Sign-In & Sign-Up Pages </button>   
+<div class="content" style="display: none;" markdown="1">
+
+1. User signs in via sign-in page
+1. Authentication data is sent to server (e.g. email & password)
+  * Typically any server that has a stateless RESTful API
+1. Server returns a token (typically in JSON format)
+1. Client stores token in local storage
+1. User requests access to protected resources by passing token to server
+   * Server can verify if token was created by the server
+
+To achieve this, the client application needs the following updates:
+* Sign-up & Sign-in Views
+* Guarded routes (so cannot access them without being authenticated)
+* Ability to pass authentication to the backend
+
+</div>
+</div>
+
+</div>
+</div>
+
 &nbsp;
 
 -------------------------------------------------------------------------------------------------------
