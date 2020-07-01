@@ -15,7 +15,7 @@
 -------------------------------------------------------------------------------------------------------
 
 <div id="howto">
-<button type="button" class="collapsible">+ In Theory</button>
+<button type="button" class="collapsible">+ Theory</button>
 <div class="content" style="display: none;" markdown="1">
   
 <div id="howto">
@@ -155,7 +155,7 @@ Some examples of common patterns can be found here:
 ------------------------------------------------------------------------------------------------------
 
 <div id="in-practice">
-<button type="button" class="collapsible">+ In Practice</button>
+<button type="button" class="collapsible">+ Basics</button>
 <div class="content" style="display: none;" markdown="1">
   
 <div id="nodejs">
@@ -416,19 +416,14 @@ Once generated, the new Virtual DOM is compared to the previous Virtual DOM to s
 </div>
 </div>
   
-<div id="components">
-<button type="button" class="collapsible">+ Functional vs Class Components</button>   
+<div id="func-components">
+<button type="button" class="collapsible">+ Functional Components</button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Both Functional and Class components should start with an uppercase letter.**
+* Functional component names should start with an uppercase letter.
+* Functional components should be used if the component is not stateful.
 
-Class components should be used if the component is stateful, or there is a need to use lifecycle methods (e.g. `componentDidMount()`).
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-### Functional Component
+**Basic Implementation**
 
 ```jsx
 // ES5
@@ -442,7 +437,7 @@ const Welcome = (props) => {
 }
 ```
 
-&nbsp;
+**Details**
 
 * Functional components do not access props via `this`(e.g. `props.XY`).
 
@@ -461,11 +456,9 @@ Cons:
    * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
    * useEffect() allows you to perform an action after render() has been called.
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 **useEffect()**
+
+`useEffect()` is an example of a React Hook, which are functions that enable lifecycle hook-like behaviour in functional components.
 
 * `import React, {useEffect} from 'react';`
 * Takes a function that will run for every render cycle.
@@ -480,11 +473,17 @@ Cons:
   * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
   * If an empty array is passed, the cleanup function will only run when the component is unmounted (destroyed).
 
-&nbsp;
+</div>
+</div>
+  
+<div id="class-components">
+<button type="button" class="collapsible">+ Class Components</button>   
+<div class="content" style="display: none;" markdown="1">
 
--------------------------------------------------------------------------------------------------------
+* Class component names should start with an uppercase letter.
+* Class components should be used if the component is stateful, or there is a need to use lifecycle methods (e.g. `componentDidMount()`).
 
-### Class Component
+**Basic Implementation**
 
 ```jsx
 class Welcome extends React.Component {
@@ -494,13 +493,12 @@ class Welcome extends React.Component {
 } 
 ```
 
+**Details**
+
 * Class components must access state and props using `this`(e.g. `this.state.XY`).
 
 * As a general of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 **Class Component LifeCycle**
 
@@ -570,7 +568,7 @@ class Welcome extends React.Component {
 </div>
 
 <div id="pure">
-<button type="button" class="collapsible">+ PureComponents</button>   
+<button type="button" class="collapsible">+ Pure Components</button>   
 <div class="content" style="display: none;" markdown="1">
 
 * A [`PureComponent`](https://reactjs.org/docs/react-api.html#reactpurecomponent) is essentially the same as a `Component` except that it checks to see if either the props or state has changed before allowing the Virtual DOM to be updated. 
@@ -616,11 +614,7 @@ return (
 ```
 There are several ways around this:
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-* Using a root element that wraps all other elements:
+**Use a Root Element**
 
 ```jsx
 return (
@@ -641,11 +635,10 @@ return (
 )
 ```
 
-&nbsp;
+**Use Square Brackets**
 
--------------------------------------------------------------------------------------------------------
-
-* Using square brackets (so that an array is being returned), however the elements being returned need to be delimited by commas.  Also, a `key` needs to be specified for each element:
+* In this case, essentially you are returning an array, which means the elements need to be delimited by commas.  
+* Also, a `key` needs to be specified for each element.
 
 ```jsx
 return (
@@ -667,12 +660,9 @@ return (
 )
 ```
 
-&nbsp;
+**Use a Wrapper/Aux Function**
 
--------------------------------------------------------------------------------------------------------
-
-* Using a Wrapper function that wraps all other elements.
-   * Caveat: In some places this function is referred to as `Aux`, however this is a reserved word on Windows and should be avoided (unless you can guarantee that Windows will never be used for development).
+In some places this function is referred to as `Aux`, however this is a reserved word on Windows and should be avoided (unless you can guarantee that Windows will never be used for development).
 
 *Wrapper.js*
 
@@ -711,11 +701,7 @@ render() {
 }
 ```
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-* Using React.Fragment:
+**Use React.Fragment**
 
 Since React 16.8, there is a built-in version of `Wrapper` called `React.Fragment`:
 
@@ -5527,14 +5513,15 @@ The firebase configuration settings are not designed to be hidden; no matter wha
 In any event, if you want to avoid making the configuration accessible in source control, the standard approach is to store the config in a separate file.  This file can then be excluded from source control.  
 
 In the case of git, add the following to `.gitignore`:
-`relative/path/to/fire.js`
+
+* `relative/path/to/fire.js`
 
 Rather than obfuscation, firebase security depends on the correct access permissions being setup for the project.  There are two main steps that should be taken:
 1. Configure the database to only allow connections from the production domain.
    * For localhost testing, create a separate database instance under a different google id.
 1. Setup proper access rules for the database and storage.
 
-These steps are discussed in deeper depth in the following document:
+These steps are discussed in greater depth in the following document:
 * [https://medium.com/@impaachu/how-to-secure-your-firebase-project-even-when-your-api-key-is-publicly-available-a462a2a58843](https://medium.com/@impaachu/how-to-secure-your-firebase-project-even-when-your-api-key-is-publicly-available-a462a2a58843)
 
 </div>
