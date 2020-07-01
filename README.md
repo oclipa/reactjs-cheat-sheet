@@ -450,27 +450,27 @@ Pros:
 
 Cons:
 
-* You cannot call setState() in a functional component.
-   * As of React 16.8, you can use useState() but this only allows you to overwrite the state, rather than merging updates into the existing state.
+* You cannot call `setState()` in a functional component.
+   * As of React 16.8, you can use `useState()` but this only allows you to overwrite the state, rather than merging updates into the existing state.
 * You cannot use lifecycle hooks in a functional component.
-   * As of React 16.8, you can use useEffect() however this is not as fine-grained as lifecycle hooks.
-   * useEffect() allows you to perform an action after render() has been called.
+   * As of React 16.8, you can use `useEffect()` however this is not as fine-grained as lifecycle hooks.
+   * `useEffect()` allows you to perform an action after render() has been called.
 
-**useEffect()**
+**useEffect() <-- move this to React Hooks section?**
 
 `useEffect()` is an example of a React Hook, which are functions that enable lifecycle hook-like behaviour in functional components.
 
 * `import React, {useEffect} from 'react';`
 * Takes a function that will run for every render cycle.
   * `useEffect( () => { somefunction; }); )`
-* Can have multiple calls to useEffect in the same function (e.g. each reacting to different object).
-* Essentially, componentDidMount and componentDidUpdate combined in one effect (see below).
+* Can have multiple calls to `useEffect()` in the same function (e.g. each reacting to different object).
+* Essentially, `componentDidMount()` and `componentDidUpdate()` combined in one effect (see below).
 * Controlled by passing an object (or array of objects) into the method and the method only reacts if the object has changed:
   * `useEffect( () => { somefunction; }, [props.somedata] ); )`
   * To have the method run only the first time an object is rendered, pass an empty array.
-* To perform clean-up using useEffect, return a function:
+* To perform clean-up using `useEffect()`, return a function:
   * `useEffect( () => { somefunction; return () => { cleanupfunction }; }, [props.somedata] );`
-  * Runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle.
+  * Runs BEFORE the main `useEffect()` function runs, but AFTER the (first) render cycle.
   * If an empty array is passed, the cleanup function will only run when the component is unmounted (destroyed).
 
 </div>
@@ -496,9 +496,7 @@ class Welcome extends React.Component {
 **Details**
 
 * Class components must access state and props using `this`(e.g. `this.state.XY`).
-
-* As a general of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
-
+* As a general rule of thumb, class components are preferred if you need fine-grained control of state, or you need actions performed outside of render() and you do not want to use React Hooks.
 
 **Class Component LifeCycle**
 
@@ -528,7 +526,7 @@ class Welcome extends React.Component {
       * Very common 
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
-      * **Only called when a component is first mounted; use componentDidUpdate() if component is already displayed**
+      * **Only called when a component is first mounted; use `componentDidUpdate()` if component is already displayed**
    1. `componentWillMount()`
       * Available but deprecated
       * Do not use
@@ -556,7 +554,7 @@ class Welcome extends React.Component {
    1. `componentDidUpdate()` &lt;-- Commonly used
       * Can cause Side-Effects (e.g. send http requests)
       * Don't update state (at least, not synchronously)
-      * **Only called when a component is already displayed; use componentDidMount() if component is not yet displayed**
+      * **Only called when a component is already displayed; use `componentDidMount()` if component is not yet displayed**
 
 * **Unmounting (clean-up)**
    * `componentWillUnmount()`
@@ -744,38 +742,36 @@ There is a general convention to name HOCs with a `With` at the beginning, and p
 
 There are two approaches to defining HOCs:
 
-&nbsp;
+**Return a JSX Functional Component**
 
--------------------------------------------------------------------------------------------------------
-
-* Return a jsx functional component.
-   * This approach is recommended when changing the HTML code or styling.
+* In this case, the HOC typically wraps group of elements rendered by a component.
+* This approach is recommended when changing the HTML code or styling.
 
 *hoc/WithClass.js (upper-case 'W' to indicate this is a component, not function)*
 
 ```jsx
 import React from 'react';
 
-const withClass = props => (
+const WithClass = props => (
   <div className={props.classes}>
     {props.children}
   </div>
 );
 
-export default withClass;
+export default WithClass;
 
 ```
 
 *containers/App.js*
 
 ```jsx
-class App extends Component {
-  import React from 'react';
+import React from 'react';
 
-  // upper-case 'W' to indicate this 
-  // is a component, not a function
-  import WithClass from '../hoc/WithClass';
-  
+// upper-case 'W' to indicate this 
+// is a component, not a function
+import WithClass from '../hoc/WithClass';
+
+class App extends Component { 
   ...
  
   render() {
@@ -790,12 +786,10 @@ class App extends Component {
 export default App;
 ```
 
-&nbsp;
+**Return a JS Function That Returns a JSX Functional Component**
 
--------------------------------------------------------------------------------------------------------
-
-* Return a javascript function that returns a jsx functional component:
-  * This approach is recommended for adding behind-the-scenes logic, e.g. error handling or sending analytic data.
+* In this case, the HOC typically wraps a component and adds extra functionality.
+* This approach is recommended for adding behind-the-scenes logic, e.g. error handling or sending analytic data.
 
 *hoc/withClass.js (lower-case 'w' to indicate this is a function, not component)*
 
@@ -817,14 +811,14 @@ export default withClass;
 *containers/App.js*
 
 ```jsx
+import React from 'react';
+
+// lower-case 'w' to indicate this 
+// is a function, not component
+import withClass from '../hoc/WithClass';
+import Wrapper from '../hoc/Wrapper';
+  
 class App extends Component {
-  import React from 'react';
-  
-  // lower-case 'w' to indicate this 
-  // is a function, not component
-  import withClass from '../hoc/WithClass';
-  import Wrapper from '../hoc/Wrapper';
-  
   ...
  
   render() {
@@ -849,10 +843,6 @@ export default withClass(App, styles.App);
 There are two approaches to handling application state:
    * `state`
    * `props`
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 **state**
 
@@ -888,8 +878,6 @@ class App extends Component {
 }
 ```
 
-&nbsp;
-
 * In class components, state should be updated using the [`setState()`](https://reactjs.org/docs/react-component.html#setstate) function; it should never be updated directly (e.g. do not use `this.state.name = newName`).
 * Be aware that `setState()` is [asynchronous](https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3).  Calling `setState()` should be considered a request that React may ignore.  This is particularly true if `setState()` is called multiple times in the same update cycle; later calls may overwrite earlier ones. 
 * In addition, it is good practice to only ever change state properties immutably.  This can be achieved by making a copy of the property to be updated, updating the copy and then overwriting the original property, e.g.
@@ -920,10 +908,6 @@ deleteOldestHandler = () => {
 }
 ```
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 **props**
 
 * Unlike `state`, both Class components and Functional components can access the `props` object.
@@ -950,16 +934,12 @@ const Town = (props) => {
 export default Town;
 ```
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-**useState()**
+**useState() <-- move this to React Hooks section?**
 
 * The one important caveat to the above is that, since React 16.8, functional components can call `useState()` to update the state.
 * This method only allow the entire state to be overwritten; it does not allow specific properties to be updated.
-* However, can have multiple calls to `useState` in the same functional class.
-* `useState` returns an array with exactly two elements.
+* However, can have multiple calls to `useState()` in the same functional class.
+* `useState()` returns an array with exactly two elements.
    * The first element is the current state.
    * The second element will always be a function that allows the state to be updated.
 
@@ -1145,11 +1125,7 @@ class Person extends Component {
 };
 ```
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-**Refs and Functional Components - useRef()**
+**Refs and Functional Components - useRef() <-- move this to React Hooks section?**
 
 As mentioned above, you cannot use refs to refer to functional components, but they can be used inside functional components by using React Hooks, specifically `useRef()`.
 
@@ -1190,10 +1166,6 @@ const Cockpit = (props) => {
   );
 };
 ```
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 For further information, see here:
    * [https://reactjs.org/docs/refs-and-the-dom.html](https://reactjs.org/docs/refs-and-the-dom.html)
@@ -1341,10 +1313,6 @@ const Cockpit = (props) => {
 
 ```
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 **contextType (class components only)**
 
 For class components, a more elegant approach, which also allows the context to be accessed outside of the `render()` method, can be used.
@@ -1381,12 +1349,7 @@ class Person extends Component {
   }
 ```
 
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-**useContext() (functional components only)**
+**useContext() (functional components only) <-- move this to React Hooks section?**
 
 For functional components, there is a React Hook that can be used: `useContext()`. 
 
@@ -1419,10 +1382,6 @@ const Cockpit = (props) => {
 }
 
 ```
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 For further information, see here:
    * [https://reactjs.org/docs/context.html](https://reactjs.org/docs/context.html)
@@ -1492,8 +1451,6 @@ class App extends Component {
   };
 }
 ```
-
-&nbsp;
 
 * Alternatively, the following is a more elegant (and recommended) approach:
 
@@ -1576,10 +1533,6 @@ If you need to pass a value to the event handler, there are two approaches:
    * The `bind()` method.
    * An anonymous function.
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 **`bind()` method**
 
 By calling the `bind()` method on the handler, a value can be passed as an argument.
@@ -1607,10 +1560,6 @@ render() {
 }
 ```
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 **Anonymous function**
 
 ```jsx
@@ -1625,17 +1574,13 @@ render() {
 ```
 Note that in this case `()` must be added to the event handler, since we are registering a reference to the anonymous function, rather than the event handler itself.  This means that we can pass data to the event handler. 
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 Of the two approaches, **the `bind()` method is generally the most efficient**, so it is recommended to use this rather than the anonymous function.
+</div>
+</div>
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-**Two-Way Binding**
+<div id="two-way-bind">
+<button type="button" class="collapsible">+ Two-Way Binding</button>   
+<div class="content" style="display: none;" markdown="1">
 
 Two-way binding means that when something in the browser changes something in the data store, that change is immediately reflected in the browser.
 
@@ -1731,10 +1676,6 @@ There are several approaches to styling React pages:
    * styled-components
    * CSS modules
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 **Inline**
 
 This means that the styles are added to tags in the `render()` method using the inline `style` property.  In this case, the styles are scoped to the component.
@@ -1764,10 +1705,6 @@ Note that there are 3 differences between this approach and standard CSS syntax:
    * Property values are enclosed in single quotes.
 
 Some CSS features are quite difficult to implement using this approach (e.g. `:hover`).
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 **Stylesheets**
 
@@ -1799,10 +1736,6 @@ const person = (props) => {
   )
 };
 ```
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 **Dynamic**
 
@@ -1855,10 +1788,6 @@ class App extends Component {
   } 
 }
 ```
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 **Radium**
 
@@ -1932,10 +1861,6 @@ const person = (props) => {
 export default Radium(Person);
 ```
 
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
 **styled-components**
 
 See: [https://styled-components.com/](https://styled-components.com/)
@@ -1980,10 +1905,6 @@ const person = (props) => {
 
 export default Person;
 ```
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
 
 **CSS modules**
 
@@ -2113,8 +2034,6 @@ try {
   // ...
 }
 ```
-
-&nbsp;
 
 **withErrorHandler() HOC**
 
