@@ -2570,6 +2570,17 @@ export default withErrorHandler(MyApp, db);
 <button type="button" class="collapsible">+ Form Validation</button>   
 <div class="content" style="display: none;" markdown="1">
 
+**Validation of Email Addresses**
+
+Some things to consider when validating email addresses:
+
+* The purpose of validating an email address is to confirm that the user didn't accidently enter an invalid value (such as their name). It will be unlikely to catch someone doing this on purpose.
+* There is no such thing as the perfect regex for email addresses because email addresses vary so widely.  The only way to truly confirm an email address is to send it an email with a verification link. 
+* It is easy to disable javascript validation, so client-side verification cannot be relied on (except as a first pass).  Verification also needs to be done on the server.
+* It is generally best to use the simplest "good enough" regex for validating email addresses.  A regex such as `/^\S+@\S+$/i` will catch most user errors but will fail for addresses like "me@here@there.com", which are valid email addresses.  If edge cases like these are a concern, it is better to skip the regex and just go straight to the "email with a link" step.
+
+**Implementation**
+
 Add `validationRules`, `valid` and `touched` values to the form state:
 
 ```jsx
@@ -2638,6 +2649,16 @@ Add function to validate values against rules:
 
       if (rules.maxLength) {
         isValid = value.length <= rules.maxLength && isValid;
+      }
+
+      if (rules.isEmail) {
+        const EMAIL_REGEX = /^\S+@\S+$/i;
+        isValid = EMAIL_REGEX.test(value) && isValid;
+      }
+
+      if (rules.isNumeric) {
+        const NUMBER_REGEX = /^\d+$/;
+        isValid = NUMBER_REGEX.test(value) && isValid;
       }
     }
 
@@ -4976,12 +4997,9 @@ To achieve this, the client application needs the following updates:
 <button type="button" class="collapsible">+ Sign-Up & Sign-In Views</button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Verification of Email Addresses**
+**Validation of Email Addresses**
 
-* The purpose of validating an email address is to confirm that the user didn't accidently enter an invalid value (such as their name). It will be unlikely to catch someone doing this on purpose.
-* There is no such thing as the perfect regex for email addresses because email addresses vary so widely.  The only way to truly confirm an email address is to send it an email with a verification link. 
-* It is easy to disable javascript validation, so client-side verification cannot be relied on (except as a first pass).  Verification also needs to be done on the server.
-* It is generally best to use the simplest "good enough" regex for validating email addresses.  A regex such as `/^\S+@\S+$/i` will catch most user errors but will fail for addresses like "me@here@there.com", which are valid email addresses.  If edge cases like these are a concern, it is better to skip the regex and just go straight to the "email with a link" step.
+See the section on <a href="#validation">Form Validation</a> for some considerations when validating email addresses.
 
 **Implementation**
 
@@ -4994,6 +5012,7 @@ import { connect } from 'react-redux';
 import * as actions from './actions/auth';
 import Input from './Input';
 import Button from './Button';
+import Spinner from './Spinner';
 import classes from './Auth.module.css';
 
 class Auth extends Component {
@@ -5112,8 +5131,18 @@ class Auth extends Component {
       />
     ));
 
+    if (this.props.loading) {
+      form = <Spinner />;
+    }
+
+    let errorMessage = null;
+    if (this.props.error) {
+      errorMessage = <p>{this.props.error}</p>;
+    }
+
     return (
       <div className={classes.Auth}>
+        {errorMessage}
         <form onSubmit={this.submitHandler}>
           {form}
           <Button btnType="Success">SUBMIT</Button>
@@ -5129,6 +5158,13 @@ class Auth extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    loading: state.auth.loading,
+    error: state.auth.error,
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onAuth: (email, password, isSignup) => dispatch(actions.auth(email, password, isSignup)),
@@ -5136,7 +5172,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
 
 ```
 
@@ -5446,7 +5482,7 @@ export const auth = (email, password, isSignup) => {
       })
       .catch((err) => {
         console.log(err);
-        dispatch(authFail(err));
+        dispatch(authFail(err.message));
       });
   };
 };
@@ -5555,6 +5591,16 @@ export const authSuccess = (token, userId) => {
 
 export const authFail = (error) => { ...etc... };
 
+// may need to handle token timeout internally, if not 
+// handled by backend
+export const checkAuthTimeout = (expirationTimeout) => {
+  return dispatch => {
+    setTimeout(() => {
+      dispatch(authSignOut())
+    }, expirationTimeout * 1000) // seconds to ms
+  };
+};
+
 export const authSignOut = () => { ...etc... };
 
 export const auth = (email, password, isSignup) => {
@@ -5577,6 +5623,7 @@ export const auth = (email, password, isSignup) => {
       )
       .then((response) => {
         dispatch(authSuccess(response.data.idToken, response.data.localId));
+        dispatch(checkAuthTimeout(response.data.expiresIn));
       })
       .catch((err) => {
         console.log(err);
