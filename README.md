@@ -5560,6 +5560,257 @@ export const signOut = () => {
 </div>
 </div>
 
+<div id="auth-protected">
+<button type="button" class="collapsible">+ Accessing Protected Resources </button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Restricting Access In Firebase**
+
+In firebase, authenticated access to protected resources is controlled by rules.  These are set in the control panel via "Database" -> "Rules".
+
+In the fully unprotected case, the rules look something like the following:
+
+```json
+{
+  "rules": {
+    ".read": "true",
+    ".write": "true"
+  }
+}
+```
+
+Alternatively, in the fully protected case, the rules look like this:
+
+```json
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+```
+
+For a more nuanced approach, the rules can be applied on a node-by-node basis.  
+
+Taking the example of the following database scheme:
+
+* react-my-burger-2d7c6
+   * ingredients
+   * orders
+
+To give unrestricted access to the ingredients while restricting access to the orders, the rules can be applied in the following manner:
+
+```json
+{
+  "rules": {
+    "ingredients": {
+      ".read": "true",
+      ".write": "true",
+    },
+    "orders": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+    }
+  }
+}
+```
+
+**Accessing Restricted Content in Firebase**
+
+The first step when accessing restricted content is to obtain a token when the user logs in:
+
+*actions/auth.js*
+
+```jsx
+export const authSuccess = (user, token) => {
+  return {
+    type: actionTypes.AUTH_SUCCESS,
+    user: user,
+    token: token,
+  };
+};
+
+export const auth = (email, password, isSignUp) => {
+  return (dispatch) => {
+    dispatch(authStart());
+
+    fire.auth().signInWithEmailAndPassword(email, password)
+      .then((response) => {
+        response.user.getIdToken().then((token) => {
+          dispatch(authSuccess(response.user, token));
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err.message));
+      });
+  };
+};
+
+```
+
+The token is that added to the Redux store:
+
+*reducers/auth.js*
+
+```jsx
+...etc...
+
+const initialState = {
+  user: null,
+  token: null,
+  error: null,
+  loading: false,
+};
+
+...etc...
+
+const authSuccess = (state, action) => {
+  return updateObject(state, {
+    user: action.user,
+    token: action.token,
+    error: null,
+    loading: false,
+  });
+};
+
+...etc...
+```
+
+The token can then be read at those points where a restricted endpoint must be accessed:
+
+*Orders.js*
+
+```jsx
+
+...etc...
+
+class Orders extends Component {
+  componentDidMount() {
+    this.props.onFetchOrders(this.props.token);
+  }
+  
+  ...etc...
+}
+
+const mapStateToProps = (state) => {
+  return {
+    token: state.auth.token,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onFetchOrders: (token) => dispatch(actions.fetchOrders(token)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Orders, axios);
+```
+
+*Order.js*
+
+```jsx
+...etc...
+
+class Order extends Component {
+
+  orderHandler = (event) => {
+  
+    const order = {
+      ...etc...
+    };
+
+    this.props.onOrderBurger(order, this.props.token);
+  };
+
+  ...etc...
+
+  render() {
+    let form = (
+      <form onSubmit={this.orderHandler}>
+        ...etc...    
+      </form>
+    );
+    
+    return (
+      <div>
+        {form}
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    token: state.auth.token,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onOrderBurger: (orderData, token) => dispatch(actions.purchaseBurger(orderData, token)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Order, axios);
+```
+
+Finally, the token is passed to the backend via the endpoint URL:
+
+*actions/order.js*
+
+```jsx
+...etc...
+
+export const purchaseBurger = (orderData, token) => {
+  return (dispatch) => {
+    dispatch(purchaseBurgerStart());
+    axios
+      .post('/orders.json?auth=' + token, orderData)
+      .then((response) => {
+        dispatch(purchaseBurgerSuccess(response.data.name, orderData));
+      })
+      .catch((error) => {
+        dispatch(purchaseBurgerFail(error));
+      });
+  };
+};
+
+...etc...
+
+export const fetchOrders = (token) => {
+  return (dispatch) => {
+    dispatch(fetchOrdersStart());
+    axios
+      .get('/orders.json?auth=' + token)
+      .then((response) => {
+        const fetchedOrders = [];
+
+        if (response && response.data) {
+          for (const key in response.data) {
+            fetchedOrders.push({
+              ...response.data[key],
+              id: key,
+            });
+          }
+        }
+
+        dispatch(fetchOrdersSuccess(fetchedOrders));
+      })
+      .catch((error) => {
+        dispatch(fetchOrdersFail(error));
+      });
+  };
+};
+
+...etc...
+
+```
+
+</div>
+</div>
+
 </div>
 </div>
 
