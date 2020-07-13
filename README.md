@@ -5649,7 +5649,7 @@ export const auth = (email, password, isSignUp) => {
 
 ```
 
-The token is that added to the Redux store:
+The token is then added to the Redux store:
 
 *reducers/auth.js*
 
@@ -5806,6 +5806,87 @@ export const fetchOrders = (token) => {
 
 ...etc...
 
+```
+
+</div>
+</div>
+
+<div id="future">
+<button type="button" class="collapsible">+ Reacting to Authentication State</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Logout**
+
+Once logged in, the user may well want to then logout.  To enable this, we can create a redirect to a Logout component, which can be placed wherever we wish in the application.
+
+*Logout.js*
+
+```jsx
+import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+import * as actions from './actions/auth';
+
+class Logout extends Component {
+  componentDidMount() {
+    this.props.onSignOut();
+  }
+
+  render() {
+    return <Redirect to="/" />;
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSignOut: () => dispatch(actions.signOut()),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Logout);
+```
+
+*auth.js*
+
+```jsx
+import * as actionTypes from './actionTypes';
+
+...etc...
+
+export const authSignOut = () => {
+  return {
+    type: actionTypes.AUTH_SIGN_OUT,
+  };
+};
+
+...etc...
+
+export const signOut = () => {
+  return (dispatch) => {
+    fire
+      .auth()
+      .signOut()
+      .then((response) => {
+        console.log('SignOut', response);
+        dispatch(authSignOut());
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err));
+      });
+  };
+};
+```
+
+*actionTypes*
+
+```jsx
+...etc...
+
+export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
+
+...etc...
 ```
 
 </div>
