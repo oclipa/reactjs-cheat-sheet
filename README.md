@@ -5557,16 +5557,77 @@ export const signOut = () => {
 };
 ```
 
+**Tokens**
+
+The tokens used to prove authentication are typically JWT tokens, which has the following format:
+
+`header.payload.public_key`
+
+For example, the following is a token, which is base64-encoded:
+
+```
+eyJhbGciOiJSUzI1NiIsImtpZCI6IjIxODQ1OWJiYTE2NGJiN2I5MWMzMjhmOD
+kxZjBiNTY1M2UzYjM4YmYiLCJ0eXAiOiJKV1QifQ.
+eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVhY3QtbX
+ktYnVyZ2VyLTJkN2M2IiwiYXVkIjoicmVhY3QtbXktYnVyZ2VyLTJkN2M2Iiwi
+YXV0aF90aW1lIjoxNTk0NzM3MTg3LCJ1c2VyX2lkIjoiNm5Zb0hMZ2lDOFI2RH
+hIOEQ1RjZtRnZmNmhWMiIsInN1YiI6IjZuWW9ITGdpQzhSNkR4SDhENUY2bUZ2
+ZjZoVjIiLCJpYXQiOjE1OTQ3MzcxODcsImV4cCI6MTU5NDc0MDc4NywiZW1haW
+wiOiJ0ZXN0QGhlcmUuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJl
+YmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbInRlc3RAaGVyZS5jb20iXX
+0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.
+g_JNsytt0u838Q4tzo5VT0tH9lj7cfzx_zJm7VDZfxs0kss0vy5Zxq4NEysNCY
+DSgGbPGCOHIQ8xmxM7D_AAyy3gnNY9mgroV88Zzudyk4CFjGVrwT0HAfSah0BK
+nXyteD_mGOzqB52xzw-kauHp7_zctnXWuuonF0X6PEGac_8TQr9aW3wRQDQLs7
+fjWTRDCB-DZKsMLVzpTuqoXq7Nx0J1-tzmpElIxL7veoNVyIolCvVERnuroeUk
+ypO37Ni15PdNwwlYXLxrd63HTpmp4HHjORdi5StQb2AAzLtZ27nyJMFcHzhTm-
+NV-LCLCGbtKTSmrsUNIrTShf9UQNw5sw
+```
+
+When decoded, the contents of the tokn are the following:
+
+```
+[header]
+{
+  "alg": "RS256",
+  "kid": "218459bba164bb7b91c328f891f0b5653e3b38bf",
+  "typ": "JWT"
+}
+
+[payload]
+{
+  "iss": "https://securetoken.google.com/react-my-burger-2d7c6",
+  "aud": "react-my-burger-2d7c6",
+  "auth_time": 1594737187,
+  "user_id": "6nYoHLgiC8R6DxH8D5F6mFvf6hV2",
+  "sub": "6nYoHLgiC8R6DxH8D5F6mFvf6hV2",
+  "iat": 1594737187,
+  "exp": 1594740787,
+  "email": "test@here.com",
+  "email_verified": false,
+  "firebase": {
+    "identities": {
+      "email": [
+        "test@here.com"
+      ]
+    },
+    "sign_in_provider": "password"
+  }
+}
+
+[public key]
+{
+  ...etc...
+}
+```
 </div>
 </div>
 
-<div id="auth-protected">
-<button type="button" class="collapsible">+ Accessing Protected Resources </button>   
+<div id="auth-protected-firebase">
+<button type="button" class="collapsible">+ Accessing Protected Resources: Firebase Configuration </button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Restricting Access In Firebase**
-
-In firebase, authenticated access to protected resources is controlled by rules.  These are set in the control panel via "Database" -> "Rules".
+In Firebase, authenticated access to protected resources is controlled by rules.  These are set in the control panel via "Database" -> "Rules".
 
 In the fully unprotected case, the rules look something like the following:
 
@@ -5614,12 +5675,18 @@ To give unrestricted access to the ingredients while restricting access to the o
   }
 }
 ```
+</div>
+</div>
 
-**Accessing Restricted Content in Firebase**
+<div id="auth-protected-login">
+<button type="button" class="collapsible">+ Accessing Protected Resources: Authentication</button>   
+<div class="content" style="display: none;" markdown="1">
 
-The first step when accessing restricted content is to obtain a token when the user logs in:
+Assuming the Firebase instance is correctly configured, authenticatation is achieved by the user logging in and then obtaining a token.  The token is then passed around to prove the user has been authenticated.
 
 *actions/auth.js*
+
+* Define an action to authenticate the user.  If successful, this returns an token.
 
 ```jsx
 export const authSuccess = (user, token) => {
@@ -5649,9 +5716,9 @@ export const auth = (email, password, isSignUp) => {
 
 ```
 
-The token is then added to the Redux store:
-
 *reducers/auth.js*
+
+* Define a reducer that updates the store with the token.
 
 ```jsx
 ...etc...
@@ -5677,9 +5744,9 @@ const authSuccess = (state, action) => {
 ...etc...
 ```
 
-The token can then be read at those points where a restricted endpoint must be accessed:
-
 *Orders.js*
+
+* Obtain the token from the store and pass it where necessary 
 
 ```jsx
 
@@ -5709,6 +5776,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(Orders, axios);
 ```
 
 *Order.js*
+
+* Obtain the token from the store and pass it where necessary 
 
 ```jsx
 ...etc...
@@ -5759,6 +5828,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(Order, axios);
 Finally, the token is passed to the backend via the endpoint URL:
 
 *actions/order.js*
+
+* Pass the token to the Firebase database when data is to be read or written
 
 ```jsx
 ...etc...
@@ -5815,13 +5886,11 @@ export const fetchOrders = (token) => {
 <button type="button" class="collapsible">+ Reacting to Authentication State</button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Logout**
-
-Once logged in, the user may well want to then logout.  To enable this, we can create a redirect to a Logout component, which can be placed wherever we wish in the application.
+The simplest test for whether a user is authenticated is to check if they have a token.  In the following example, the simple case of displaying either a Login or Logout button is demonstrated.
 
 *Logout.js*
 
-* Calls the signOut action and then redirects to root.
+* First create a Logout component that can be reused whereever necessary.  This calls the signOut action and then redirects to root.
 
 ```jsx
 import React, { Component } from 'react';
@@ -5897,7 +5966,7 @@ export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
 
 *reducers/auth.js*
 
-* Resets the Redux store to its initial state.
+* Resets the Redux store to its initial state (i.e. sets token to null)
 
 ```jsx
 ...etc...
@@ -6053,7 +6122,111 @@ export default NavigationItems;
 <button type="button" class="collapsible">+ Persisting Authentication State</button>   
 <div class="content" style="display: none;" markdown="1">
 
-If the authentication state is not persisted, refreshing the page will reset the application state.
+If the authentication state is not persisted, refreshing the page will reset the application state.  To avoid this, a standard browser API is used: `localStorage`
+
+*actions/auth.js*
+
+```jsx
+
+...etc...
+
+// remove the token from localStorage when the user logs out
+export const authSignOut = () => {
+  removeToken();
+  return {
+    type: actionTypes.AUTH_SIGN_OUT,
+  };
+};
+
+// get the expiration date from the token
+const getExpirationDate = (jwtToken) => {
+  if (!jwtToken) {
+    return null;
+  }
+  
+  // convert bas64-encoded token into seconds
+  const jwt = JSON.parse(atob(jwtToken.split('.')[1]));
+
+  // multiply by 1000 to convert seconds into milliseconds
+  return (jwt && jwt.exp && jwt.exp * 1000) || null;
+};
+
+// check if the token expiry time has passed
+const isExpired = (expiryDate) => {
+  if (!expiryDate) {
+    return false;
+  }
+
+  return Date.now() > expiryDate;
+};
+
+// write the token to localStorage
+const setToken = (token) => {
+  if (token) {
+    const expirationDate = getExpirationDate(token);
+    
+    localStorage.setItem('AUTH_TOKEN', JSON.stringify(token));
+    localStorage.setItem('AUTH_TOKEN_EXPIRATION', JSON.stringify(expirationDate));
+  } else {
+    removeToken();
+  }
+};
+
+// delete the token from localStorage
+const removeToken = () => {
+  localStorage.removeItem('AUTH_TOKEN');
+  localStorage.removeItem('AUTH_TOKEN_EXPIRATION');
+}
+
+// send the user's credentials to the firebase instance for authentication
+// and then store the returned token if successful
+export const auth = (email, password, isSignUp) => {
+  let doAuth = (email, password) => {
+    return fire.auth().createUserWithEmailAndPassword(email, password);
+  };
+
+  if (!isSignUp) {
+    doAuth = (email, password) => {
+      return fire.auth().signInWithEmailAndPassword(email, password);
+    };
+  }
+
+  return (dispatch) => {
+    dispatch(authStart());
+
+    doAuth(email, password)
+      .then((response) => {
+        console.log('SignIn', response);
+        response.user.getIdToken().then((token) => {
+          setToken(token);
+          dispatch(authSuccess(response.user, token));
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err.message));
+      });
+  };
+};
+
+// log the user out of the firebase instance
+// and delete the token
+export const signOut = () => {
+  return (dispatch) => {
+    fire
+      .auth()
+      .signOut()
+      .then((response) => {
+        dispatch(authSignOut());
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err));
+      });
+  };
+};
+
+```
 
 </div>
 </div>
