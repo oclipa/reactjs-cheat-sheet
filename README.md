@@ -5811,7 +5811,7 @@ export const fetchOrders = (token) => {
 </div>
 </div>
 
-<div id="future">
+<div id="use-auth">
 <button type="button" class="collapsible">+ Reacting to Authentication State</button>   
 <div class="content" style="display: none;" markdown="1">
 
@@ -5820,6 +5820,8 @@ export const fetchOrders = (token) => {
 Once logged in, the user may well want to then logout.  To enable this, we can create a redirect to a Logout component, which can be placed wherever we wish in the application.
 
 *Logout.js*
+
+* Calls the signOut action and then redirects to root.
 
 ```jsx
 import React, { Component } from 'react';
@@ -5847,7 +5849,9 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(null, mapDispatchToProps)(Logout);
 ```
 
-*auth.js*
+*actions/auth.js*
+
+* The signOut action is exposed here.  This calls the signOut function on the firebase auth API, and then call returns AUTH_SIGN_OUT if it was successful.
 
 ```jsx
 import * as actionTypes from './actionTypes';
@@ -5879,7 +5883,9 @@ export const signOut = () => {
 };
 ```
 
-*actionTypes*
+*actions/actionTypes.js*
+
+* AUTH_SIGN_OUT is defined here.
 
 ```jsx
 ...etc...
@@ -5888,6 +5894,166 @@ export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
 
 ...etc...
 ```
+
+*reducers/auth.js*
+
+* Resets the Redux store to its initial state.
+
+```jsx
+...etc...
+
+const initialState = {
+  user: null,
+  token: null,
+  error: null,
+  loading: false,
+};
+
+const updateObject = (oldObject, updatedProperties) => {
+  return {
+    ...oldObject,
+    ...updatedProperties,
+  };
+};
+
+const authSignOut = (state, action) => {
+  return updateObject(state, initialState);
+};
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    
+    ...etc...
+    
+    case actionTypes.AUTH_SIGN_OUT: {
+      return authSignOut(state, action);
+    }
+    
+    ...etc...
+  }
+};
+
+...etc...
+```
+
+*App.js*
+
+* The Logout component can be placed wherever the option to sign-out is required.  Here, a redirect is used to forward the `/logout` path to the sign-out routine.
+
+```jsx
+...etc...
+import Logout from './Logout';
+
+function App() {
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        console.log('Authenticated!', user);
+      } else {
+        console.log('Denied!');
+        // No user is signed in.
+      }
+    });
+  }, []);
+
+  return (
+    <div>
+      <BrowserRouter>
+        <Layout>
+          <Switch>
+            ...etc...
+            <Route path="/logout" component={Logout} />
+            ...etc...
+          </Switch>
+        </Layout>
+      </BrowserRouter>
+    </div>
+  );
+}
+
+...etc...
+```
+
+*Layout.js*
+
+* Generally, the authentication state is passed down from a higher-level class component to lower-level functional components.
+
+```jsx
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Toolbar from './Toolbar';
+
+...etc...
+
+class Layout extends Component {
+  ...etc...
+  
+  render() {
+    return (
+      <Wrapper>
+        <Toolbar isAuth={this.props.isAuthenticated} ...etc... />
+      </Wrapper>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: state.auth.token !== null,
+  };
+};
+
+export default connect(mapStateToProps)(Layout);
+```
+
+*Toolbar.js*
+
+```jsx
+import React from 'react';
+import NavigationItems from './NavigationItems';
+...etc...
+
+const Toolbar = (props) => (
+  <header className={classes.Toolbar}>
+  
+    ...etc...
+  
+    <nav className={classes.DesktopOnly}>
+      <NavigationItems isAuthenticated={props.isAuth} />
+    </nav>
+  </header>
+);
+
+export default Toolbar;
+
+```
+
+*NavigationItems.js*
+
+* Here, we can simply test props.isAuthenticated
+
+```jsx
+const NavigationItems = (props) => (
+  <ul className={classes.NavigationItems}>
+    {props.isAuthenticated ? (
+      <NavigationItem link="/logout">Logout</NavigationItem>
+    ) : (
+      <NavigationItem link="/auth">Login</NavigationItem>
+    )}
+  </ul>
+);
+
+export default NavigationItems;
+```
+
+</div>
+</div>
+
+<div id="persist-auth">
+<button type="button" class="collapsible">+ Persisting Authentication State</button>   
+<div class="content" style="display: none;" markdown="1">
+
+If the authentication state is not persisted, refreshing the page will reset the application state.
 
 </div>
 </div>
