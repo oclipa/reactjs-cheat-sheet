@@ -5896,7 +5896,7 @@ export const fetchOrders = (token) => {
 </div>
 
 <div id="use-auth">
-<button type="button" class="collapsible">+ Reacting to Authentication State</button>   
+<button type="button" class="collapsible">+ Reacting to Authentication State: Logout</button>   
 <div class="content" style="display: none;" markdown="1">
 
 The simplest test for whether a user is authenticated is to check if they have a token.  In the following example, the simple case of displaying either a Login or Logout button is demonstrated.
@@ -6120,17 +6120,15 @@ export default NavigationItems;
 </div>
 </div>
 
-<div id="persist-auth">
-<button type="button" class="collapsible">+ Persisting Authentication State</button>   
+<div id="use-auth">
+<button type="button" class="collapsible">+ Reacting to Authentication State: Redirect</button>   
 <div class="content" style="display: none;" markdown="1">
 
-If the authentication state is not persisted, refreshing the page will reset the application state.  To avoid this, a standard browser API is used: `localStorage`
-
-In addition, allow a path to be specified to which a user should be redirected depending on the authentication result.
+Depending on the authentication state, the user may need to be redirected to different pages.  For example, if the user builds a burger and want to checkout, they may need to be directed to either the checkout page or the login page, depending on whether they are logged in or not. 
 
 *actions/actionTypes.js*
 
-* Add an action type for setting the post-authentication redirect path
+* Add an action type for setting the post-authentication redirect path.
 
 ```jsx
 ...etc...
@@ -6140,7 +6138,7 @@ export const SET_AUTH_REDIRECT_PATH = 'SET_AUTH_REDIRECT_PATH';
 
 *reducers/auth.js*
 
-* jjjj
+* Add a reducer
 
 ```jsx
 const initialState = {
@@ -6169,25 +6167,11 @@ const reducer = (state = initialState, action) => {
 
 *actions/auth.js*
 
-* Write authentication state to localStorage.  Also add functions to test what current authentication state is.
+* Add action that indicates that the post-authorization redirect path needs to be changed.
 
 ```jsx
 
 ...etc...
-
-const AUTH_TOKEN = 'AUTH_TOKEN';
-const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
-const AUTH_USER_ID = 'AUTH_USER_ID';
-
-...etc...
-
-// remove the token from localStorage when the user logs out
-export const authSignOut = () => {
-  removeToken();
-  return {
-    type: actionTypes.AUTH_SIGN_OUT,
-  };
-};
 
 // set the path to be redirected to after authentication
 export const setAuthRedirectPath = (path) => {
@@ -6197,150 +6181,9 @@ export const setAuthRedirectPath = (path) => {
   };
 };
 
-// get the expiration date from the token
-const getExpirationDate = (jwtToken) => {
-  if (!jwtToken) {
-    return null;
-  }
-
-  // token format: header.payload.public_key
-  // extract payload (payload.exp = expiry time)
-  const jwt = JSON.parse(atob(jwtToken.split('.')[1]));
-
-  // multiply by 1000 to convert seconds into milliseconds
-  return (jwt && jwt.exp && jwt.exp * 1000) || null;
-};
-
-// check if the token expiry time has passed
-const isExpired = (expiryTime) => {
-  if (!expiryTime) {
-    return false;
-  }
-  return Date.now() > expiryTime;
-};
-
-// write the token to localStorage
-const setToken = (user, token) => {
-  if (token) {
-    const expirationDate = getExpirationDate(token);
-
-    localStorage.setItem(AUTH_TOKEN, JSON.stringify(token));
-    localStorage.setItem(AUTH_TOKEN_EXPIRATION, JSON.stringify(expirationDate));
-    localStorage.setItem(AUTH_USER_ID, JSON.stringify(user));
-  } else {
-    removeToken();
-  }
-};
-
-// delete the token from localStorage
-const removeToken = () => {
-  localStorage.removeItem(AUTH_TOKEN);
-  localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
-  localStorage.removeItem(AUTH_USER_ID);
-};
-
-// send the user's credentials to the firebase instance for authentication
-// and then store the returned token if successful
-export const auth = (email, password, isSignUp) => {
-  let doAuth = (email, password) => {
-    return fire.auth().createUserWithEmailAndPassword(email, password);
-  };
-
-  if (!isSignUp) {
-    doAuth = (email, password) => {
-      return fire.auth().signInWithEmailAndPassword(email, password);
-    };
-  }
-
-  return (dispatch) => {
-    dispatch(authStart());
-
-    doAuth(email, password)
-      .then((response) => {
-        response.user.getIdToken().then((token) => {
-          setToken(response.user, token);
-          dispatch(authSuccess(response.user, token));
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        dispatch(authFail(err.message));
-      });
-  };
-};
-
-// log the user out of the firebase instance
-// and delete the token
-export const signOut = () => {
-  return (dispatch) => {
-    fire
-      .auth()
-      .signOut()
-      .then((response) => {
-        dispatch(authSignOut());
-      })
-      .catch((err) => {
-        console.log(err);
-        dispatch(authFail(err));
-      });
-  };
-};
-
-// check the current state of the authentication
-// if token cannot be found in localStorage, or
-// it has expired, sign-out, else reconfirm that
-// authentication is successful
-export const authCheckState = () => {
-  return (dispatch) => {
-    const token = localStorage.getItem(AUTH_TOKEN);
-    if (!token) {
-      dispatch(signOut());
-    } else {
-      const expirationDate = JSON.parse(localStorage.getItem(AUTH_TOKEN_EXPIRATION));
-      if (isExpired(expirationDate)) {
-        dispatch(signOut());
-      } else {
-        const userId = JSON.parse(localStorage.getItem(AUTH_USER_ID));
-        dispatch(authSuccess(userId, token));
-      }
-    }
-  };
-};
-
-```
-
-*App.js*
-
-* When main app is mounted, test the current authentication state.
-
-```jsx
 ...etc...
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
-import * as actions from './actions/auth';
 
-class App extends Component {
-
-  // when component mounts, test whether user is authenticated
-  componentDidMount() {
-    this.props.onTryAutoSignup();
-  }
-  
-  ...etc...
-
-}
-
-// get action for testing authentication state
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onTryAutoSignup: () => dispatch(actions.authCheckState()),
-  };
-};
-
-// use withRouter to ensure that props get passed to App
-export default withRouter(connect(null, mapDispatchToProps)(App));
 ```
-
 *Auth.js*
 
 * During authentication, ensure that the redirect path is set correctly (essentially, if the user has not yet built a burger, go to root, otherwise go to elsewhere (e.g. checkout))
@@ -6364,6 +6207,7 @@ class Auth extends Component {
   
   render() {
   {
+    // create redirect component (initially set to null, so ignored)
     let authRedirect = null;
     if (this.props.isAuthenticated) {
       authRedirect = <Redirect to={this.props.authRedirectPath} />;
@@ -6371,7 +6215,7 @@ class Auth extends Component {
 
     return (
       <div className={classes.Auth}>
-        {authRedirect}
+        {authRedirect} // redirect if not null
 
         ...etc...
       </div>
@@ -6382,12 +6226,16 @@ class Auth extends Component {
 const mapStateToProps = (state) => {
   return {
     ...etc...
+    // authentication test
     isAuthenticated: state.auth.token !== null,
-    buildingBurger: state.burgerBuilder.building,
+    // if true, users wants to go to authRedirectPath
+    buildingBurger: state.burgerBuilder.building, 
+    // the path to be redirected to
     authRedirectPath: state.auth.authRedirectPath,
   };
 };
 
+// expose action that will reset the redirect path to root
 const mapDispatchToProps = (dispatch) => {
   return {
     ...etc...
@@ -6398,7 +6246,7 @@ const mapDispatchToProps = (dispatch) => {
 
 *reducers/burgerBuilder.js*
 
-* Add a flag to indicate whether or not the user is building a burger.
+* Add a flag to indicate whether or not the user is building a burger (which determines whether the user should be redirected the checkout or not)
 
 ```jsx
 ...etc...
@@ -6455,8 +6303,12 @@ class BurgerBuilder extends Component {
   
   purchaseHandler = () => {
     if (this.props.isAuthenticated) {
+    // if user is already authenticated, send them straight
+    // to the checkout
       this.setState({ purchasing: true });
     } else {
+      // redirect user to login page, and then,
+      // if successful, redirect them to the checkout 
       this.props.onSetAuthRedirectPath('/checkout');
       this.props.history.push('/auth');
     }
@@ -6464,8 +6316,6 @@ class BurgerBuilder extends Component {
 
   render() {
     ...etc...
-    
-    let burger = this.props.error ? <p>Ingredients cannot be loaded!</p> : <Spinner />;
 
     if (this.props.ingredients) {
       burger = (
@@ -6506,7 +6356,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     ...etc...
-    onSetAuthRedirectPath: (path) => dispatch(burgerBuilderActions.setAuthRedirectPath(path)),
+    onSetAuthRedirectPath: (path) => dispatch(actions.setAuthRedirectPath(path)),
   };
 };
 
@@ -6534,6 +6384,178 @@ const BuildControls = (props) => (
 
 export default BuildControls;
 ```
+
+</div>
+</div>
+
+<div id="persist-auth">
+<button type="button" class="collapsible">+ Persisting Authentication State</button>   
+<div class="content" style="display: none;" markdown="1">
+
+If the authentication state is not persisted, refreshing the page will reset the application state.  To avoid this, a standard browser API is used: `localStorage`
+
+*actions/auth.js*
+
+* Write authentication state to localStorage.  Also add functions to test what current authentication state is.
+
+```jsx
+
+...etc...
+
+const AUTH_TOKEN = 'AUTH_TOKEN';
+const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
+const AUTH_USER_ID = 'AUTH_USER_ID';
+
+...etc...
+
+// remove the token from localStorage when the user logs out
+export const authSignOut = () => {
+  removeTokenFromLocalStorage();
+  return {
+    type: actionTypes.AUTH_SIGN_OUT,
+  };
+};
+
+// get the expiration date from the token
+const getExpirationDate = (jwtToken) => {
+  if (!jwtToken) {
+    return null;
+  }
+
+  // token format: header.payload.public_key
+  // extract payload (payload.exp = expiry time)
+  const jwt = JSON.parse(atob(jwtToken.split('.')[1]));
+
+  // multiply by 1000 to convert seconds into milliseconds
+  return (jwt && jwt.exp && jwt.exp * 1000) || null;
+};
+
+// check if the token expiry time has passed
+const isExpired = (expiryTime) => {
+  if (!expiryTime) {
+    return false;
+  }
+  return Date.now() > expiryTime;
+};
+
+// write the token to localStorage
+// (or remove it if token is not found)
+const writeTokenToLocalStorage = (user, token) => {
+  if (token) {
+    const expirationDate = getExpirationDate(token);
+
+    localStorage.setItem(AUTH_TOKEN, JSON.stringify(token));
+    localStorage.setItem(AUTH_TOKEN_EXPIRATION, JSON.stringify(expirationDate));
+    localStorage.setItem(AUTH_USER_ID, JSON.stringify(user));
+  } else {
+    removeTokenFromLocalStorage();
+  }
+};
+
+// delete the token from localStorage
+const removeTokenFromLocalStorage = () => {
+  localStorage.removeItem(AUTH_TOKEN);
+  localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
+  localStorage.removeItem(AUTH_USER_ID);
+};
+
+// send the user's credentials to the firebase instance for authentication
+// and then store the returned token if successful
+export const auth = (email, password, isSignUp) => {
+  let doAuth = (email, password) => {
+    return fire.auth().createUserWithEmailAndPassword(email, password);
+  };
+
+  if (!isSignUp) {
+    doAuth = (email, password) => {
+      return fire.auth().signInWithEmailAndPassword(email, password);
+    };
+  }
+
+  return (dispatch) => {
+    dispatch(authStart());
+
+    doAuth(email, password)
+      .then((response) => {
+        response.user.getIdToken().then((token) => {
+          writeTokenToLocalStorage(response.user, token);
+          dispatch(authSuccess(response.user, token));
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err.message));
+      });
+  };
+};
+
+// Check the current state of the authentication.
+// If token cannot be found in localStorage, or
+// it has expired, sign-out, else reconfirm that
+// authentication is successful.
+export const authCheckState = () => {
+  return (dispatch) => {
+    const token = localStorage.getItem(AUTH_TOKEN);
+    if (!token) {
+      dispatch(signOut());
+    } else {
+      const expirationDate = JSON.parse(localStorage.getItem(AUTH_TOKEN_EXPIRATION));
+      if (isExpired(expirationDate)) {
+        dispatch(signOut());
+      } else {
+        const userId = JSON.parse(localStorage.getItem(AUTH_USER_ID));
+        dispatch(authSuccess(userId, token));
+      }
+    }
+  };
+};
+
+```
+
+*App.js*
+
+* When main app is mounted, test the current authentication state.
+
+```jsx
+...etc...
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import * as actions from './actions/auth';
+
+class App extends Component {
+
+  // when component mounts, test whether user is authenticated
+  componentDidMount() {
+    this.props.onTryAutoSignup();
+  }
+  
+  ...etc...
+
+}
+
+// get action for testing authentication state
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onTryAutoSignup: () => dispatch(actions.authCheckState()),
+  };
+};
+
+// use withRouter to ensure that props get passed to App
+export default withRouter(connect(null, mapDispatchToProps)(App));
+```
+
+</div>
+</div>
+
+<div id="auth-sec">
+<button type="button" class="collapsible">+ App Security Warning: Refresh Token</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Along with the access token that is received by the app, a refresh token is also received.  Unlike the access token, the refresh token never expires, which means that it can be used to automatically refresh the user's session, rather than requiring them to login again.
+
+On the face of it, this offers a better user experience, however it is not recommended to do this.  
+
+If the refresh token is persisted in local storage, there is a risk of (Cross-Site Scripting)[https://codeburst.io/web-storage-and-xss-attacks-4f83b0d08725] (XSS) attacks.  While the access token is also at risk of this, the fact that it expires means it is less of a risk.  Since the refresh token never expires, theoretically this gives someone unlimited access to the app resources.
 
 </div>
 </div>
