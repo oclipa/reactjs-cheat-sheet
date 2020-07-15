@@ -2794,22 +2794,24 @@ Routing is enabled by installing and importing the react-router-dom package:
 
 To implement routing, the first thing step is to, in either App.js or index.js files, wrap the part of the app that supports routing with the `BrowserRouter` component:
 
+*index.js*
+
 ```jsx
-import React from 'react';
-import Blog from 'Blog';
+...etc...
 import { BrowserRouter } from 'react-router-dom';
 
-function App () {
-  return (
-    <BrowserRouter>
-      <div className="App">
-        <Blog />
-      </div>
-    </BrowserRouter>
-  );
-}
+...etc...
 
-export default App;
+ReactDOM.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+...etc...
 ```
 </div>
 </div>
@@ -3644,7 +3646,7 @@ There are four main stages when hooking the Store up to a React application:
 
 **Simple Example of Redux in a React App**
 
-Usually, the Store is created in the *index.js* file (where the `<App />` is added to the DOM).
+Usually, the Store is created in the *index.js* file (where the `<App />` is added to the DOM).  Note that the Provider component wraps the entire app, including the BrowserRouter component.
 
 *index.js* 
 
@@ -3661,7 +3663,17 @@ import reducer from './store/reducer';
 
 const store = createStore(reducer);
 
-ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 registerServiceWorker();
 ```
 
@@ -5084,21 +5096,15 @@ export default connect(mapStateToProps, mapDispatchToProps)(Auth);
 *App.js*
 
 ```jsx
-import React from 'react';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import Auth from './Auth';
 
-function App() {
+class App extends Component {
 
-  useEffect(() => {
-  
-    /* react to changes in login state here */
-  
-  }, []);
-
-  return (
-    <div>
-      <BrowserRouter>
+  render() {
+    return (
+      <div>
         <Layout>
           <Switch>
             ...etc...
@@ -5106,9 +5112,12 @@ function App() {
             ...etc...
           </Switch>
         </Layout>
-      </BrowserRouter>
-    </div>
-  );
+      </div>
+    );
+  }
+}
+
+export default App;
 ```
 
 *actions/actionTypes.js*
@@ -5280,29 +5289,30 @@ The configuration details for the firebase connection can be obtained from:
 *App.js*
 
 ```jsx
-import React, { useEffect } from 'react';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import Auth from './Auth';
 
-function App() {
+class App extends Component {
 
   // this will be triggered the first time the page is
-  // rendered (because it passes an empty array)
-  useEffect(() => {
+  // rendered
+  componentDidMount() {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
         console.log('Authenticated!', user);
       } else {
         console.log('Denied!');
+        // No user is signed in.
       }
     });
-  }, []);
+  }
 
-  return (
-    <div>
-      <BrowserRouter>
+  render() {
+    return (
+      <div>
         <Layout>
           <Switch>
             ...etc...
@@ -5310,9 +5320,12 @@ function App() {
             ...etc...
           </Switch>
         </Layout>
-      </BrowserRouter>
-    </div>
-  );
+      </div>
+    );
+  }
+}
+
+export default App;
 ```
 
 *reducers/auth.js*
@@ -6013,21 +6026,11 @@ const reducer = (state = initialState, action) => {
 ...etc...
 import Logout from './Logout';
 
-function App() {
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(function (user) {
-      if (user) {
-        console.log('Authenticated!', user);
-      } else {
-        console.log('Denied!');
-        // No user is signed in.
-      }
-    });
-  }, []);
+class App extends Component {
 
-  return (
-    <div>
-      <BrowserRouter>
+  render() {
+    return (
+      <div>
         <Layout>
           <Switch>
             ...etc...
@@ -6035,11 +6038,10 @@ function App() {
             ...etc...
           </Switch>
         </Layout>
-      </BrowserRouter>
-    </div>
-  );
+      </div>
+    );
+  }
 }
-
 ...etc...
 ```
 
@@ -6124,9 +6126,58 @@ export default NavigationItems;
 
 If the authentication state is not persisted, refreshing the page will reset the application state.  To avoid this, a standard browser API is used: `localStorage`
 
-*actions/auth.js*
+In addition, allow a path to be specified to which a user should be redirected depending on the authentication result.
+
+*actions/actionTypes.js*
+
+* Add an action type for setting the post-authentication redirect path
 
 ```jsx
+...etc...
+export const SET_AUTH_REDIRECT_PATH = 'SET_AUTH_REDIRECT_PATH';
+...etc...
+```
+
+*reducers/auth.js*
+
+* jjjj
+
+```jsx
+const initialState = {
+  ...etc...
+  authRedirectPath: '/',
+};
+
+...etc...
+
+const setAuthRedirectPath = (state, action) => {
+  return updateObject(state, { authRedirectPath: action.path });
+};
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    ...etc...
+    
+    case actionTypes.SET_AUTH_REDIRECT_PATH: {
+      return setAuthRedirectPath(state, action);
+    }
+    default:
+      return state;
+  }
+};
+```
+
+*actions/auth.js*
+
+* Write authentication state to localStorage.  Also add functions to test what current authentication state is.
+
+```jsx
+
+...etc...
+
+const AUTH_TOKEN = 'AUTH_TOKEN';
+const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
+const AUTH_USER_ID = 'AUTH_USER_ID';
 
 ...etc...
 
@@ -6138,13 +6189,22 @@ export const authSignOut = () => {
   };
 };
 
+// set the path to be redirected to after authentication
+export const setAuthRedirectPath = (path) => {
+  return {
+    type: actionTypes.SET_AUTH_REDIRECT_PATH,
+    path: path,
+  };
+};
+
 // get the expiration date from the token
 const getExpirationDate = (jwtToken) => {
   if (!jwtToken) {
     return null;
   }
-  
-  // convert bas64-encoded token into seconds
+
+  // token format: header.payload.public_key
+  // extract payload (payload.exp = expiry time)
   const jwt = JSON.parse(atob(jwtToken.split('.')[1]));
 
   // multiply by 1000 to convert seconds into milliseconds
@@ -6152,21 +6212,21 @@ const getExpirationDate = (jwtToken) => {
 };
 
 // check if the token expiry time has passed
-const isExpired = (expiryDate) => {
-  if (!expiryDate) {
+const isExpired = (expiryTime) => {
+  if (!expiryTime) {
     return false;
   }
-
-  return Date.now() > expiryDate;
+  return Date.now() > expiryTime;
 };
 
 // write the token to localStorage
-const setToken = (token) => {
+const setToken = (user, token) => {
   if (token) {
     const expirationDate = getExpirationDate(token);
-    
-    localStorage.setItem('AUTH_TOKEN', JSON.stringify(token));
-    localStorage.setItem('AUTH_TOKEN_EXPIRATION', JSON.stringify(expirationDate));
+
+    localStorage.setItem(AUTH_TOKEN, JSON.stringify(token));
+    localStorage.setItem(AUTH_TOKEN_EXPIRATION, JSON.stringify(expirationDate));
+    localStorage.setItem(AUTH_USER_ID, JSON.stringify(user));
   } else {
     removeToken();
   }
@@ -6174,9 +6234,10 @@ const setToken = (token) => {
 
 // delete the token from localStorage
 const removeToken = () => {
-  localStorage.removeItem('AUTH_TOKEN');
-  localStorage.removeItem('AUTH_TOKEN_EXPIRATION');
-}
+  localStorage.removeItem(AUTH_TOKEN);
+  localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
+  localStorage.removeItem(AUTH_USER_ID);
+};
 
 // send the user's credentials to the firebase instance for authentication
 // and then store the returned token if successful
@@ -6196,9 +6257,8 @@ export const auth = (email, password, isSignUp) => {
 
     doAuth(email, password)
       .then((response) => {
-        console.log('SignIn', response);
         response.user.getIdToken().then((token) => {
-          setToken(token);
+          setToken(response.user, token);
           dispatch(authSuccess(response.user, token));
         });
       })
@@ -6226,6 +6286,253 @@ export const signOut = () => {
   };
 };
 
+// check the current state of the authentication
+// if token cannot be found in localStorage, or
+// it has expired, sign-out, else reconfirm that
+// authentication is successful
+export const authCheckState = () => {
+  return (dispatch) => {
+    const token = localStorage.getItem(AUTH_TOKEN);
+    if (!token) {
+      dispatch(signOut());
+    } else {
+      const expirationDate = JSON.parse(localStorage.getItem(AUTH_TOKEN_EXPIRATION));
+      if (isExpired(expirationDate)) {
+        dispatch(signOut());
+      } else {
+        const userId = JSON.parse(localStorage.getItem(AUTH_USER_ID));
+        dispatch(authSuccess(userId, token));
+      }
+    }
+  };
+};
+
+```
+
+*App.js*
+
+* When main app is mounted, test the current authentication state.
+
+```jsx
+...etc...
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import * as actions from './actions/auth';
+
+class App extends Component {
+
+  // when component mounts, test whether user is authenticated
+  componentDidMount() {
+    this.props.onTryAutoSignup();
+  }
+  
+  ...etc...
+
+}
+
+// get action for testing authentication state
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onTryAutoSignup: () => dispatch(actions.authCheckState()),
+  };
+};
+
+// use withRouter to ensure that props get passed to App
+export default withRouter(connect(null, mapDispatchToProps)(App));
+```
+
+*Auth.js*
+
+* During authentication, ensure that the redirect path is set correctly (essentially, if the user has not yet built a burger, go to root, otherwise go to elsewhere (e.g. checkout))
+
+```jsx
+...etc...
+import { Redirect } from 'react-router-dom';
+
+class Auth extends Component {
+  ...etc...
+  
+  componentDidMount() {
+    // if user is not building a burger, and the redirect path is not root,
+    // set the redirect path to root
+    if (!this.props.buildingBurger && this.props.authRedirectPath !== '/') {
+      this.props.onSetAuthRedirectPath();
+    }
+  }
+  
+  ...etc...
+  
+  render() {
+  {
+    let authRedirect = null;
+    if (this.props.isAuthenticated) {
+      authRedirect = <Redirect to={this.props.authRedirectPath} />;
+    }
+
+    return (
+      <div className={classes.Auth}>
+        {authRedirect}
+
+        ...etc...
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    ...etc...
+    isAuthenticated: state.auth.token !== null,
+    buildingBurger: state.burgerBuilder.building,
+    authRedirectPath: state.auth.authRedirectPath,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    ...etc...
+    onSetAuthRedirectPath: () => dispatch(actions.setAuthRedirectPath('/')),
+  };
+};
+```
+
+*reducers/burgerBuilder.js*
+
+* Add a flag to indicate whether or not the user is building a burger.
+
+```jsx
+...etc...
+
+const initialState = {
+  ...etc...
+  building: false,
+};
+
+...etc...
+
+const addIngredientHandler = (state, ingredientType) => {
+  ...etc...
+
+  const updatedState = {
+    ...etc...
+    building: true,
+  };
+  return updateObject(state, updatedState);
+};
+
+const removeIngredientHandler = (state, ingredientType) => {
+  ...etc...
+
+  const updatedState = {
+    ...etc...
+    building: true,
+  };
+  return updateObject(state, updatedState);
+};
+
+const setIngredientsHandler = (state, updatedIngredients) => {
+
+  ...etc...
+  
+  return updateObject(state, {
+    ...etc...
+    building: false,
+  });
+};
+
+...etc...
+```
+
+*BurgerBuilder.js*
+
+* If user is successully authenticated, allow them to go to the checkout, otherwise redirect them to the login page.
+
+```jsx
+...etc...
+
+class BurgerBuilder extends Component {
+  ...etc...
+  
+  purchaseHandler = () => {
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasing: true });
+    } else {
+      this.props.onSetAuthRedirectPath('/checkout');
+      this.props.history.push('/auth');
+    }
+  };
+
+  render() {
+    ...etc...
+    
+    let burger = this.props.error ? <p>Ingredients cannot be loaded!</p> : <Spinner />;
+
+    if (this.props.ingredients) {
+      burger = (
+        <Wrapper>
+          ...etc...
+        
+          <BuildControls
+            ...etc...
+            isAuth={this.props.isAuthenticated}
+          />
+        </Wrapper>
+      );
+      
+      ...etc...
+    }
+
+    return (
+      <Wrapper>
+        ...etc...
+        
+        {burger}
+      </Wrapper>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  if (state) {
+    return {
+      ...etc...
+      isAuthenticated: state.auth.token !== null,
+    };
+  } else {
+    return null;
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    ...etc...
+    onSetAuthRedirectPath: (path) => dispatch(burgerBuilderActions.setAuthRedirectPath(path)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
+```
+
+*BuildControls.js*
+
+* Change the state of the order button depending on whether or not the user is authenticated.
+
+```jsx
+...etc...
+
+const BuildControls = (props) => (
+  <div className={classes.BuildControls}>
+    ...etc...
+
+    <button
+      ...etc...
+    >
+      {props.isAuth ? 'ORDER NOW' : 'LOGIN TO ORDER'}
+    </button>
+  </div>
+);
+
+export default BuildControls;
 ```
 
 </div>
