@@ -6555,10 +6555,210 @@ Along with the access token that is received by the app, a refresh token is also
 
 On the face of it, this offers a better user experience, however it is not recommended to do this.  
 
-If the refresh token is persisted in local storage, there is a risk of (Cross-Site Scripting)[https://codeburst.io/web-storage-and-xss-attacks-4f83b0d08725] (XSS) attacks.  While the access token is also at risk of this, the fact that it expires means it is less of a risk.  Since the refresh token never expires, theoretically this gives someone unlimited access to the app resources.
+If the refresh token is persisted in local storage, there is a risk of [Cross-Site Scripting](https://codeburst.io/web-storage-and-xss-attacks-4f83b0d08725) (XSS) attacks.  While the access token is also at risk of this, the fact that it expires means it is less of a risk.  Since the refresh token never expires, theoretically this gives someone unlimited access to the app resources.
 
 </div>
 </div>
+
+<div id="auth-guarded-routes">
+<button type="button" class="collapsible">+ Guarded Route</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A Guarded Route is essentially one that does not get rendered to the UI except under a specific condition, e.g. if the user is logged in.
+
+**NOTE**: A Guarded Route only protects the user from accidentally accessing pages they shouldn't; it does not prevent a determined user from digging down into the app javascript source code and viewing the pages (since the source code is always sent to the browser).  This is why server-side access permissions are used to control access to the data.
+
+*App.js*
+
+* Only render the checkout, orders and logout pages if the user is logged in.  Also, redirect the user to a warning page if they are not logged in.
+
+```jsx
+...etc...
+
+class App extends Component {
+
+  ...etc...
+
+  render() {
+    let routes = (
+      <Switch>
+        <Route path="/auth" component={Auth} />
+        <Route path="/burger" exact component={BurgerBuilder} />
+        <Redirect from="/" to="/burger" />
+        <Redirect to="/" /> {/* this could also redirect to a 404 or 403 page */}
+      </Switch>
+    );
+
+    if (this.props.isAuthenticated) {
+      routes = (
+        <Switch>
+          <Switch>
+            <Route path="/orders" component={Orders} />
+            <Route path="/checkout" component={Checkout} />
+            <Route path="/logout" component={Logout} />
+            <Route path="/burger" exact component={BurgerBuilder} />
+            <Redirect from="/" to="/burger" />
+          </Switch>
+        </Switch>
+      );
+    }
+
+    return (
+      <div>
+        <Layout>
+          {routes}
+        </Layout>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: state.auth.token !== null,
+  };
+};
+
+...etc...
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+```
+
+</div>
+</div>
+
+<div id="auth-guarded-routes">
+<button type="button" class="collapsible">+ Filtering Returned Data</button>   
+<div class="content" style="display: none;" markdown="1">
+
+If the results from the backend are not filtered, there is a risk that data belonging to other users will be displayed to the current user.  Consequently we want to make sure we only return the current user's data.
+
+In the case of Firebase, this is achieved using the backend's REST API; specifically, the `orderBy` and `equalTo` properties.
+
+**Firebase Configuration**
+
+To enable this filtering in Firebase, an additional `.indexOn` rule must be added to the database rules:
+
+```json
+{
+  "rules": {
+    "ingredients": {
+      ".read": "true",
+      ".write": "true",
+    },
+    "orders": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["userId"]
+    }
+  }
+}
+```
+
+Note that `.indexOn` can accept an array of keys to index, although in this case we are only interested in `userId`.
+
+**Code Example**
+
+*actions/order.js*
+
+* Append `&orderBy="key"&equalTo="value"` to the API (note the double-quotes!).  In this case, the key is `userId`.
+
+```jsx
+...etc...
+
+export const fetchOrders = (token, userId) => {
+  return (dispatch) => {
+    dispatch(fetchOrdersStart());
+    
+    const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"';
+    axios
+      .get('/orders.json' + queryParams)
+      .then((response) => {
+          ...etc...
+        }
+        
+        dispatch(fetchOrdersSuccess(fetchedOrders));
+      })
+      .catch((error) => {
+        dispatch(fetchOrdersFail(error));
+      });
+  };
+};
+```
+
+*ContactData.js*
+
+* Ensure that the userId is included in the order data sent to the backend.
+
+```jsx
+...etc...
+
+class ContactData extends Component {
+  
+  ...etc...
+  
+  orderHandler = (event) => {
+    ...etc...
+
+    const order = {
+      ...etc...
+      userId: this.props.userId,
+    };
+
+    this.props.onOrderBurger(order, this.props.token);
+  };
+
+  ...etc...
+}
+
+const mapStateToProps = (state) => {
+  return {
+    ...etc...
+    userId: state.auth.userId,
+  };
+};
+
+...etc...
+```
+
+*Orders.js*
+
+* Ensure that userId is included in data passed to the database query
+
+```jsx
+...etc...
+
+class Orders extends Component {
+  componentDidMount() {
+    this.props.onFetchOrders(this.props.token, this.props.userId);
+  }
+
+  ...etc...
+}
+
+const mapStateToProps = (state) => {
+  return {
+    ...etc...
+    userId: state.auth.userId,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onFetchOrders: (token, userId) => dispatch(actions.fetchOrders(token, userId)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(Orders, axios));
+```
+
+</div>
+</div>
+
+**Further Information**
+
+* [General SPA Authentication](https://stormpath.com/blog/token-auth-spa)
+* [Firebase Authentication REST API](https://firebase.google.com/docs/reference/rest/auth/)
 
 </div>
 </div>
