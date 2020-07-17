@@ -6826,6 +6826,28 @@ export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(Ord
 </div>
 </div>
 
+<div id="testing">
+<button type="button" class="collapsible">+ Testing Overview</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Testing Tools:
+* Test Runner: Executes test and provides a validation library (e.g. Jest)
+   * Jest: this should be included in the default create-react-app install.
+      * There is an extension that integrates Jest into VS Code: [https://github.com/jest-community/vscode-jest](https://github.com/jest-community/vscode-jest)
+* Testing Utilities: "Simulates" the React App (mounts components; allows you to dig into the DOM) (e.g. React Test Utils, Enzyme)
+   * Enzyme: `npm install --save enzyme react-test-renderer enzyme-adapter-react-16`
+   
+What Not To Test:
+* Don't test libraries (assume developers have tested their own libraries)
+* Don't test complex connections (test if button click triggers a specific props, or if change of data received results in a difference; one school of thought: only test if app is rendered correctly)
+
+What To Test:
+* Do test isolated units.
+* Do test conditional outputs.
+
+</div>
+</div>
+
 &nbsp;
 
 -------------------------------------------------------------------------------------------------------
