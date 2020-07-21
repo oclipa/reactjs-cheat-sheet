@@ -219,9 +219,9 @@ Some examples of common patterns can be found here:
 * `npm install redux`
    * Enables enhanced state management
 * `npm install react-redux`
-   * Allows redux store to be hooked up to react application
+   * Allows Redux store to be hooked up to react application
 * `npm install redux-thunk`
-   * Enables both complex synchronous logic and simple asynchronous logic when accessing a redux store.
+   * Enables both complex synchronous logic and simple asynchronous logic when accessing a Redux store.
 
 **Locally Installed Development (i.e. per project; only required for development)**
 * `npm install eslint --save-dev`
@@ -2254,14 +2254,14 @@ axios.interceptors.response.use(response => {
 });
 ```
 
-It is also possible to set up axios "instances", which override the global defaults for different parts of the application, e.g.:
+It is also possible to set up Axios "instances", which override the global defaults for different parts of the application, e.g.:
 
 *axios.js*
 
 ```jsx
 import axios from 'axios';
 
-// axios instances overwrite the global defaults
+// Axios instances overwrite the global defaults
 const instance = axios.create({
   baseURL: 'http://jsonplaceholder.typicode.com'
 });
@@ -2273,7 +2273,6 @@ export default instance;
 *MyComponent.js*
 
 ```jsx
-//import axios from "axios";
 import axios from '../../axios';
 
 // within this component, values in 
@@ -2352,7 +2351,7 @@ class MyApp extends Component {
   /* Query database after component is loaded */
   componentDidMount() {
     db
-      .get('/items.json') /* .json suffix is required by firebase */
+      .get('/items.json') /* .json suffix is required by Firebase */
       .then((response) => {
         console.log(response);
         this.setState({ myItems: response.data });
@@ -4080,7 +4079,7 @@ The following diagram gives a high-level overview of when it is generally consid
 <button type="button" class="collapsible">+ Middleware</button>   
 <div class="content" style="display: none;" markdown="1">
 
-In the context of Redux, middleware is a function that can be inserted into a redux implementation to react to, or alter, an action before it is received by the reducer.
+In the context of Redux, middleware is a function that can be inserted into a Redux implementation to react to, or alter, an action before it is received by the reducer.
 
 The middleware is defined in index.js:
   
@@ -4088,7 +4087,7 @@ The middleware is defined in index.js:
 
 ```jsx
 // add logger middleware function, to which
-// we pass the redux store
+// we pass the Redux store
 const logger = store => {
   // return another function, to which we
   // pass a 'next' argument.
@@ -4376,7 +4375,7 @@ export const saveResult = (result) => {
 };
 ```
 
-This has the advantage that it can run asynchronous code, but the is goes against the core redux concept that only reducers should update the state.
+This has the advantage that it can run asynchronous code, but the it goes against the core Redux concept that only reducers should update the state.
 
 **In the Reducer**
 
@@ -5319,23 +5318,23 @@ const store = createStore(rootReducer, ...etc...);
 Reference information for authentication in Firebase can be found here:
 * [https://firebase.google.com/docs/reference/rest/auth](https://firebase.google.com/docs/reference/rest/auth)
 
-The firebase module needs to be installed:
+The Firebase module needs to be installed:
 * Install: `npm install firebase`
 * Import: `import firebase from 'firebase/app'; import 'firebase/auth';`
 
-NOTE: It is recommended that you only the packages you actually need, rather than importing the entire firebase module.
+NOTE: It is recommended that you only the packages you actually need, rather than importing the entire Firebase module.
 
 **Register App With Firebase**
 
 Before performing authentication using firebase, the application needs to be registered with the project.  The current steps to do this are:
-1. Open the firebase control panel for the project
+1. Open the Firebase control panel for the project
 1. Open "Project Overview" (top-left)
 1. Click "+ Add app" (just under the project name, in the main panel)
 1. Click "</>" (for web app)
 1. When prompted, give the app a nickname and click "Register app".
 1. Further information will be provided regarding installing and using the SDK, however this can be ignored for the following purposes.
 
-The configuration details for the firebase connection can be obtained from:
+The configuration details for the Firebase connection can be obtained from:
 1. Open "Project settings" (the cog, in the top left)
 1. Scroll down to identify the web app
 1. Under "Firebase SDK snippet", click "Config"
@@ -5412,7 +5411,7 @@ const authSuccess = (state, action) => {
 *actions/auth.js*
 
 ```jsx
-// import the firebase authentication package
+// import the Firebase authentication package
 import firebase from 'firebase/app';
 import 'firebase/auth';
 
@@ -5482,7 +5481,7 @@ export const signOut = () => {
 
 ```jsx
 // Obtain configuration from "Project Settings" 
-// in firebase console
+// in Firebase console
 export const firebaseConfig = {
   apiKey: '...',
   authDomain: '...',
@@ -5497,7 +5496,7 @@ export const firebaseConfig = {
 
 **Securing the Firebase Config**
 
-The firebase configuration settings are not designed to be hidden; no matter what steps you take, the settings will be publically available once loaded into a browser.
+The Firebase configuration settings are not designed to be hidden; no matter what steps you take, the settings will be publically available once loaded into a browser.
 
 In any event, if you want to avoid making the configuration accessible in source control, the standard approach is to store the config in a separate file.  This file can then be excluded from source control.  
 
@@ -5505,7 +5504,7 @@ In the case of git, add the following to `.gitignore`:
 
 * `relative/path/to/fire.js`
 
-Rather than obfuscation, firebase security depends on the correct access permissions being setup for the project.  There are two main steps that should be taken:
+Rather than obfuscation, Firebase security depends on the correct access permissions being setup for the project.  There are two main steps that should be taken:
 1. Configure the database to only allow connections from the production domain.
    * For localhost testing, create a separate database instance under a different google id.
 1. Setup proper access rules for the database and storage.
@@ -5990,7 +5989,7 @@ export default connect(null, mapDispatchToProps)(Logout);
 
 *actions/auth.js*
 
-* The signOut action is exposed here.  This calls the signOut function on the firebase auth API, and then call returns AUTH_SIGN_OUT if it was successful.
+* The signOut action is exposed here.  This calls the signOut function on the Firebase auth API, and then call returns AUTH_SIGN_OUT if it was successful.
 
 ```jsx
 import * as actionTypes from './actionTypes';
@@ -6518,7 +6517,7 @@ const removeTokenFromLocalStorage = () => {
   localStorage.removeItem(AUTH_USER_ID);
 };
 
-// send the user's credentials to the firebase instance for authentication
+// send the user's credentials to the Firebase instance for authentication
 // and then store the returned token if successful
 export const auth = (email, password, isSignUp) => {
   let doAuth = (email, password) => {
@@ -6832,10 +6831,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(Ord
 
 Testing Tools:
 * Test Runner: Executes test and provides a validation library (e.g. Jest)
-   * Jest: this should be included in the default create-react-app install.
+   * Jest: this should be included in the default create-react-app install (but can be installed for any JavaScript project)
+      * Documentation for Jest can be found here: [https://jestjs.io/](https://jestjs.io/)
       * There is an extension that integrates Jest into VS Code: [https://github.com/jest-community/vscode-jest](https://github.com/jest-community/vscode-jest)
 * Testing Utilities: "Simulates" the React App (mounts components; allows you to dig into the DOM) (e.g. React Test Utils, Enzyme)
    * Enzyme: `npm install --save enzyme react-test-renderer enzyme-adapter-react-16`
+   * Documentation for Enzyme can be found here: [https://enzymejs.github.io/enzyme/](https://enzymejs.github.io/enzyme/)
    
 What Not To Test:
 * Don't test libraries (assume developers have tested their own libraries)
@@ -6844,6 +6845,148 @@ What Not To Test:
 What To Test:
 * Do test isolated units.
 * Do test conditional outputs.
+
+<div id="test-basic">
+<button type="button" class="collapsible">+ Basic Test Implementation (using Enzyme)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The basic test implementation revolves around the following functions provided by Jest:
+* `describe()`: This describes the test bundle, and contains all the tests in the bundle
+* `it()`: This describes and performs a single test.
+* `expect()`: This evaluates the test.
+
+And the following functions provided by Enzyme:
+* `shallow()`: This renders the component and its immediate children, but it doesn't render any deeper.
+* `find()`: This returns a list of the instances of the specified component that were output during rendering.
+
+For example:
+
+*NavigationItems.test.js* (the *test.js* suffix is required, so that it can be identified as containing tests)
+
+```jsx
+import React from 'react';
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+import NavigationItems from './NavigationItems';
+import NavigationItem from './NavigationItem/NavigationItem';
+
+// connects Enzyme to the test
+configure({ adapter: new Adapter() });
+
+describe('<NavigationItems />', () => {
+  it('should render two <NavigationItem /> elements if not authenticated', () => {
+    // shallow() renders the component and its immediate children, but it doesn't render any deeper.
+    const wrapper = shallow(<NavigationItems />);
+
+    // expect() evaluates whether the specified test was successful (true/false)
+    // find() returns a list of the instances of the specified component
+    expect(wrapper.find(NavigationItem)).toHaveLength(2);
+  });
+  
+  it('should render three <NavigationItem /> elements if authenticated', () => {  
+    const wrapper = shallow(<NavigationItems authenticated />);
+    expect(wrapper.find(NavigationItem)).toHaveLength(3);
+  });
+});
+```
+</div>
+</div>
+
+<div id="test-run">
+<button type="button" class="collapsible">+ Running Tests</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Tests are run using the `npm test` command.  This is run on the command line and, after some initialization, produces an output similar to the following:
+
+```
+ PASS  src/components/Navigation/NavigationItems/NavigationItems.test.js
+  <NavigationItems />
+    ✓ should render two <NavigationItem /> elements if not authenticated (18ms)
+    ✓ should render three <NavigationItem /> elements if authenticated (6ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        2.589s
+Ran all test suites related to changed files.
+
+Watch Usage: Press w to show more.
+```
+
+As can be seen, this lists the descriptions of the tests being run, followed by statistics regarding the results of the tests.
+
+The test runner will now monitor the tests and re-run them if it identifies any changes (in either the tests or codebase).
+
+**NOTE:** If you encounter an error similar to `Error: Invariant failed: You should not use <Route> outside a <Router>`, delete the `src\App.test.js` file.
+
+</div>
+</div>
+
+<div id="test-refine">
+<button type="button" class="collapsible">+ Refined Test Implementation</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A slightly more refined test implementation can be achieved with the following functions:
+* `beforeEach()`: This is one of several global functions provided by Jest.  In this case, the function is called before each test.
+   * For further information on Jest globals, see here: [https://jestjs.io/docs/en/api](https://jestjs.io/docs/en/api)
+* `setProps()`: This is a function exposed by Enzyme that allows props to be passed to a test (in the form of a Javascript object)
+
+For example:
+
+*NavigationItems.test.js*
+
+```jsx
+import React from 'react';
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+import NavigationItems from './NavigationItems';
+import NavigationItem from './NavigationItem/NavigationItem';
+
+// connects Enzyme to the test
+configure({ adapter: new Adapter() });
+
+describe('<NavigationItems />', () => {
+  let wrapper;
+
+  beforeEach(() => {
+    // factor out the shallow() function since it is common to all tests
+    wrapper = shallow(<NavigationItems />);
+  });
+
+  it('should render two <NavigationItem /> elements if not authenticated', () => {
+    expect(wrapper.find(NavigationItem)).toHaveLength(2);
+  });
+
+  it('should render three <NavigationItem /> elements if authenticated', () => {
+    // pass props using setProps()
+    wrapper.setProps({ 
+      isAuthenticated: true 
+    });
+    expect(wrapper.find(NavigationItem)).toHaveLength(3);
+  });
+});
+```
+
+https://jestjs.io/docs/en/expect
+
+```jsx
+...etc...
+
+describe('<NavigationItems />', () => {
+
+  ...etc...
+  
+  it('should render three <NavigationItem /> elements if authenticated', () => {
+    wrapper.setProps({ isAuthenticated: true });
+
+    expect(wrapper.contains(<NavigationItem link="/logout">Logout</NavigationItem>)).toEqual(true);
+  });
+});
+```
+</div>
+</div>
 
 </div>
 </div>
@@ -6856,9 +6999,6 @@ What To Test:
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* [Redux](https://devhints.io/redux)
-* Authentication
-* Testing
 * Deploying To The Web
 * Webpack
 * Next.js
