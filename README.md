@@ -6512,7 +6512,7 @@ describe('<NavigationItems />', () => {
 </div>
 
 <div id="test-refine">
-<button type="button" class="collapsible">+ Testing Redux Containers</button>   
+<button type="button" class="collapsible">+ Testing Containers</button>   
 <div class="content" style="display: none;" markdown="1">
 
 Although Redux containers deal with state rather than props, a container can be tested via props by wrapping the default export with `connect()` (so that the state can be converted to props) and also marking the container component as an export.
@@ -6597,7 +6597,7 @@ describe('<BurgerBuilder />', () => {
 </div>
 
 <div id="test-redux">
-<button type="button" class="collapsible">+ Testing Redux Containers</button>   
+<button type="button" class="collapsible">+ Testing Redux</button>   
 <div class="content" style="display: none;" markdown="1">
 
 We don't want to test complex chains of actions, reducers and state.  All we really want to test are the reducers.
