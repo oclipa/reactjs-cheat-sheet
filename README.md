@@ -6713,29 +6713,29 @@ describe('auth reducer', () => {
 Deployment instructions will vary host-to-host.  A couple of examples:
 
 **Firebase**
-1 `npm install -g firebase-tools`
-1 `firebase login`
-1 `firebase init`
+1. `npm install -g firebase-tools`
+1. `firebase login`
+1. `firebase init`
    * Firebase CLI -> Hosting
    * Firebase Project -> [choose project name]
    * Public directory -> build
    * Single-page app -> y
    * Overwrite build/index.html -> n
-1 `firebase deploy`
-1 Confirm that the app is accessible at `https://[project-name].firebaseapp.com`
+1. `firebase deploy`
+1. Confirm that the app is accessible at `https://[project-name].firebaseapp.com`
 
 **GitHub Pages**
-1 Create a repository containing the app
-1 Install dependencies: `npm install`
-1 Install gh-pages: `npm install gh-pages --save-dev`
-1 Add the following to the package.json file (just above `"dependencies"`):
+1. Create a repository containing the app
+1. Install dependencies: `npm install`
+1. Install gh-pages: `npm install gh-pages --save-dev`
+1. Add the following to the package.json file (just above `"dependencies"`):
    * `"homepage": "https://[github-username].github.io/[github-repo-name]"`
-1 Also add the following to `"scripts"`:
+1. Also add the following to `"scripts"`:
    * `"predeploy": "npm run build"`
    * `"deploy": "gh-pages -d build"`
-1 Commit all files
-1 Run: `npm run deploy`
-1 Confirm that the app is accessible at `https://[github-username].github.io/[github-repo-name]`
+1. Commit all files
+1. Run: `npm run deploy`
+1. Confirm that the app is accessible at `https://[github-username].github.io/[github-repo-name]`
 
 </div>
 </div>
