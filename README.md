@@ -6737,6 +6737,8 @@ Deployment instructions will vary host-to-host.  A couple of examples:
 1. Run: `npm run deploy`
 1. Confirm that the app is accessible at `https://[github-username].github.io/[github-repo-name]`
 
+NOTE: The GitHub application is deployed to a `gh-pages` branch.  If the app is not automatically visible at the expected URL, check that the `gh-pages` branch has been used for the application source: [repo] -> Settings -> GitHub Pages -> Source.
+
 </div>
 </div>
 
