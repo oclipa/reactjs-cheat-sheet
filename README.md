@@ -199,7 +199,7 @@ Some examples of common patterns can be found here:
 * `[sudo] npm install create-react-app -g`
   * Command-line tool that creates the basic framework for a react app.
 * `[sudo] npm install yarn -g`
-  * Command-line tool that creates the basic framework for a react app.
+  * Yarn is an alternative to npm.
 
 **Locally Installed Production (i.e. per project; required for production)**
 
@@ -222,6 +222,8 @@ Some examples of common patterns can be found here:
    * Allows Redux store to be hooked up to react application
 * `npm install redux-thunk`
    * Enables both complex synchronous logic and simple asynchronous logic when accessing a Redux store.
+* `npm install firebase`
+   * Enables access to Google's Firebase database.
 
 **Locally Installed Development (i.e. per project; only required for development)**
 * `npm install eslint --save-dev`
@@ -231,6 +233,11 @@ Some examples of common patterns can be found here:
    * Code formatter
 * `npm install eslint-config-prettier --save-dev`
    * Allows ESLine and Prettier to work together
+* `npm install jest --save-dev `
+   * Enables unit tests to be run.
+   * NOTE: this is included as a dependency of `create-react-app` and so can be skipped if CRA is installed.
+* `npm install enzyme react-test-renderer enzyme-adapter-react-16 --save-dev`
+   * Enables unit testing of React components
 
 </div>
 </div>
@@ -4445,503 +4452,6 @@ To delve into Redux in more depth (since it has far more uses than those discuss
 </div>
 </div>
 
-<div id="code-examples">
-<button type="button" class="collapsible">+ Code Examples</button>   
-<div class="content" style="display: none;" markdown="1">
-
-<div id="spinner">
-<button type="button" class="collapsible">+ Creating A Simple Spinner</button>   
-<div class="content" style="display: none;" markdown="1">
-
-*Spinner.js*
-
-```jsx
-import React from 'react';
-import classes from './Spinner.module.css';
-
-const Spinner = (props) => <div className={classes.Loader}>Loading...</div>;
-
-export default Spinner;
-```
-
-*Spinner.module.css*
-
-Generate the CSS using the following tool:
-* [https://projects.lukehaas.me/css-loaders/](https://projects.lukehaas.me/css-loaders/)
-
-*MyPage.js*
-
-```jsx
-import React, { Component } from 'react';
-import axios from 'axios';
-
-import Input from './Input';
-import Button from './Button';
-import Spinner from './Spinner';
-
-class MyPage extends Component {
-  state = {
-    loading: false,
-  };
-
-  submitHandler = (event) => {
-  
-    this.setState({ loading: true });
-    
-    axios
-      .post('https://mydatabase/my-data.json', data)
-      .then((response) => {
-        this.setState({ loading: false });
-        this.props.history.push('/');
-      })
-      .catch((error) => {
-        this.setState({ loading: false });
-      });
-  };
-  
-  render() {
-    let content = (
-      <form onSubmit={this.submitHandler}>
-        <Input />
-        <Button>
-          SUBMIT
-        </Button>
-      </form>
-    );
-    
-    if (this.state.loading) {
-      content = <Spinner />;
-    }
-
-    return (
-      <div>
-        <h4>Enter your Data</h4>
-        {content}
-      </div>
-    );
-  }
-}
-
-export default MyPage;
-```
-
-</div>
-</div>
-
-<div id="hamburger">
-<button type="button" class="collapsible">+ Creating A Simple Hamburger Icon</button>   
-<div class="content" style="display: none;" markdown="1">
-
-A "Hamburger Button" is the nickname given to the icon that is commonly used for toggling a menu, particularly on mobile apps.  The name comes from the resemblance with a hamburger.
-
-*HamburgerButton.js*
-
-```jsx
-import React from 'react';
-import classes from './HamburgerButton.module.css';
-
-const HamburgerButton = (props) => (
-  <div className={classes.HamburgerButton} onClick={props.clicked}>
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-);
-
-export default HamburgerButton;
-```
-
-*HamburgerButton.module.css*
-
-```css
-.HamburgerButton {
-  width: 40px;
-  height: 100%;
-  display: flex;
-  flex-flow: column;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  box-sizing: border-box;
-  cursor: pointer;
-}
-
-.HamburgerButton div {
-  width: 90%;
-  height: 3px;
-  background-color: white;
-}
-
-@media (min-width: 500px) {
-  .HamburgerButton {
-      display: none;
-  }
-}
-```
-</div>
-</div>
-
-<div id="backdrop">
-<button type="button" class="collapsible">+ Creating A Simple Backdrop</button>   
-<div class="content" style="display: none;" markdown="1">
-
-In this context, a backdrop refers to an overlay that is displayed to hide the background while something else is displayed in the foreground (e.g. a message dialog, or a slide-in dialog). 
-
-*Backdrop.js*
-
-```jsx
-import React from 'react';
-import classes from './Backdrop.module.css';
-
-const Backdrop = (props) =>
-  props.show ? <div className={classes.Backdrop} onClick={props.clicked}></div> : null;
-
-export default Backdrop;
-
-```
-
-*Backdrop.module.css*
-
-```css
-.Backdrop {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: 100;
-  left: 0;
-  top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* If width < 350px or height < 300px  */
-@media (max-width: 500px), (max-height: 500px) {
-  .Backdrop {
-    width: 500px;
-    height: 715px;
-  }
-}
-```
-</div>
-</div>
-
-<div id="modal">
-<button type="button" class="collapsible">+ Creating A Simple Modal Pop-Up</button>   
-<div class="content" style="display: none;" markdown="1">
-
-*Modal.js*
-
-```jsx
-import React, { Component } from 'react';
-import classes from './Modal.module.css';
-import Wrapper from './Wrapper';
-import Backdrop from './Backdrop';
-
-class Modal extends Component {
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
-  }
-
-  render() {
-    return (
-      <Wrapper>
-        <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
-        <div
-          className={classes.Modal}
-          style={{
-            transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
-            opacity: this.props.show ? '1' : '0',
-          }}
-        >
-          {this.props.children}
-        </div>
-      </Wrapper>
-    );
-  }
-}
-
-export default Modal;
-```
-
-*Backdrop.module.css*
-
-```css
-.Backdrop {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: 100;
-  left: 0;
-  top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* If width < 350px or height < 300px  */
-@media (max-width: 500px), (max-height: 500px) {
-  .Backdrop {
-    width: 500px;
-    height: 715px;
-  }
-}
-```
-
-*MyPage.js*
-
-```jsx
-class MyPage extends Component {
-  state = {
-    data: {},
-    showData: false
-  };
-  
-  modelOpenedHandler = (data) => {
-    this.setState({ data: data, showData: true });
-  };
-  
-  modalClosedHandler = () => {
-    this.setState({ showData: false });
-  };
-  
-  render() {
-    let myData = (
-        <MyData data={this.state.data} />
-      );
-    }
-
-    if (this.state.loading) {
-      myData = <Spinner />;
-    }
-
-    return (
-      <Wrapper>
-        <Modal show={this.state.showData} modalClosed={this.modalClosedHandler}>
-          {myData}
-        </Modal>
-        <Content modelOpened={this.modalOpenedHandler} />
-      </Wrapper>
-    );
-  }
-}
-```
-
-</div>
-</div>
-
-<div id="sidedrawer">
-<button type="button" class="collapsible">+ Creating A Simple Toolbar And Side Drawer</button>   
-<div class="content" style="display: none;" markdown="1">
-
-*Layout.js*
-
-```jsx
-import React, { Component } from 'react';
-
-import classes from './Layout.module.css';
-
-import Wrapper from './Wrapper';
-import Toolbar from './Toolbar';
-import SideDrawer from './SideDrawer';
-
-class Layout extends Component {
-  state = {
-    showSideDrawer: false,
-  };
-
-  sideDrawerToggleHandler = () => {
-    this.setState((prevState) => {
-      return { showSideDrawer: !prevState.showSideDrawer };
-    });
-  };
-
-  render() {
-    return (
-      <Wrapper>
-        <Toolbar toggle={this.sideDrawerToggleHandler} />
-
-        <SideDrawer open={this.state.showSideDrawer} closed={this.sideDrawerToggleHandler} />
-
-        <main className={classes.Content}>{this.props.children}</main>
-      </Wrapper>
-    );
-  }
-}
-
-export default Layout;
-```
-
-*Layout.module.css*
-
-```css
-.Content {
-  margin-top: 72px;
-  width: 100%;
-}
-
-/* If width < 350px or height < 300px  */
-@media (max-width: 350px), (max-height: 300px) {
-  .Content {
-    width: 350px;
-    height: 600px;
-    background-color: red;
-  }
-}
-```
-
-*Toolbar.js*
-
-```jsx
-import React from 'react';
-
-import classes from './Toolbar.module.css';
-
-import Logo from './Logo';
-import NavigationItems from '../NavigationItems';
-import HamburgerButton from './HamburgerButton'
-
-const Toolbar = (props) => (
-  <header className={classes.Toolbar}>
-    <div className={[classes.HamburgerButton, classes.MobileOnly].join(' ')}>
-      <HamburgerButton clicked={props.toggle} />
-    </div>
-    <div className={classes.Logo}>
-      <Logo />
-    </div>
-    <nav className={classes.DesktopOnly}>
-      <NavigationItems/>
-    </nav>
-  </header>
-);
-
-export default Toolbar;
-```
-
-*Toolbar.module.css*
-
-```css
-.Toolbar {
-  height: 56px;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: #703b09;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  box-sizing: border-box;
-  z-index: 90;
-}
-
-.Toolbar nav {
-  height: 100%;
-}
-
-.Logo {
-  height: 80%;
-}
-
-.HamburgerButton {
-  height: 100%;
-}
-
-/* If width > 500px */
-@media (max-width: 500px) {
-  .DesktopOnly {
-    display: none;
-  }
-}
-
-/* If width < 499px */
-@media (min-width: 499px) {
-  .MobileOnly {
-    display: none;
-  }
-}
-```
-
-*SideDrawer.js*
-
-```jsx
-import React from 'react';
-
-import classes from './SideDrawer.module.css';
-
-import Wrapper from './Wrapper';
-import Backdrop from '../Backdrop';
-import Logo from './Logo';
-import NavigationItems from './NavigationItems';
-
-const SideDrawer = (props) => {
-  let attachedClasses = [classes.SideDrawer, classes.Close];
-  if (props.open) {
-    attachedClasses = [classes.SideDrawer, classes.Open];
-  }
-
-  return (
-    <Wrapper>
-      <Backdrop show={props.open} clicked={props.closed} />
-      <div className={attachedClasses.join(' ')}>
-        <div className={classes.Logo}>
-          <Logo />
-        </div>
-        <nav>
-          <NavigationItems />
-        </nav>
-      </div>
-    </Wrapper>
-  );
-};
-
-export default SideDrawer;
-```
-
-*SideDrawer.module.css*
-
-```css
-.SideDrawer {
-  position: fixed;
-  width: 280px;
-  max-width: 70%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  z-index: 200;
-  background-color: white;
-  padding: 32px 16px;
-  box-sizing: border-box;
-  transition: transform 0.3s ease-out;
-}
-
-@media (min-width: 500px) {
-  .SideDrawer {
-    display: none;
-  }
-}
-
-.Open {
-  transform: translateX(0);
-}
-
-.Close {
-  transform: translateX(-100%);
-}
-
-.Logo {
-  position: relative;
-  height: 11%;
-  width: 45%;
-  max-width: 100%;
-  margin-bottom: 32px;
-}
-```
-
-</div>
-</div>
-
-</div>
-</div>
-
 <div id="auth">
 <button type="button" class="collapsible">+ Authentication In Single Page Applications </button>   
 <div class="content" style="display: none;" markdown="1">
@@ -6829,25 +6339,44 @@ export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(Ord
 <button type="button" class="collapsible">+ Testing Overview</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Testing Tools:
-* Test Runner: Executes test and provides a validation library (e.g. Jest)
-   * Jest: this should be included in the default create-react-app install (but can be installed for any JavaScript project)
-      * Documentation for Jest can be found here: [https://jestjs.io/](https://jestjs.io/)
-      * There is an extension that integrates Jest into VS Code: [https://github.com/jest-community/vscode-jest](https://github.com/jest-community/vscode-jest)
-* Testing Utilities: "Simulates" the React App (mounts components; allows you to dig into the DOM) (e.g. React Test Utils, Enzyme)
-   * Enzyme: `npm install --save enzyme react-test-renderer enzyme-adapter-react-16`
-   * Documentation for Enzyme can be found here: [https://enzymejs.github.io/enzyme/](https://enzymejs.github.io/enzyme/)
-   
-What Not To Test:
-* Don't test libraries (assume developers have tested their own libraries)
-* Don't test complex connections (test if button click triggers a specific props, or if change of data received results in a difference; one school of thought: only test if app is rendered correctly)
+<div id="test-tools">
+<button type="button" class="collapsible">+ Testing Tools</button>   
+<div class="content" style="display: none;" markdown="1">
+  
+To perform testing of React code, two tools are required:
 
-What To Test:
-* Do test isolated units.
-* Do test conditional outputs.
+**Test Runner**
+
+The Test Runner executes the tests and provides validation tools.  The most commonly used one is Jest, since is included in the default create-react-app install.
+
+The documentation for Jest can be found here: 
+* [https://jestjs.io/](https://jestjs.io/)
+
+There is an extension that integrates Jest into VS Code, further details regarding which can be found here:
+* [https://github.com/jest-community/vscode-jest](https://github.com/jest-community/vscode-jest)
+
+
+NOTE: Although the following is concerned with React, Jest can be installed manually for any JavaScript project.
+
+* Install: `npm install --save-dev jest`
+* Import: [none required]
+
+
+**Testing Utility**
+
+The Testing Utility "simulates" the React App (i.e. it mounts components), which allows the DOM to be accessed.  Examples include React Test Utils and Enzyme.
+
+The following will concentrate on Enzyme, the documentation for which can be found here:
+*  [https://enzymejs.github.io/enzyme/](https://enzymejs.github.io/enzyme/)
+
+* Install: `npm install --save enzyme react-test-renderer enzyme-adapter-react-16`
+* Import: `import { configure, shallow } from 'enzyme'; import Adapter from 'enzyme-adapter-react-16';`
+
+</div>
+</div>
 
 <div id="test-basic">
-<button type="button" class="collapsible">+ Basic Test Implementation (using Enzyme)</button>   
+<button type="button" class="collapsible">+ Basic Test Implementation (using Enzyme &amp; Jest)</button>   
 <div class="content" style="display: none;" markdown="1">
 
 The basic test implementation revolves around the following functions provided by Jest:
@@ -6930,7 +6459,11 @@ The test runner will now monitor the tests and re-run them if it identifies any 
 A slightly more refined test implementation can be achieved with the following functions:
 * `beforeEach()`: This is one of several global functions provided by Jest.  In this case, the function is called before each test.
    * For further information on Jest globals, see here: [https://jestjs.io/docs/en/api](https://jestjs.io/docs/en/api)
-* `setProps()`: This is a function exposed by Enzyme that allows props to be passed to a test (in the form of a Javascript object)
+* `setProps()`: This is a function exposed by Enzyme that allows props to be passed to a test (in the form of a Javascript object).
+   * This is one of many functions exposed by the `shallow()` rendering API; a full list can be found here: [https://enzymejs.github.io/enzyme/docs/api/shallow.html](https://enzymejs.github.io/enzyme/docs/api/shallow.html)
+
+In addition, the `expect()` function provided by Jest exposes many "matchers" that can be used to validate tests.  A full list of these can be found here: [https://jestjs.io/docs/en/expect](https://jestjs.io/docs/en/expect).
+
 
 For example:
 
@@ -6966,25 +6499,691 @@ describe('<NavigationItems />', () => {
     });
     expect(wrapper.find(NavigationItem)).toHaveLength(3);
   });
-});
-```
-
-https://jestjs.io/docs/en/expect
-
-```jsx
-...etc...
-
-describe('<NavigationItems />', () => {
-
-  ...etc...
   
-  it('should render three <NavigationItem /> elements if authenticated', () => {
+  it('test that the logout <NavigationItem /> element is rendered if authenticated', () => {
     wrapper.setProps({ isAuthenticated: true });
 
     expect(wrapper.contains(<NavigationItem link="/logout">Logout</NavigationItem>)).toEqual(true);
   });
 });
 ```
+
+</div>
+</div>
+
+<div id="test-refine">
+<button type="button" class="collapsible">+ Testing Redux Containers</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Although Redux containers deal with state rather than props, a container can be tested via props by wrapping the default export with `connect()` (so that the state can be converted to props) and also marking the container component as an export.
+
+NOTE: that all props must be initialized *including functions exposed by the props*.
+
+For example:
+
+*BurgerBuilder.js*
+
+```jsx
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+...etc...
+
+export class BurgerBuilder extends Component {
+  state = {
+    purchasing: false,
+  };
+
+  //
+  componentDidMount() {
+    this.props.onInitIngredients();
+  }
+
+  ...etc...
+}
+
+const mapStateToProps = (state) => {
+  if (state) {
+    return {
+      ...etc...
+    };
+  } else {
+    return null;
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    ...etc...
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
+```
+
+The following is an example of test that might be written for the above code:
+
+*BurgerBuilder.test.js*
+
+```jsx
+import React from 'react';
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+import { BurgerBuilder } from './BurgerBuilder';
+import BuildControls from './BuildControls';
+
+// connects enzyme to the test
+configure({ adapter: new Adapter() });
+
+describe('<BurgerBuilder />', () => {
+  let wrapper;
+
+  beforeEach(() => {
+    // for the onInitIngredients() prop, just pass in a dummy function
+    wrapper = shallow(<BurgerBuilder onInitIngredients={() => {}} />);
+  });
+
+  it('should render <BuildControls /> when receving ingredients', () => {
+    wrapper.setProps({
+      ingredients: { salad: 0 },
+    });
+    expect(wrapper.find(BuildControls)).toHaveLength(1);
+  });
+});
+
+```
+</div>
+</div>
+
+<div id="test-redux">
+<button type="button" class="collapsible">+ Testing Redux Containers</button>   
+<div class="content" style="display: none;" markdown="1">
+
+We don't want to test complex chains of actions, reducers and state.  All we really want to test are the reducers.
+
+Testing reducers is relatively straightforward since we don't need to worry about rendering (and this don't need enzyme).
+
+For example, to test the authentication reducer:
+
+*auth.js*
+
+```jsx
+...etc...
+
+const initialState = {
+  userId: null,
+  token: null,
+  error: null,
+  loading: false,
+  authRedirectPath: '/',
+};
+
+const authSuccess = (state, action) => {
+  return updateObject(state, {
+    userId: action.userId,
+    token: action.token,
+    error: null,
+    loading: false,
+  });
+};
+
+...etc...
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case actionTypes.AUTH_SUCCESS: {
+      return authSuccess(state, action);
+    }
+    ...etc...
+  }
+};
+
+export default reducer;
+```
+
+A test for this might be the following:
+
+*auth.test.js*
+
+```jsx
+import reducer from './auth';
+import * as actionTypes from '../actions/actionTypes';
+
+describe('auth reducer', () => {
+  it('should return the initial state', () => {
+    expect(reducer(undefined, {})).toEqual({
+      userId: null,
+      token: null,
+      error: null,
+      loading: false,
+      authRedirectPath: '/',
+    });
+  });
+
+  it('should store the token upon login', () => {
+    expect(
+      reducer(
+        {
+          userId: null,
+          token: null,
+          error: null,
+          loading: false,
+          authRedirectPath: '/',
+        },
+        {
+          type: actionTypes.AUTH_SUCCESS,
+          token: 'some-token',
+          userId: 'some-user-id',
+        }
+      )
+    ).toEqual({
+      userId: 'some-user-id',
+      token: 'some-token',
+      error: null,
+      loading: false,
+      authRedirectPath: '/',
+    });
+  });
+});
+```
+</div>
+</div>
+
+</div>
+</div>
+
+<div id="code-examples">
+<button type="button" class="collapsible">+ Code Examples</button>   
+<div class="content" style="display: none;" markdown="1">
+
+<div id="spinner">
+<button type="button" class="collapsible">+ Creating A Simple Spinner</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Spinner.js*
+
+```jsx
+import React from 'react';
+import classes from './Spinner.module.css';
+
+const Spinner = (props) => <div className={classes.Loader}>Loading...</div>;
+
+export default Spinner;
+```
+
+*Spinner.module.css*
+
+Generate the CSS using the following tool:
+* [https://projects.lukehaas.me/css-loaders/](https://projects.lukehaas.me/css-loaders/)
+
+*MyPage.js*
+
+```jsx
+import React, { Component } from 'react';
+import axios from 'axios';
+
+import Input from './Input';
+import Button from './Button';
+import Spinner from './Spinner';
+
+class MyPage extends Component {
+  state = {
+    loading: false,
+  };
+
+  submitHandler = (event) => {
+  
+    this.setState({ loading: true });
+    
+    axios
+      .post('https://mydatabase/my-data.json', data)
+      .then((response) => {
+        this.setState({ loading: false });
+        this.props.history.push('/');
+      })
+      .catch((error) => {
+        this.setState({ loading: false });
+      });
+  };
+  
+  render() {
+    let content = (
+      <form onSubmit={this.submitHandler}>
+        <Input />
+        <Button>
+          SUBMIT
+        </Button>
+      </form>
+    );
+    
+    if (this.state.loading) {
+      content = <Spinner />;
+    }
+
+    return (
+      <div>
+        <h4>Enter your Data</h4>
+        {content}
+      </div>
+    );
+  }
+}
+
+export default MyPage;
+```
+
+</div>
+</div>
+
+<div id="hamburger">
+<button type="button" class="collapsible">+ Creating A Simple Hamburger Icon</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A "Hamburger Button" is the nickname given to the icon that is commonly used for toggling a menu, particularly on mobile apps.  The name comes from the resemblance with a hamburger.
+
+*HamburgerButton.js*
+
+```jsx
+import React from 'react';
+import classes from './HamburgerButton.module.css';
+
+const HamburgerButton = (props) => (
+  <div className={classes.HamburgerButton} onClick={props.clicked}>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+);
+
+export default HamburgerButton;
+```
+
+*HamburgerButton.module.css*
+
+```css
+.HamburgerButton {
+  width: 40px;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.HamburgerButton div {
+  width: 90%;
+  height: 3px;
+  background-color: white;
+}
+
+@media (min-width: 500px) {
+  .HamburgerButton {
+      display: none;
+  }
+}
+```
+</div>
+</div>
+
+<div id="backdrop">
+<button type="button" class="collapsible">+ Creating A Simple Backdrop</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In this context, a backdrop refers to an overlay that is displayed to hide the background while something else is displayed in the foreground (e.g. a message dialog, or a slide-in dialog). 
+
+*Backdrop.js*
+
+```jsx
+import React from 'react';
+import classes from './Backdrop.module.css';
+
+const Backdrop = (props) =>
+  props.show ? <div className={classes.Backdrop} onClick={props.clicked}></div> : null;
+
+export default Backdrop;
+
+```
+
+*Backdrop.module.css*
+
+```css
+.Backdrop {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 500px), (max-height: 500px) {
+  .Backdrop {
+    width: 500px;
+    height: 715px;
+  }
+}
+```
+</div>
+</div>
+
+<div id="modal">
+<button type="button" class="collapsible">+ Creating A Simple Modal Pop-Up</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Modal.js*
+
+```jsx
+import React, { Component } from 'react';
+import classes from './Modal.module.css';
+import Wrapper from './Wrapper';
+import Backdrop from './Backdrop';
+
+class Modal extends Component {
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
+  }
+
+  render() {
+    return (
+      <Wrapper>
+        <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
+        <div
+          className={classes.Modal}
+          style={{
+            transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
+            opacity: this.props.show ? '1' : '0',
+          }}
+        >
+          {this.props.children}
+        </div>
+      </Wrapper>
+    );
+  }
+}
+
+export default Modal;
+```
+
+*Backdrop.module.css*
+
+```css
+.Backdrop {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 500px), (max-height: 500px) {
+  .Backdrop {
+    width: 500px;
+    height: 715px;
+  }
+}
+```
+
+*MyPage.js*
+
+```jsx
+class MyPage extends Component {
+  state = {
+    data: {},
+    showData: false
+  };
+  
+  modelOpenedHandler = (data) => {
+    this.setState({ data: data, showData: true });
+  };
+  
+  modalClosedHandler = () => {
+    this.setState({ showData: false });
+  };
+  
+  render() {
+    let myData = (
+        <MyData data={this.state.data} />
+      );
+    }
+
+    if (this.state.loading) {
+      myData = <Spinner />;
+    }
+
+    return (
+      <Wrapper>
+        <Modal show={this.state.showData} modalClosed={this.modalClosedHandler}>
+          {myData}
+        </Modal>
+        <Content modelOpened={this.modalOpenedHandler} />
+      </Wrapper>
+    );
+  }
+}
+```
+
+</div>
+</div>
+
+<div id="sidedrawer">
+<button type="button" class="collapsible">+ Creating A Simple Toolbar And Side Drawer</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Layout.js*
+
+```jsx
+import React, { Component } from 'react';
+
+import classes from './Layout.module.css';
+
+import Wrapper from './Wrapper';
+import Toolbar from './Toolbar';
+import SideDrawer from './SideDrawer';
+
+class Layout extends Component {
+  state = {
+    showSideDrawer: false,
+  };
+
+  sideDrawerToggleHandler = () => {
+    this.setState((prevState) => {
+      return { showSideDrawer: !prevState.showSideDrawer };
+    });
+  };
+
+  render() {
+    return (
+      <Wrapper>
+        <Toolbar toggle={this.sideDrawerToggleHandler} />
+
+        <SideDrawer open={this.state.showSideDrawer} closed={this.sideDrawerToggleHandler} />
+
+        <main className={classes.Content}>{this.props.children}</main>
+      </Wrapper>
+    );
+  }
+}
+
+export default Layout;
+```
+
+*Layout.module.css*
+
+```css
+.Content {
+  margin-top: 72px;
+  width: 100%;
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 350px), (max-height: 300px) {
+  .Content {
+    width: 350px;
+    height: 600px;
+    background-color: red;
+  }
+}
+```
+
+*Toolbar.js*
+
+```jsx
+import React from 'react';
+
+import classes from './Toolbar.module.css';
+
+import Logo from './Logo';
+import NavigationItems from '../NavigationItems';
+import HamburgerButton from './HamburgerButton'
+
+const Toolbar = (props) => (
+  <header className={classes.Toolbar}>
+    <div className={[classes.HamburgerButton, classes.MobileOnly].join(' ')}>
+      <HamburgerButton clicked={props.toggle} />
+    </div>
+    <div className={classes.Logo}>
+      <Logo />
+    </div>
+    <nav className={classes.DesktopOnly}>
+      <NavigationItems/>
+    </nav>
+  </header>
+);
+
+export default Toolbar;
+```
+
+*Toolbar.module.css*
+
+```css
+.Toolbar {
+  height: 56px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #703b09;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 90;
+}
+
+.Toolbar nav {
+  height: 100%;
+}
+
+.Logo {
+  height: 80%;
+}
+
+.HamburgerButton {
+  height: 100%;
+}
+
+/* If width > 500px */
+@media (max-width: 500px) {
+  .DesktopOnly {
+    display: none;
+  }
+}
+
+/* If width < 499px */
+@media (min-width: 499px) {
+  .MobileOnly {
+    display: none;
+  }
+}
+```
+
+*SideDrawer.js*
+
+```jsx
+import React from 'react';
+
+import classes from './SideDrawer.module.css';
+
+import Wrapper from './Wrapper';
+import Backdrop from '../Backdrop';
+import Logo from './Logo';
+import NavigationItems from './NavigationItems';
+
+const SideDrawer = (props) => {
+  let attachedClasses = [classes.SideDrawer, classes.Close];
+  if (props.open) {
+    attachedClasses = [classes.SideDrawer, classes.Open];
+  }
+
+  return (
+    <Wrapper>
+      <Backdrop show={props.open} clicked={props.closed} />
+      <div className={attachedClasses.join(' ')}>
+        <div className={classes.Logo}>
+          <Logo />
+        </div>
+        <nav>
+          <NavigationItems />
+        </nav>
+      </div>
+    </Wrapper>
+  );
+};
+
+export default SideDrawer;
+```
+
+*SideDrawer.module.css*
+
+```css
+.SideDrawer {
+  position: fixed;
+  width: 280px;
+  max-width: 70%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  background-color: white;
+  padding: 32px 16px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-out;
+}
+
+@media (min-width: 500px) {
+  .SideDrawer {
+    display: none;
+  }
+}
+
+.Open {
+  transform: translateX(0);
+}
+
+.Close {
+  transform: translateX(-100%);
+}
+
+.Logo {
+  position: relative;
+  height: 11%;
+  width: 45%;
+  max-width: 100%;
+  margin-bottom: 32px;
+}
+```
+
 </div>
 </div>
 
