@@ -200,6 +200,8 @@ Some examples of common patterns can be found here:
   * Command-line tool that creates the basic framework for a react app.
 * `[sudo] npm install yarn -g`
   * Yarn is an alternative to npm.
+* `npm install firebase-tools -g`
+   * If using Google Firebase
 
 **Locally Installed Production (i.e. per project; required for production)**
 
@@ -224,6 +226,8 @@ Some examples of common patterns can be found here:
    * Enables both complex synchronous logic and simple asynchronous logic when accessing a Redux store.
 * `npm install firebase`
    * Enables access to Google's Firebase database.
+* `npm install gh-pages`
+   * If deploying to GitHub Pages
 
 **Locally Installed Development (i.e. per project; only required for development)**
 * `npm install eslint --save-dev`
@@ -6689,6 +6693,49 @@ describe('auth reducer', () => {
 ```
 </div>
 </div>
+
+</div>
+</div>
+
+<div id="deploy">
+<button type="button" class="collapsible">+ Deploying React App</button>   
+<div class="content" style="display: none;" markdown="1">
+
+1. Check (&amp; Adjust) basepath
+   * `<BrowserRouter basename="/my-app/">`
+1. Build &amp; Optimize Project
+   * `npm run build`
+1. Check that server ALWAYS returns index.html
+   * including 404 cases!
+1. Upload build artifacts to static server
+   * Found in /build folder when using create-react-app
+
+Deployment instructions will vary host-to-host.  A couple of examples:
+
+**Firebase**
+1 `npm install -g firebase-tools`
+1 `firebase login`
+1 `firebase init`
+   * Firebase CLI -> Hosting
+   * Firebase Project -> [choose project name]
+   * Public directory -> build
+   * Single-page app -> y
+   * Overwrite build/index.html -> n
+1 `firebase deploy`
+1 Confirm that the app is accessible at `https://[project-name].firebaseapp.com`
+
+**GitHub Pages**
+1 Create a repository containing the app
+1 Install dependencies: `npm install`
+1 Install gh-pages: `npm install gh-pages --save-dev`
+1 Add the following to the package.json file (just above `"dependencies"`):
+   * `"homepage": "https://[github-username].github.io/[github-repo-name]"`
+1 Also add the following to `"scripts"`:
+   * `"predeploy": "npm run build"`
+   * `"deploy": "gh-pages -d build"`
+1 Commit all files
+1 Run: `npm run deploy`
+1 Confirm that the app is accessible at `https://[github-username].github.io/[github-repo-name]`
 
 </div>
 </div>
