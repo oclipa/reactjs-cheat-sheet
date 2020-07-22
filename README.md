@@ -7270,6 +7270,244 @@ export default SideDrawer;
 
 </div>
 </div>
+
+-------------------------------------------------------------------------------------------------------
+
+<div id="webpack">
+<button type="button" class="collapsible">+ Webpack</button>
+<div class="content" style="display: none;" markdown="1">
+
+**Introduction**
+
+Webpack is the de-facto standard for setting up projects.  At its core, Webpack is a bundler; it packages a collection of files into a bundle.  In addition to this however, Webpack also analyzes connections between files and optimizes, transforms and transpiles them. 
+
+1. Needs at last one entry point (e.g. app.js), but can handle more than this.
+1. From the entry point, webpack builds up a map of all its the dependencies.
+1. It packages all of the dependencies into a single, concatenated bundle (e.g. dist/bundle.js)
+1. During the packaging, loaders can be applied to the files (e.g. babel-loader, css-loader etc.).  Loaders apply file-dependent transformations.
+1. Additionally, after the loaders have acted on each file, plugins can be applied to the concatenated bundle before it is output (e.g. uglify).
+
+The configuration for these steps is defined in a `webpack.config.js` file.
+
+The create-react-app script uses Webpack under the covers, so theoretically webpack could be used directly, however this is not recommended as normal practice (since CRA handles a lot of the complexities).
+
+**Basic Workflow Requirements**
+
+To partially emulate create-react-app, the basic webpack workflow requirements are:
+
+* Compile Next-Gen JavaScript Features
+* Handle JSX
+* CSS Autoprefixing
+* Support Image Imports
+* Optimize code
+
+**Example Implementation**
+
+The following details how to create a React project without using create-react-app.
+
+1. Create a new folder
+1. If using git, add a `.gitignore` (see below)
+1. Run `npm init` (to enable support for NodeJS; this will create an initial `package.json` file)
+1. Run `npm install --save-dev webpack webpack-dev-server webpack-cli`
+1. Create a `src` folder
+1. Create `src/index.html`
+1. If using VS Code, in the empty `index.html` file type `html:5` and click return.  This will add boiler-plate HTML code to the file.
+1. Add the following to the `<body />` of the HTML: `<div id="root"></div>` (see below)
+1. Now add the following to the `src` folder:
+   * `assets` folder
+   * `components` folder
+   * `containers` folder
+   * `index.js` (see below)
+   * `index.css` (see below)
+   * `App.js` (see below)
+1. Install root dependencies: `npm install react react-dom react-router-dom`
+1. Create the app.
+
+*.gitignore*
+
+```
+node_modules
+.DS_Store
+/dist
+```
+
+*src/index.html*
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+*src/index.css*
+
+```css
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+```
+
+*src/index.js*
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+
+import './index.css';
+import App from './App';
+
+const app = (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
+ReactDOM.render(app, document.getElementById('root'));
+```
+
+*src/App.js*
+
+```jsx
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
+// if require lazy-loading
+import asyncComponent from './hoc/asyncComponent';
+
+const AsyncComp = asyncComponent(() => {
+  return import('./LazyLoadedComponent');
+});
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        ...etc...
+      </div>
+    );
+  }
+}
+```
+
+**Configuring Webpack**
+
+Add `"start": "webpack-dev-server"` to `"scripts"` in `package.json`
+
+Create the following file in the same folder as `package.json`: `webpack.config.js`
+
+The following example demonstrates the bare minimum config to get Webpack to run.  Full documentation for Webpack can be found here:
+* [https://webpack.js.org/guides/](https://webpack.js.org/guides/)
+
+*webpack.config.js*
+
+```js
+// NodeJS syntax
+
+// NodeJS package
+const path = require('path'); 
+
+module.exports = {
+  mode: 'development',
+  // entry point
+  entry: './src/index.js',
+  output: {
+    // __dirname = absolute path for folder containing webpack.config.js
+    // dist = folder under __dirname where output is to be written
+    path: path.resolve(__dirname, 'dist'),
+    // name of output file
+    filename: 'bundle.js',
+    publicPath: '',
+  },
+  // controls how source maps are created (to aid debugging)
+  // check official docs for further options
+  devtool: 'cheap-module-eval-source-map',
+};
+```
+
+**Babel**
+
+Babel is a third-party library that transpiles JavaScript code.  Specifically, it converts next-gen JavaScript code (including JSX) to older code that can be understood by older browsers.
+
+For further documentation on Babel, see here:
+* [https://babeljs.io/docs/en/](https://babeljs.io/docs/en/)
+
+The packages installed depend on the exact configuration being used.  In this case:
+
+Install: `npm install --save-dev @babel/core @babel/preset-env @babel/preset-react @babel/preset-stage-2 babel-loader @babel/plugin-proposal-class-properties`
+
+To enable Babel, it must be added as a module in the Webpack config:
+
+*webpack.config.js*
+
+```js
+// NodeJS syntax
+
+// NodeJS package
+const path = require('path'); 
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    rules: [
+      {
+        // for all .js files
+        test: /\.js$/,
+        // process them using this loader
+        loader: 'babel-loader',
+        // (but exclude anything in node_modules)
+        exclude: /node_modules/,
+      },
+    ],
+  },
+};
+```
+
+To configure Babel, a `.babelrc` is added to the project:
+
+*.babelrc*
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          // browsers with more than 1% of market share,
+          // or the last 2 versions
+          "browsers": ["> 1%", "last 2 versions"]
+        }
+      }
+    ],
+    // presets for React plugins 
+    "@babel/preset-react"
+  ],
+  // plugins to perform additional processing of code
+  "plugins": [
+    // prevents errors due to code that is only at the
+    // proposal stage and not officially supported
+    "@babel/plugin-proposal-class-properties"
+  ]
+}
+```
+
+</div>
+</div>
+
+-------------------------------------------------------------------------------------------------------
+
 &nbsp;
 
 &nbsp;
