@@ -6698,7 +6698,7 @@ describe('auth reducer', () => {
 </div>
 
 <div id="deploy">
-<button type="button" class="collapsible">+ Deploying React App</button>   
+<button type="button" class="collapsible">+ Deploying Single Page Applications</button>   
 <div class="content" style="display: none;" markdown="1">
 
 1. Check (&amp; Adjust) basepath
@@ -7245,7 +7245,6 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Deploying To The Web
 * Webpack
 * Next.js
 * Animation
