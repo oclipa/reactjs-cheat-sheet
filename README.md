@@ -6742,6 +6742,494 @@ NOTE: The GitHub application is deployed to a `gh-pages` branch.  If the app is 
 </div>
 </div>
 
+-------------------------------------------------------------------------------------------------------
+
+<div id="webpack">
+<button type="button" class="collapsible">+ Webpack</button>
+<div class="content" style="display: none;" markdown="1">
+
+<div id="webpack-intro">
+<button type="button" class="collapsible">+ Introduction</button>
+<div class="content" style="display: none;" markdown="1">
+
+Webpack is the de-facto standard for setting up projects.  At its core, Webpack is a bundler; it packages a collection of files into a bundle.  In addition to this however, Webpack also analyzes connections between files and optimizes, transforms and transpiles them. 
+
+1. Needs at last one entry point (e.g. app.js), but can handle more than this.
+1. From the entry point, webpack builds up a map of all its the dependencies.
+1. It packages all of the dependencies into a single, concatenated bundle (e.g. dist/bundle.js)
+1. During the packaging, loaders can be applied to the files (e.g. babel-loader, css-loader etc.).  Loaders apply file-dependent transformations.
+1. Additionally, after the loaders have acted on each file, plugins can be applied to the concatenated bundle before it is output (e.g. uglify).
+
+The configuration for these steps is defined in a `webpack.config.js` file.
+
+**NOTE**: The create-react-app script uses Webpack under the covers, so theoretically Webpack could be used directly, however this is not recommended as normal practice (since CRA handles a lot of the complexities).
+
+</div>
+</div>
+
+<div id="webpack-basics">
+<button type="button" class="collapsible">+ Basic Workflow Requirements</button>
+<div class="content" style="display: none;" markdown="1">
+
+To partially emulate create-react-app, the basic webpack workflow requirements are:
+
+* Compile Next-Gen JavaScript Features
+* Handle JSX
+* CSS Autoprefixing
+* Support Image Imports
+* Optimize code
+
+</div>
+</div>
+
+<div id="webpack-example">
+<button type="button" class="collapsible">+ Example Implementation</button>
+<div class="content" style="display: none;" markdown="1">
+
+The following details how to create a React project without using create-react-app.
+
+1. Create a new folder
+1. If using git, add a `.gitignore` (see below)
+1. Run `npm init` (to enable support for NodeJS; this will create an initial `package.json` file)
+1. Run `npm install --save-dev webpack webpack-dev-server webpack-cli`
+1. Create a `src` folder
+1. Create `src/index.html`
+1. If using VS Code, in the empty `index.html` file type `html:5` and click return.  This will add boiler-plate HTML code to the file.
+1. Add the following to the `<body />` of the HTML: `<div id="root"></div>` (see below)
+1. Now add the following to the `src` folder:
+   * `assets` folder
+   * `components` folder
+   * `containers` folder
+   * `index.js` (see below)
+   * `index.css` (see below)
+   * `App.js` (see below)
+1. Install root dependencies: `npm install react react-dom react-router-dom`
+1. Create the app.
+
+*.gitignore*
+
+```
+node_modules
+.DS_Store
+/dist
+```
+
+*src/index.html*
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+*src/index.css*
+
+```css
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+```
+
+*src/index.js*
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+
+import './index.css';
+import App from './App';
+
+const app = (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
+ReactDOM.render(app, document.getElementById('root'));
+```
+
+*src/App.js*
+
+```jsx
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
+// if require lazy-loading
+import asyncComponent from './hoc/asyncComponent';
+
+const AsyncComp = asyncComponent(() => {
+  return import('./LazyLoadedComponent');
+});
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        ...etc...
+      </div>
+    );
+  }
+}
+```
+
+</div>
+</div>
+
+<div id="webpack-config">
+<button type="button" class="collapsible">+ Configuring Webpack</button>
+<div class="content" style="display: none;" markdown="1">
+
+Add `"start": "webpack-dev-server"` to `"scripts"` in `package.json`
+
+Create the following file in the same folder as `package.json`: `webpack.config.js`
+
+The following example demonstrates the bare minimum config to get Webpack to run.  Full documentation for Webpack can be found here:
+* [https://webpack.js.org/guides/](https://webpack.js.org/guides/)
+
+*webpack.config.js*
+
+```js
+// NodeJS syntax
+
+// NodeJS package
+const path = require('path'); 
+
+module.exports = {
+  mode: 'development',
+  // entry point
+  entry: './src/index.js',
+  output: {
+    // __dirname = absolute path for folder containing webpack.config.js
+    // dist = folder under __dirname where output is to be written
+    path: path.resolve(__dirname, 'dist'),
+    // name of output file
+    filename: 'bundle.js',
+    publicPath: '',
+  },
+  // controls how source maps are created (to aid debugging)
+  // check official docs for further options
+  devtool: 'cheap-module-eval-source-map',
+};
+```
+
+</div>
+</div>
+
+<div id="webpack-babel">
+<button type="button" class="collapsible">+ Babel Loader</button>
+<div class="content" style="display: none;" markdown="1">
+
+Babel is a third-party library that transpiles JavaScript code.  Specifically, it converts next-gen JavaScript code (including JSX) to older code that can be understood by older browsers.
+
+For further documentation on Babel, see here:
+* [https://babeljs.io/docs/en/](https://babeljs.io/docs/en/)
+
+The packages installed depend on the exact configuration being used.  In this case:
+
+Install: `npm install --save-dev @babel/core @babel/preset-env @babel/preset-react @babel/preset-stage-2 babel-loader @babel/plugin-proposal-class-properties`
+
+To enable Babel, it must be added as a module in the Webpack config:
+
+*webpack.config.js*
+
+```js
+...etc...
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    rules: [
+      {
+        // for all .js files
+        test: /\.js$/,
+        // (but exclude anything in node_modules)
+        exclude: /node_modules/,
+        // process all found files using this loader
+        loader: 'babel-loader',
+      },
+    ],
+  },
+};
+```
+
+To configure Babel, a `.babelrc` is added to the project:
+
+*.babelrc*
+
+```js
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          // browsers with more than 1% of market share,
+          // or the last 2 versions
+          "browsers": ["> 1%", "last 2 versions"]
+        }
+      }
+    ],
+    // presets for React plugins 
+    "@babel/preset-react"
+  ],
+  // plugins to perform additional processing of code
+  "plugins": [
+    // prevents errors due to code that is only at the
+    // proposal stage and not officially supported
+    "@babel/plugin-proposal-class-properties"
+  ]
+}
+```
+
+**Babel Polyfill**
+
+The current setup won't support all browsers theoretically supported by React. Features like Promises and Object.assign() are missing in older browsers - especially in IE.
+
+Support for these browsers can by added using a polyfill (a package which provides these features for older browsers).
+
+The Babel docs explain how you can take advantage of Babel's built-in "Polyfill auto injecting" feature: [https://babeljs.io/docs/en/babel-polyfill](https://babeljs.io/docs/en/babel-polyfill)
+
+First, install the following two packages:
+* core-js
+* regenerator-runtime
+
+Install: `npm install core-js regenerator-runtime`
+
+Then, change the config of your @babel/preset-env babel preset in the .babelrc file: 
+
+"presets": [
+    ["@babel/preset-env", {
+        "targets": {
+            "browsers": [
+                "> 1%",
+                "last 2 versions"
+            ]
+        },
+        "useBuiltIns": "usage"
+     }],
+    ...
+ ],
+
+*.babelrc*
+
+```js
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          // browsers with more than 1% of market share,
+          // or the last 2 versions
+          "browsers": ["> 1%", "last 2 versions"]
+        },
+        "useBuiltIns": "usage"
+      }
+    ],
+    
+    ...etc...
+  ],
+  
+  ...etc...
+}
+```
+
+</div>
+</div>
+
+<div id="webpack-css">
+<button type="button" class="collapsible">+ CSS Loader</button>
+<div class="content" style="display: none;" markdown="1">
+
+The CSS loader actually has four components:
+* `css-loader`: analyzes css imports
+* `style-loader`: takes all of the found css and injects it into an HTML page
+* `postcss-loader`: allows styles to be transformed using plugins
+* `autoprefixer`: a plugin to parse CSS and add vendor prefixes to CSS rules
+
+For further information on PostCSS and Autoprefixer, see here: 
+* [https://postcss.org/](https://postcss.org/)
+
+Install: `npm install --save-dev style-loader css-loader postcss-loader autoprefixer`
+
+*webpack.config.js*
+
+```js
+const autoprefixer = require('autoprefixer'); // NodeJS package
+
+...etc...
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    rules: [
+      ...etc...
+      {
+        // for all .css files
+        test: /\.css$/,
+        // (but exclude anything in node_modules)
+        exclude: /node_modules/,
+        // process all found files using these loaders
+        use: [ // mutiple loaders
+          { loader: 'style-loader' },
+          { 
+            loader: 'css-loader', options: {
+              importLoaders: 1,
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+              }
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: () => [autoprefixer],
+            },
+          },
+        ]
+      },
+    ],
+  },
+};
+```
+
+In addition, Autoprefixer requires that the list of browsers to be targeted be added to the package.json file:
+
+*package.json*
+
+```js
+...etc...
+
+  "license": "ISC",
+  "browserslist": "> 1%, last 2 versions", // same as in .babelrc
+  "devDependencies": {
+
+...etc...
+```
+
+</div>
+</div>
+
+<div id="webpack-asset">
+<button type="button" class="collapsible">+ Asset Loader</button>
+<div class="content" style="display: none;" markdown="1">
+
+Processing assets that need to be referenced by URL (such as images) is done using `url-loader`.  If files are below a set file size limit, `url-loader` inlines them within the JavaScript files using base64 encoding (rather than uploading them as separate files).  This is typically used for image files.  It provides performance advantages if an app contains many small files, since it avoids repeated server requests when the app is loaded.
+
+If the files exceed the file size limit, `url-loader` defers to `file-loader`, which uploads each file separately rather than inlining them.  For large files, the performance benefits of inlining them can be lost since the JavaScript can get very large.
+
+Install: `npm install --save-dev url-loader file-loader`
+
+*webpack.config.js*
+
+```js
+...etc...
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    rules: [
+      ...etc...
+      {
+        // for all image files
+        test: /\.(png|jpe?g|gif)$/,
+        // (but exclude anything in node_modules)
+        exclude: /node_modules/,
+        // process all found files using this loader
+        // for demo purposes, options are specified using
+        // an alternative, inline syntax.
+        // limit = max image size in kb
+        // name = output path
+        loader: 'url-loader?limit=8192&name=images/[name].[ext]',
+      },
+    ],
+  },
+};
+```
+
+</div>
+</div>
+
+<div id="webpack-inject">
+<button type="button" class="collapsible">+ Injecting The JavaScript Into The HTML</button>
+<div class="content" style="display: none;" markdown="1">
+
+Once all of the preceding file transformations have been completed, the results are passed to a final transformation that injects them into the app HTML.
+
+Install: `npm install --save-dev html-webpack-plugin`
+
+The `html-webpack-plugin` is instantiated in the `plugins` array, which is separate to the `module` array.
+
+*webpack.config.js*
+
+```js
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+...etc...
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    ...etc...
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      // file to be used as basis for app
+      template: __dirname + '/src/index.html',
+      // file to be generated by the plugin
+      filename: 'index.html',
+      // where to inject the results
+      inject: 'body',
+    }),
+  ],
+};
+```
+
+</div>
+</div>
+
+<div id="webpack-inject">
+<button type="button" class="collapsible">+ Building &amp; Optimizing The App</button>
+<div class="content" style="display: none;" markdown="1">
+
+To build and start the development version of the app, simply run `npm start`.
+
+To build and run the production version of the app:
+
+1. Copy `webpack.config.js` to `webpack.config.prod.js`.
+1. In `webpack.config.prod.js` change the `mode` to be `'production'`.
+1. Also, change `devtool` to be `'none'`.
+1. In `package.json` add the following to the `scripts`:
+   * `"build:prod": "webpack --config webpack.config.prod.js"`
+1. Run the build using the following command:
+   * `npm run build:prod`
+
+The optimized app is deployed to the `\dist` sub-folder.
+
+</div>
+</div>
+
+</div>
+</div>
+
+-------------------------------------------------------------------------------------------------------
+
 <div id="code-examples">
 <button type="button" class="collapsible">+ Code Examples</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -7247,7 +7735,6 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Webpack
 * Next.js
 * Animation
 * Redux-saga
@@ -7268,72 +7755,49 @@ export default SideDrawer;
 * [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
 * [Strict Mode](https://reactjs.org/docs/strict-mode.html)
 
+
 </div>
 </div>
 
 -------------------------------------------------------------------------------------------------------
 
-<div id="webpack">
-<button type="button" class="collapsible">+ Webpack</button>
+<div id="nextjs">
+<button type="button" class="collapsible">+ NextJS - Server-Side Rendering</button>
 <div class="content" style="display: none;" markdown="1">
 
-<div id="webpack-intro">
-<button type="button" class="collapsible">+ Introduction</button>
-<div class="content" style="display: none;" markdown="1">
+NextJs is a library that builds on top of ReactJS.  It forces a particular folder structure and enables server-side rendering "out-of-the-box".  It also simplifies some of the configuration.
 
-Webpack is the de-facto standard for setting up projects.  At its core, Webpack is a bundler; it packages a collection of files into a bundle.  In addition to this however, Webpack also analyzes connections between files and optimizes, transforms and transpiles them. 
+Server-side rendering is particularly useful if an app is highly dependent on being found by search engines.
 
-1. Needs at last one entry point (e.g. app.js), but can handle more than this.
-1. From the entry point, webpack builds up a map of all its the dependencies.
-1. It packages all of the dependencies into a single, concatenated bundle (e.g. dist/bundle.js)
-1. During the packaging, loaders can be applied to the files (e.g. babel-loader, css-loader etc.).  Loaders apply file-dependent transformations.
-1. Additionally, after the loaders have acted on each file, plugins can be applied to the concatenated bundle before it is output (e.g. uglify).
+Further information about NextJS can be found here: [https://nextjs.org/](https://nextjs.org/).
 
-The configuration for these steps is defined in a `webpack.config.js` file.
+**Server-Side Rendering*
 
-**NOTE**: The create-react-app script uses Webpack under the covers, so theoretically Webpack could be used directly, however this is not recommended as normal practice (since CRA handles a lot of the complexities).
+During server-side rendering, when the first page load occurs (which would normally respond with just the app bundle), the server also generates a rendered version of the first page and passes this back with the app bundle.  This means the first page will always be rendered as expected.  Subsequent page accesses will be rendered by the client as normal.
 
-</div>
-</div>
+This is particularly useful when the app is being crawled by a search engine (or an machine-based form of access), since these do not normally perform page rendering.
 
-<div id="webpack-basics">
-<button type="button" class="collapsible">+ Basic Workflow Requirements</button>
-<div class="content" style="display: none;" markdown="1">
-
-To partially emulate create-react-app, the basic webpack workflow requirements are:
-
-* Compile Next-Gen JavaScript Features
-* Handle JSX
-* CSS Autoprefixing
-* Support Image Imports
-* Optimize code
-
-</div>
-</div>
+Folders & Files to reflect URLs in file system.  Automatically parse this using internal Router.  Also, pre-renders the pages on the server and code-splits the code.
 
 <div id="webpack-example">
 <button type="button" class="collapsible">+ Example Implementation</button>
 <div class="content" style="display: none;" markdown="1">
 
-The following details how to create a React project without using create-react-app.
+**Setting Up The Project**
+
+The following details how to create a NextJS-based project without using create-react-app.
 
 1. Create a new folder
 1. If using git, add a `.gitignore` (see below)
 1. Run `npm init` (to enable support for NodeJS; this will create an initial `package.json` file)
-1. Run `npm install --save-dev webpack webpack-dev-server webpack-cli`
-1. Create a `src` folder
-1. Create `src/index.html`
-1. If using VS Code, in the empty `index.html` file type `html:5` and click return.  This will add boiler-plate HTML code to the file.
-1. Add the following to the `<body />` of the HTML: `<div id="root"></div>` (see below)
-1. Now add the following to the `src` folder:
-   * `assets` folder
-   * `components` folder
-   * `containers` folder
-   * `index.js` (see below)
-   * `index.css` (see below)
-   * `App.js` (see below)
-1. Install root dependencies: `npm install react react-dom react-router-dom`
-1. Create the app.
+1. Install root dependencies: `npm install react react-dom next`
+1. In `package.json`, add the scripts required by Next (see below)
+1. Create a `.\pages` folder in the root folder
+   * Note that the URL scheme maps to the folder scheme under the `pages` folder.  So, `.\pages\auth\user.js` will map to `https://localhost:3000/auth/user.js`.
+1. All pages are placed under this folder (or its sub-folders).
+   * React components are typically placed outside of this folder (but imported into the pages as normal).
+1. Start the development server using the following command, provided by Next:
+   * `npm run dev`
 
 *.gitignore*
 
@@ -7343,416 +7807,188 @@ node_modules
 /dist
 ```
 
-*src/index.html*
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
-```
-
-*src/index.css*
-
-```css
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-}
-```
-
-*src/index.js*
-
-```jsx
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-
-import './index.css';
-import App from './App';
-
-const app = (
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-);
-
-ReactDOM.render(app, document.getElementById('root'));
-```
-
-*src/App.js*
-
-```jsx
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-
-// if require lazy-loading
-import asyncComponent from './hoc/asyncComponent';
-
-const AsyncComp = asyncComponent(() => {
-  return import('./LazyLoadedComponent');
-});
-
-class App extends Component {
-  render() {
-    return (
-      <div>
-        ...etc...
-      </div>
-    );
-  }
-}
-```
-
-</div>
-</div>
-
-<div id="webpack-config">
-<button type="button" class="collapsible">+ Configuring Webpack</button>
-<div class="content" style="display: none;" markdown="1">
-
-Add `"start": "webpack-dev-server"` to `"scripts"` in `package.json`
-
-Create the following file in the same folder as `package.json`: `webpack.config.js`
-
-The following example demonstrates the bare minimum config to get Webpack to run.  Full documentation for Webpack can be found here:
-* [https://webpack.js.org/guides/](https://webpack.js.org/guides/)
-
-*webpack.config.js*
-
-```js
-// NodeJS syntax
-
-// NodeJS package
-const path = require('path'); 
-
-module.exports = {
-  mode: 'development',
-  // entry point
-  entry: './src/index.js',
-  output: {
-    // __dirname = absolute path for folder containing webpack.config.js
-    // dist = folder under __dirname where output is to be written
-    path: path.resolve(__dirname, 'dist'),
-    // name of output file
-    filename: 'bundle.js',
-    publicPath: '',
-  },
-  // controls how source maps are created (to aid debugging)
-  // check official docs for further options
-  devtool: 'cheap-module-eval-source-map',
-};
-```
-
-</div>
-</div>
-
-<div id="webpack-babel">
-<button type="button" class="collapsible">+ Babel Loader</button>
-<div class="content" style="display: none;" markdown="1">
-
-Babel is a third-party library that transpiles JavaScript code.  Specifically, it converts next-gen JavaScript code (including JSX) to older code that can be understood by older browsers.
-
-For further documentation on Babel, see here:
-* [https://babeljs.io/docs/en/](https://babeljs.io/docs/en/)
-
-The packages installed depend on the exact configuration being used.  In this case:
-
-Install: `npm install --save-dev @babel/core @babel/preset-env @babel/preset-react @babel/preset-stage-2 babel-loader @babel/plugin-proposal-class-properties`
-
-To enable Babel, it must be added as a module in the Webpack config:
-
-*webpack.config.js*
-
-```js
-...etc...
-
-module.exports = {
-  ...etc...
-  
-  module: {
-    rules: [
-      {
-        // for all .js files
-        test: /\.js$/,
-        // (but exclude anything in node_modules)
-        exclude: /node_modules/,
-        // process all found files using this loader
-        loader: 'babel-loader',
-      },
-    ],
-  },
-};
-```
-
-To configure Babel, a `.babelrc` is added to the project:
-
-*.babelrc*
-
-```js
-{
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          // browsers with more than 1% of market share,
-          // or the last 2 versions
-          "browsers": ["> 1%", "last 2 versions"]
-        }
-      }
-    ],
-    // presets for React plugins 
-    "@babel/preset-react"
-  ],
-  // plugins to perform additional processing of code
-  "plugins": [
-    // prevents errors due to code that is only at the
-    // proposal stage and not officially supported
-    "@babel/plugin-proposal-class-properties"
-  ]
-}
-```
-
-**Babel Polyfill**
-
-The current setup won't support all browsers theoretically supported by React. Features like Promises and Object.assign() are missing in older browsers - especially in IE.
-
-Support for these browsers can by added using a polyfill (a package which provides these features for older browsers).
-
-The Babel docs explain how you can take advantage of Babel's built-in "Polyfill auto injecting" feature: [https://babeljs.io/docs/en/babel-polyfill](https://babeljs.io/docs/en/babel-polyfill)
-
-First, install the following two packages:
-* core-js
-* regenerator-runtime
-
-Install: `npm install core-js regenerator-runtime`
-
-Then, change the config of your @babel/preset-env babel preset in the .babelrc file: 
-
-"presets": [
-    ["@babel/preset-env", {
-        "targets": {
-            "browsers": [
-                "> 1%",
-                "last 2 versions"
-            ]
-        },
-        "useBuiltIns": "usage"
-     }],
-    ...
- ],
-
-*.babelrc*
-
-```js
-{
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          // browsers with more than 1% of market share,
-          // or the last 2 versions
-          "browsers": ["> 1%", "last 2 versions"]
-        },
-        "useBuiltIns": "usage"
-      }
-    ],
-    
-    ...etc...
-  ],
-  
-  ...etc...
-}
-```
-
-</div>
-</div>
-
-<div id="webpack-css">
-<button type="button" class="collapsible">+ CSS Loader</button>
-<div class="content" style="display: none;" markdown="1">
-
-The CSS loader actually has four components:
-* `css-loader`: analyzes css imports
-* `style-loader`: takes all of the found css and injects it into an HTML page
-* `postcss-loader`: allows styles to be transformed using plugins
-* `autoprefixer`: a plugin to parse CSS and add vendor prefixes to CSS rules
-
-For further information on PostCSS and Autoprefixer, see here: 
-* [https://postcss.org/](https://postcss.org/)
-
-Install: `npm install --save-dev style-loader css-loader postcss-loader autoprefixer`
-
-*webpack.config.js*
-
-```js
-const autoprefixer = require('autoprefixer'); // NodeJS package
-
-...etc...
-
-module.exports = {
-  ...etc...
-  
-  module: {
-    rules: [
-      ...etc...
-      {
-        // for all .css files
-        test: /\.css$/,
-        // (but exclude anything in node_modules)
-        exclude: /node_modules/,
-        // process all found files using these loaders
-        use: [ // mutiple loaders
-          { loader: 'style-loader' },
-          { 
-            loader: 'css-loader', options: {
-              importLoaders: 1,
-              modules: {
-                localIdentName: '[name]__[local]__[hash:base64:5]'
-              }
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              ident: 'postcss',
-              plugins: () => [autoprefixer],
-            },
-          },
-        ]
-      },
-    ],
-  },
-};
-```
-
-In addition, Autoprefixer requires that the list of browsers to be targeted be added to the package.json file:
-
 *package.json*
 
 ```js
-...etc...
-
-  "license": "ISC",
-  "browserslist": "> 1%, last 2 versions", // same as in .babelrc
-  "devDependencies": {
-
-...etc...
-```
-
-</div>
-</div>
-
-<div id="webpack-asset">
-<button type="button" class="collapsible">+ Asset Loader</button>
-<div class="content" style="display: none;" markdown="1">
-
-Processing assets that need to be referenced by URL (such as images) is done using `url-loader`.  If files are below a set file size limit, `url-loader` inlines them within the JavaScript files using base64 encoding (rather than uploading them as separate files).  This is typically used for image files.  It provides performance advantages if an app contains many small files, since it avoids repeated server requests when the app is loaded.
-
-If the files exceed the file size limit, `url-loader` defers to `file-loader`, which uploads each file separately rather than inlining them.  For large files, the performance benefits of inlining them can be lost since the JavaScript can get very large.
-
-Install: `npm install --save-dev url-loader file-loader`
-
-*webpack.config.js*
-
-```js
-...etc...
-
-module.exports = {
+{
   ...etc...
   
-  module: {
-    rules: [
-      ...etc...
-      {
-        // for all image files
-        test: /\.(png|jpe?g|gif)$/,
-        // (but exclude anything in node_modules)
-        exclude: /node_modules/,
-        // process all found files using this loader
-        // for demo purposes, options are specified using
-        // an alternative, inline syntax.
-        // limit = max image size in kb
-        // name = output path
-        loader: 'url-loader?limit=8192&name=images/[name].[ext]',
-      },
-    ],
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
   },
-};
-```
-
-</div>
-</div>
-
-<div id="webpack-inject">
-<button type="button" class="collapsible">+ Injecting The JavaScript Into The HTML</button>
-<div class="content" style="display: none;" markdown="1">
-
-Once all of the preceding file transformations have been completed, the results are passed to a final transformation that injects them into the app HTML.
-
-Install: `npm install --save-dev html-webpack-plugin`
-
-The `html-webpack-plugin` is instantiated in the `plugins` array, which is separate to the `module` array.
-
-*webpack.config.js*
-
-```js
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-...etc...
-
-module.exports = {
-  ...etc...
   
-  module: {
     ...etc...
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      // file to be used as basis for app
-      template: __dirname + '/src/index.html',
-      // file to be generated by the plugin
-      filename: 'index.html',
-      // where to inject the results
-      inject: 'body',
-    }),
-  ],
-};
+}
+```
+
+**Creating Pages**
+
+Pages are typically created using stateless functional components, although class components and functional components that use `useState()` will also work.
+
+To handle linking between pages, NextJS provides components that can be used in place of those provided by React.  For example:
+   * `<Link href="url"><a>Text</a></Link>` (imported using: `import Link from 'next/link';`)
+   * `<button onClick={() => Router.push('url')}}>Text</button>` (imported using: `import Router from 'next/router';`)
+   
+For example:
+
+*pages/index.js*
+
+```jsx
+import React from 'react';
+import Link from 'next/link';
+import Router from 'next/router';
+
+const indexPage = () => (
+  <div>
+    <h1>The Main Page</h1>
+    <p>
+      Go to{' '}
+      <Link href="/auth">
+        <a>Auth</a>
+      </Link>
+    </p>
+    <button
+      onClick={() => {
+        Router.push('/auth');
+      }}
+    >
+      Got to Auth
+    </button>
+  </div>
+);
+
+export default indexPage;
+```
+
+*pages/auth/index.js*
+
+```jsx
+import React from 'react';
+
+const authIndexPage = () => (
+  <div>
+    <h1>The Auth Index Page</h1>
+  </div>
+);
+
+export default authIndexPage;
+```
+
+**Creating Components**
+
+Components are created outside of the `./pages` folder (for example under `./components`).
+
+For example:
+
+*components/User.js*
+
+```jsx
+import React from 'react';
+
+const user = (props) => (
+  <div>
+    <h1>{props.name}</h1>
+    <p>Age: {props.age}</p>
+  </div>
+);
+
+export default user;
+```
+
+These can then be imported as normal into the pages:
+
+*pages/auth/index.js*
+
+```jsx
+import React from 'react';
+
+import User from '../../components/User';
+
+const authIndexPage = () => (
+  <div>
+    <h1>The Auth Index Page</h1>
+    <User name="Max" age={28} />
+  </div>
+);
+
+export default authIndexPage;
+```
+
+**Styling Pages**
+
+* The latest version of NextJS has support for CSS modules, however previous versions did not.  
+* NextJS has always supported other forms of styling, such as Inline Styles and Radium.  
+* It also supports `styled-jsx`, which provides isolated scope CSS using a `<style />` tag.
+   * [https://github.com/vercel/styled-jsx](https://github.com/vercel/styled-jsx)
+
+*User.js*
+
+```js
+import React from 'react';
+
+import classes from './User.module.css';
+
+const user = (props) => (
+  <div className={classes.User}>
+    <h1>{props.name}</h1>
+    <p>Age: {props.age}</p>
+  </div>
+);
+
+export default user;
+```
+
+*User.module.css*
+
+```css
+.User {
+  border: 1px solid #eee;
+  box-shadow: 0 2px 3px #ccc;
+  padding: 20px;
+  text-align: center;
+}
+```
+
+**Handling 404 &amp; 500 Errors**
+
+404 errors, which can happen frequently and thus put a strain on the server, are typically handled by placing a `404.js` file in the root of the `./pages` folder.  A 404 error page is then statically generated at build time.
+
+*pages/404.js*
+
+```jsx
+export default function Custom404() {
+  return <h1>404 - Page Not Found</h1>;
+}
+```
+
+For handling 500 (or other) error codes, a `_error.js` file is placed in the root of the `./pages` folder.  This page is generated dynamically when an error occurs.
+
+*pages/_error.js*
+
+```jsx
+function Error({ statusCode }) {
+  return (
+    <p>
+      {statusCode
+        ? `An error ${statusCode} occurred on server`
+        : 'An error occurred on client'}
+    </p>
+  )
+}
+
+Error.getInitialProps = ({ res, err }) => {
+  const statusCode = res ? res.statusCode : err ? err.statusCode : 404
+  return { statusCode }
+}
+
+export default Error
 ```
 
 </div>
 </div>
 
-<div id="webpack-inject">
-<button type="button" class="collapsible">+ Building &amp; Optimizing The App</button>
-<div class="content" style="display: none;" markdown="1">
-
-To build and start the development version of the app, simply run `npm start`.
-
-To build and run the production version of the app:
-
-1. Copy `webpack.config.js` to `webpack.config.prod.js`.
-1. In `webpack.config.prod.js` change the `mode` to be `'production'`.
-1. Also, change `devtool` to be `'none'`.
-1. In `package.json` add the following to the `scripts`:
-   * `"build:prod": "webpack --config webpack.config.prod.js"`
-1. Run the build using the following command:
-   * `npm run build:prod`
-
-The optimized app is deployed to the `\dist` sub-folder.
-
-</div>
-</div>
 
 </div>
 </div>
