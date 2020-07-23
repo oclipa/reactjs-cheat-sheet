@@ -7435,7 +7435,7 @@ module.exports = {
 };
 ```
 
-**Babel**
+**Babel Loader**
 
 Babel is a third-party library that transpiles JavaScript code.  Specifically, it converts next-gen JavaScript code (including JSX) to older code that can be understood by older browsers.
 
@@ -7451,10 +7451,7 @@ To enable Babel, it must be added as a module in the Webpack config:
 *webpack.config.js*
 
 ```js
-// NodeJS syntax
-
-// NodeJS package
-const path = require('path'); 
+...etc...
 
 module.exports = {
   ...etc...
@@ -7464,10 +7461,10 @@ module.exports = {
       {
         // for all .js files
         test: /\.js$/,
-        // process them using this loader
-        loader: 'babel-loader',
         // (but exclude anything in node_modules)
         exclude: /node_modules/,
+        // process all found files using this loader
+        loader: 'babel-loader',
       },
     ],
   },
@@ -7478,7 +7475,7 @@ To configure Babel, a `.babelrc` is added to the project:
 
 *.babelrc*
 
-```json
+```js
 {
   "presets": [
     [
@@ -7501,6 +7498,110 @@ To configure Babel, a `.babelrc` is added to the project:
     "@babel/plugin-proposal-class-properties"
   ]
 }
+```
+
+**CSS Loader**
+
+The CSS loader actually has four components:
+* `css-loader`: analyzes css imports
+* `style-loader`: takes all of the found css and injects it into an HTML page
+* `postcss-loader`: allows styles to be transformed using plugins
+* `autoprefixer`: a plugin to parse CSS and add vendor prefixes to CSS rules
+
+For further information on PostCSS and Autoprefixer, see here: 
+* [https://postcss.org/](https://postcss.org/)
+
+Install: `npm install --save-dev style-loader css-loader postcss-loader autoprefixer`
+
+*webpack.config.js*
+
+```js
+const autoprefixer = require('autoprefixer'); // NodeJS package
+
+...etc...
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    rules: [
+      ...etc...
+      {
+        // for all .css files
+        test: /\.css$/,
+        // (but exclude anything in node_modules)
+        exclude: /node_modules/,
+        // process all found files using these loaders
+        use: [ // mutiple loaders
+          { loader: 'style-loader' },
+          { 
+            loader: 'css-loader', options: {
+              importLoaders: 1,
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+              }
+            }
+          },
+        ]
+      },
+      {
+        loader: 'postcss-loader',
+        options: {
+          ident: 'postcss',
+          plugins: () => [autoprefixer],
+        },
+      },
+    ],
+  },
+};
+```
+
+In addition, Autoprefixer requires that the list of browsers to be targeted be added to the package.json file:
+
+*package.json*
+
+```js
+...etc...
+
+  "license": "ISC",
+  "browserslist": "> 1%, last 2 versions", // same as in .babelrc
+  "devDependencies": {
+
+...etc...
+```
+
+**Asset Loader**
+
+Processing assets that need to be referenced by URL (such as images) is done using `url-loader`.
+
+Install: `npm install --save-dev url-loader`
+
+*webpack.config.js*
+
+```js
+...etc...
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    rules: [
+      ...etc...
+      {
+        // for all image files
+        test: /\.(png|jpe?g|gif)$/,
+        // (but exclude anything in node_modules)
+        exclude: /node_modules/,
+        // process all found files using this loader
+        // for demo purposes, options are specified using
+        // an alternative, inline syntax.
+        // limit = image size
+        // name = output path
+        loader: 'url-loader?limit=8192&name=images/[name].[ext]',
+      },
+    ],
+  },
+};
 ```
 
 </div>
