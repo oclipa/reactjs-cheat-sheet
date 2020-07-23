@@ -7277,7 +7277,9 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Webpack</button>
 <div class="content" style="display: none;" markdown="1">
 
-**Introduction**
+<div id="webpack-intro">
+<button type="button" class="collapsible">+ Introduction</button>
+<div class="content" style="display: none;" markdown="1">
 
 Webpack is the de-facto standard for setting up projects.  At its core, Webpack is a bundler; it packages a collection of files into a bundle.  In addition to this however, Webpack also analyzes connections between files and optimizes, transforms and transpiles them. 
 
@@ -7289,9 +7291,14 @@ Webpack is the de-facto standard for setting up projects.  At its core, Webpack 
 
 The configuration for these steps is defined in a `webpack.config.js` file.
 
-The create-react-app script uses Webpack under the covers, so theoretically webpack could be used directly, however this is not recommended as normal practice (since CRA handles a lot of the complexities).
+**NOTE**: The create-react-app script uses Webpack under the covers, so theoretically Webpack could be used directly, however this is not recommended as normal practice (since CRA handles a lot of the complexities).
 
-**Basic Workflow Requirements**
+</div>
+</div>
+
+<div id="webpack-basics">
+<button type="button" class="collapsible">+ Basic Workflow Requirements</button>
+<div class="content" style="display: none;" markdown="1">
 
 To partially emulate create-react-app, the basic webpack workflow requirements are:
 
@@ -7301,7 +7308,12 @@ To partially emulate create-react-app, the basic webpack workflow requirements a
 * Support Image Imports
 * Optimize code
 
-**Example Implementation**
+</div>
+</div>
+
+<div id="webpack-example">
+<button type="button" class="collapsible">+ Example Implementation</button>
+<div class="content" style="display: none;" markdown="1">
 
 The following details how to create a React project without using create-react-app.
 
@@ -7400,7 +7412,12 @@ class App extends Component {
 }
 ```
 
-**Configuring Webpack**
+</div>
+</div>
+
+<div id="webpack-config">
+<button type="button" class="collapsible">+ Configuring Webpack</button>
+<div class="content" style="display: none;" markdown="1">
 
 Add `"start": "webpack-dev-server"` to `"scripts"` in `package.json`
 
@@ -7435,7 +7452,12 @@ module.exports = {
 };
 ```
 
-**Babel Loader**
+</div>
+</div>
+
+<div id="webpack-babel">
+<button type="button" class="collapsible">+ Babel Loader</button>
+<div class="content" style="display: none;" markdown="1">
 
 Babel is a third-party library that transpiles JavaScript code.  Specifically, it converts next-gen JavaScript code (including JSX) to older code that can be understood by older browsers.
 
@@ -7500,7 +7522,65 @@ To configure Babel, a `.babelrc` is added to the project:
 }
 ```
 
-**CSS Loader**
+**Babel Polyfill**
+
+The current setup won't support all browsers theoretically supported by React. Features like Promises and Object.assign() are missing in older browsers - especially in IE.
+
+Support for these browsers can by added using a polyfill (a package which provides these features for older browsers).
+
+The Babel docs explain how you can take advantage of Babel's built-in "Polyfill auto injecting" feature: [https://babeljs.io/docs/en/babel-polyfill](https://babeljs.io/docs/en/babel-polyfill)
+
+First, install the following two packages:
+* core-js
+* regenerator-runtime
+
+Install: `npm install core-js regenerator-runtime`
+
+Then, change the config of your @babel/preset-env babel preset in the .babelrc file: 
+
+"presets": [
+    ["@babel/preset-env", {
+        "targets": {
+            "browsers": [
+                "> 1%",
+                "last 2 versions"
+            ]
+        },
+        "useBuiltIns": "usage"
+     }],
+    ...
+ ],
+
+*.babelrc*
+
+```js
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          // browsers with more than 1% of market share,
+          // or the last 2 versions
+          "browsers": ["> 1%", "last 2 versions"]
+        },
+        "useBuiltIns": "usage"
+      }
+    ],
+    
+    ...etc...
+  ],
+  
+  ...etc...
+}
+```
+
+</div>
+</div>
+
+<div id="webpack-css">
+<button type="button" class="collapsible">+ CSS Loader</button>
+<div class="content" style="display: none;" markdown="1">
 
 The CSS loader actually has four components:
 * `css-loader`: analyzes css imports
@@ -7542,14 +7622,14 @@ module.exports = {
               }
             }
           },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: () => [autoprefixer],
+            },
+          },
         ]
-      },
-      {
-        loader: 'postcss-loader',
-        options: {
-          ident: 'postcss',
-          plugins: () => [autoprefixer],
-        },
       },
     ],
   },
@@ -7570,11 +7650,18 @@ In addition, Autoprefixer requires that the list of browsers to be targeted be a
 ...etc...
 ```
 
-**Asset Loader**
+</div>
+</div>
 
-Processing assets that need to be referenced by URL (such as images) is done using `url-loader`.
+<div id="webpack-asset">
+<button type="button" class="collapsible">+ Asset Loader</button>
+<div class="content" style="display: none;" markdown="1">
 
-Install: `npm install --save-dev url-loader`
+Processing assets that need to be referenced by URL (such as images) is done using `url-loader`.  If files are below a set file size limit, `url-loader` inlines them within the JavaScript files using base64 encoding (rather than uploading them as separate files).  This is typically used for image files.  It provides performance advantages if an app contains many small files, since it avoids repeated server requests when the app is loaded.
+
+If the files exceed the file size limit, `url-loader` defers to `file-loader`, which uploads each file separately rather than inlining them.  For large files, the performance benefits of inlining them can be lost since the JavaScript can get very large.
+
+Install: `npm install --save-dev url-loader file-loader`
 
 *webpack.config.js*
 
@@ -7595,7 +7682,7 @@ module.exports = {
         // process all found files using this loader
         // for demo purposes, options are specified using
         // an alternative, inline syntax.
-        // limit = image size
+        // limit = max image size in kb
         // name = output path
         loader: 'url-loader?limit=8192&name=images/[name].[ext]',
       },
@@ -7603,6 +7690,69 @@ module.exports = {
   },
 };
 ```
+
+</div>
+</div>
+
+<div id="webpack-inject">
+<button type="button" class="collapsible">+ Injecting The JavaScript Into The HTML</button>
+<div class="content" style="display: none;" markdown="1">
+
+Once all of the preceding file transformations have been completed, the results are passed to a final transformation that injects them into the app HTML.
+
+Install: `npm install --save-dev html-webpack-plugin`
+
+The `html-webpack-plugin` is instantiated in the `plugins` array, which is separate to the `module` array.
+
+*webpack.config.js*
+
+```js
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+...etc...
+
+module.exports = {
+  ...etc...
+  
+  module: {
+    ...etc...
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      // file to be used as basis for app
+      template: __dirname + '/src/index.html',
+      // file to be generated by the plugin
+      filename: 'index.html',
+      // where to inject the results
+      inject: 'body',
+    }),
+  ],
+};
+```
+
+</div>
+</div>
+
+<div id="webpack-inject">
+<button type="button" class="collapsible">+ Building &amp; Optimizing The App</button>
+<div class="content" style="display: none;" markdown="1">
+
+To build and start the development version of the app, simply run `npm start`.
+
+To build and run the production version of the app:
+
+1. Copy `webpack.config.js` to `webpack.config.prod.js`.
+1. In `webpack.config.prod.js` change the `mode` to be `'production'`.
+1. Also, change `devtool` to be `'none'`.
+1. In `package.json` add the following to the `scripts`:
+   * `"build:prod": "webpack --config webpack.config.prod.js"`
+1. Run the build using the following command:
+   * `npm run build:prod`
+
+The optimized app is deployed to the `\dist` sub-folder.
+
+</div>
+</div>
 
 </div>
 </div>
