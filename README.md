@@ -3,7 +3,7 @@
 <a class="link" href="http://oclipa.github.io/toolbox.html">&lt; toolbox</a>
 </div> 
 
-## ReactJS
+## React
 
 **Recommended Course:**
    * **[React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/course/react-the-complete-guide-incl-redux/)**
@@ -124,27 +124,27 @@ Some examples of common patterns can be found here:
 
 * When using ReduxJS, split your Reducer code into smaller methods to avoid huge JSON within your Reducer.
 * Consider using TypeScript in your apps if you do not do it already.
-* Use the create-react-app generator to bootstrap your ReactJS app.
+* Use the create-react-app generator to bootstrap your React app.
 * Keep your code DRY. Don’t Repeat Yourself, but keep in mind code duplicate is NOT always a bad thing.
 * Avoid having large classes, methods or components, including Reducers.
 * Use more robust managers to manage application state, such as Redux.
 * Use event synchronizer, such as Redux-Thunk, for interactions with your back end API.
 * Avoid passing too many attributes or arguments. Limit yourself to five props that you pass into your component.
-* Use ReactJS defaultProps and ReactJS propTypes.
+* Use React defaultProps and React propTypes.
 * Use linter, break up lines that are too long.
 * Keep your own jslint configuration file.
 * Always use a dependency manager with a lock file, such as NPM or yarn.
 * Test your commonly accessed code, code that is complex and prone to bugs.
 * Write more tests that give more test coverage for your code with a little effort and test code to ensure its proper functioning.
 * Every time you find a bug, make sure you write a test first.
-* Use function-based components by starting to use React Hooks, a new ReactJS way to create state-full components.
+* Use function-based components by starting to use React Hooks, a new React way to create state-full components.
 * Use ES6 de-structuring for your props.
 * Use conditional rendering.
 * User `map()` to collect and render collections of components.
 * Use partial components, such as `<>` … `</>`
 * Name your event handlers with handle prefixes, such as `handleClick()` or `handleUpdate()`.
 * Use `onChange` to control your inputs, such as `onChange={this.handleInputChange}`.
-* Use JEST to test your ReactJS code.
+* Use JEST to test your React code.
 
 </div>
 </div>
@@ -197,7 +197,7 @@ Some examples of common patterns can be found here:
 **Globally Installed**
 
 * `[sudo] npm install create-react-app -g`
-  * Command-line tool that creates the basic framework for a react app.
+  * Command-line tool that creates the basic framework for a React app.
 * `[sudo] npm install yarn -g`
   * Yarn is an alternative to npm.
 * `npm install firebase-tools -g`
@@ -209,7 +209,7 @@ Some examples of common patterns can be found here:
    * Enables use of PropTypes for validation of properties
 * `npm install radium`
    * Uses an HOC that can be used to style components.
-   * Requires pseudo-CSS for inline CSS (the same as standard react).
+   * Requires pseudo-CSS for inline CSS (the same as standard React).
 * `npm install styled-components`
    * Uses tagged template literals to style components.
    * Allows inline CSS to be specified as normal (rather than in the pseudo-CSS required by standard React or Radium).
@@ -221,7 +221,7 @@ Some examples of common patterns can be found here:
 * `npm install redux`
    * Enables enhanced state management
 * `npm install react-redux`
-   * Allows Redux store to be hooked up to react application
+   * Allows Redux store to be hooked up to React application
 * `npm install redux-thunk`
    * Enables both complex synchronous logic and simple asynchronous logic when accessing a Redux store.
 * `npm install firebase`
@@ -2109,7 +2109,7 @@ export default withErrorHandler;
 <button type="button" class="collapsible">+ HTTP Requests with Axios</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Axios is a promise-based HTTP client that can be integrated with ReactJS:  
+Axios is a promise-based HTTP client that can be integrated with React:  
    * [https://github.com/axios/axios](https://github.com/axios/axios)
 
 * Install: `npm install axios`
@@ -3608,15 +3608,15 @@ export default App;
 <button type="button" class="collapsible">+ Routing & Server Deployment</button>   
 <div class="content" style="display: none;" markdown="1">
 
-There are two main issues to be aware of what deploying a react app to a server:
+There are two main issues to be aware of what deploying a React app to a server:
 1. Always return index.html
-   * The server knows nothing about the routes in a react app, which means that the server cannot redirect the browser to the requested part of the app.
-   * The solution is to ensure that the server is configured to *always* return index.html, since index.html will then load the react app, which can, in turn, interpret the requested path.
+   * The server knows nothing about the routes in a React app, which means that the server cannot redirect the browser to the requested part of the app.
+   * The solution is to ensure that the server is configured to *always* return index.html, since index.html will then load the React app, which can, in turn, interpret the requested path.
    * This happens by default on the NPM development server.
 1. Always provide a `basename` for the `BrowserRouter`
    * `BrowserRouter` assumes that all routes requested in the app are relative to the root `basename` property.
    * If this is not explicitly specified, the `basename` is assumed to be `/` (the server root, e.g. example.com/).
-   * If the react app is not located at the server root (e.g. example.com/my-app) and `basename` is not specified, specifying a route in the app (e.g. /posts/) will fail (because the server reads this as example.com/posts/ rather than example.com/my-app/posts/).
+   * If the React app is not located at the server root (e.g. example.com/my-app) and `basename` is not specified, specifying a route in the app (e.g. /posts/) will fail (because the server reads this as example.com/posts/ rather than example.com/my-app/posts/).
    * To avoid this, the `BrowserRouter` element should always be specified as `<BrowserRouter basename="/my-app">`
 
 </div>
@@ -3639,7 +3639,7 @@ There are two main issues to be aware of what deploying a react app to a server:
 
 **A Simple Non-React Redux Example**
 
-This example is standalone code; it does not require react.
+This example is standalone code; it does not require React.
 
 * Install: `npm install redux`
 
@@ -7762,14 +7762,14 @@ export default SideDrawer;
 -------------------------------------------------------------------------------------------------------
 
 <div id="nextjs">
-<button type="button" class="collapsible">+ NextJS - Server-Side Rendering</button>
+<button type="button" class="collapsible">+ Next.js - Server-Side Rendering</button>
 <div class="content" style="display: none;" markdown="1">
 
-NextJs is a library that builds on top of ReactJS.  It forces a particular folder structure and enables server-side rendering "out-of-the-box".  It also simplifies some of the configuration.
+Next.js is a library that builds on top of React.  It forces a particular folder structure and enables server-side rendering "out-of-the-box".  It also simplifies some of the configuration.
 
 Server-side rendering is particularly useful if an app is highly dependent on being found by search engines.
 
-Further information about NextJS can be found here: [https://nextjs.org/](https://nextjs.org/).
+Further information about Next.js can be found here: [https://nextjs.org/](https://nextjs.org/).
 
 **Server-Side Rendering*
 
@@ -7785,13 +7785,13 @@ Folders & Files to reflect URLs in file system.  Automatically parse this using 
 
 **Setting Up The Project**
 
-The following details how to create a NextJS-based project without using create-react-app.
+The following details how to create a Next.js-based project without using create-react-app.
 
 1. Create a new folder
 1. If using git, add a `.gitignore` (see below)
 1. Run `npm init` (to enable support for NodeJS; this will create an initial `package.json` file)
 1. Install root dependencies: `npm install react react-dom next`
-1. In `package.json`, add the scripts required by Next (see below)
+1. In `package.json`, add the scripts required by Next.js (see below)
 1. Create a `.\pages` folder in the root folder
    * Note that the URL scheme maps to the folder scheme under the `pages` folder.  So, `.\pages\auth\user.js` will map to `https://localhost:3000/auth/user.js`.
 1. All pages are placed under this folder (or its sub-folders).
@@ -7816,7 +7816,8 @@ node_modules
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production next start",
+    "prod": "npm run build; npm run start"
   },
   
     ...etc...
@@ -7827,7 +7828,7 @@ node_modules
 
 Pages are typically created using stateless functional components, although class components and functional components that use `useState()` will also work.
 
-To handle linking between pages, NextJS provides components that can be used in place of those provided by React.  For example:
+To handle linking between pages, Next.js provides components that can be used in place of those provided by React.  For example:
    * `<Link href="url"><a>Text</a></Link>` (imported using: `import Link from 'next/link';`)
    * `<button onClick={() => Router.push('url')}}>Text</button>` (imported using: `import Router from 'next/router';`)
    
@@ -7918,8 +7919,8 @@ export default authIndexPage;
 
 **Styling Pages**
 
-* The latest version of NextJS has support for CSS modules, however previous versions did not.  
-* NextJS has always supported other forms of styling, such as Inline Styles and Radium.  
+* The latest version of Next.js has support for CSS modules, however previous versions did not.  
+* Next.js has always supported other forms of styling, such as Inline Styles and Radium.  
 * It also supports `styled-jsx`, which provides isolated scope CSS using a `<style />` tag.
    * [https://github.com/vercel/styled-jsx](https://github.com/vercel/styled-jsx)
 
@@ -8056,7 +8057,6 @@ export default function Page({ errorCode, stars, errorDetails }) {
   return <div>Next stars: {stars}</div>;
 }
 ```
-
 
 </div>
 </div>
