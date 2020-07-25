@@ -7963,28 +7963,100 @@ export default function Custom404() {
 }
 ```
 
-For handling 500 (or other) error codes, a `_error.js` file is placed in the root of the `./pages` folder.  This page is generated dynamically when an error occurs.
+For handling 500 (or other) error codes, a default page is provided by Next.  This page is generated dynamically so that details of the error can be passed to it (hence why it is separate from the 404 error page).
+
+*pages/getStarCount.js*
+
+```jsx
+import Error from 'next/error';
+
+function tryParse(suspect) {
+  ...etc... 
+  return return { value: parsedSuspect, valid: isValid };
+}
+JSON['tryParse'] = tryParse;
+
+export async function getServerSideProps() {
+  const res = await fetch('https://api.github.com/repos/vercel/next.js');
+
+  const statusCode = res.statusCode;
+  let errorCode = res.ok ? false : statusCode ? statusCode : 500;
+
+  // initially get response as text, in case json wasn't returned
+  const resText = await res.text();
+  // then try to convert JSON to object
+  const result = JSON.tryParse(resText);
+  const resObj = result.value;
+
+  // if conversion was successful, use resObj
+  let count = 0;
+  if (result.valid) {
+    count = resObj.stargazers_count;
+    if (!count) count = 0;
+  }
+
+  return {
+    props: { errorCode, stars: count, errorDetails: resObj },
+  };
+}
+
+export default function Page({ errorCode, stars, resObj }) {
+  if (errorCode) {
+    return (
+      <Error statusCode={errorCode} title={JSON.stringify(resObj)} />
+    );
+  }
+
+  return <div>Next stars: {stars}</div>;
+}
+```
+
+Alternatively, the default error page can be overridden by placing an `_error.js` file in the root of the `./pages` folder.  This must be imported instead of `next/error`.  
 
 *pages/_error.js*
 
 ```jsx
-function Error({ statusCode }) {
+const Error = (props) => {
   return (
     <p>
-      {statusCode
-        ? `An error ${statusCode} occurred on server`
+      {props.statusCode
+        ? `An error ${props.statusCode} occurred on server: ${props.metadata}`
         : 'An error occurred on client'}
     </p>
-  )
-}
+  );
+};
 
 Error.getInitialProps = ({ res, err }) => {
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404
-  return { statusCode }
+  return { statusCode, metadata: err }
 }
 
 export default Error
 ```
+
+*pages/getStarCount.js*
+
+```jsx
+// import _error, rather than next/error;
+import ErrorPage from './_error';
+
+...etc...
+
+export default function Page({ errorCode, stars, errorDetails }) {
+  if (errorCode) {
+    return (
+      <ErrorPage
+        statusCode={errorCode}
+        title={'Something went wrong'}
+        metadata={JSON.stringify(errorDetails)}
+      />
+    );
+  }
+
+  return <div>Next stars: {stars}</div>;
+}
+```
+
 
 </div>
 </div>
