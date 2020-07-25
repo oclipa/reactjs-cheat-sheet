@@ -7765,6 +7765,10 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Next.js - Server-Side Rendering</button>
 <div class="content" style="display: none;" markdown="1">
 
+<div id="nextjs-intro">
+<button type="button" class="collapsible">+ Introduction</button>
+<div class="content" style="display: none;" markdown="1">
+
 Next.js is a library that builds on top of React.  It forces a particular folder structure and enables server-side rendering "out-of-the-box".  It also simplifies some of the configuration.
 
 Server-side rendering is particularly useful if an app is highly dependent on being found by search engines.
@@ -7779,8 +7783,11 @@ This is particularly useful when the app is being crawled by a search engine (or
 
 Folders & Files to reflect URLs in file system.  Automatically parse this using internal Router.  Also, pre-renders the pages on the server and code-splits the code.
 
-<div id="webpack-example">
-<button type="button" class="collapsible">+ Example Implementation</button>
+</div>
+</div>
+
+<div id="nextjs-setup">
+<button type="button" class="collapsible">+ Setting up a Project</button>
 <div class="content" style="display: none;" markdown="1">
 
 **Setting Up The Project**
@@ -7824,7 +7831,12 @@ node_modules
 }
 ```
 
-**Creating Pages**
+</div>
+</div>
+
+<div id="nextjs-pages">
+<button type="button" class="collapsible">+ Creating Pages</button>
+<div class="content" style="display: none;" markdown="1">
 
 Pages are typically created using stateless functional components, although class components and functional components that use `useState()` will also work.
 
@@ -7877,7 +7889,12 @@ const authIndexPage = () => (
 export default authIndexPage;
 ```
 
-**Creating Components**
+</div>
+</div>
+
+<div id="nextjs-components">
+<button type="button" class="collapsible">+ Creating Components</button>
+<div class="content" style="display: none;" markdown="1">
 
 Components are created outside of the `./pages` folder (for example under `./components`).
 
@@ -7917,7 +7934,12 @@ const authIndexPage = () => (
 export default authIndexPage;
 ```
 
-**Styling Pages**
+</div>
+</div>
+
+<div id="nextjs-styling">
+<button type="button" class="collapsible">+ Styling Pages</button>
+<div class="content" style="display: none;" markdown="1">
 
 * The latest version of Next.js has support for CSS modules, however previous versions did not.  
 * Next.js has always supported other forms of styling, such as Inline Styles and Radium.  
@@ -7952,7 +7974,12 @@ export default user;
 }
 ```
 
-**Handling 404 &amp; 500 Errors**
+</div>
+</div>
+
+<div id="nextjs-errors">
+<button type="button" class="collapsible">+ Error Handling</button>
+<div class="content" style="display: none;" markdown="1">
 
 404 errors, which can happen frequently and thus put a strain on the server, are typically handled by placing a `404.js` file in the root of the `./pages` folder.  A 404 error page is then statically generated at build time.
 
@@ -8057,6 +8084,232 @@ export default function Page({ errorCode, stars, errorDetails }) {
   return <div>Next stars: {stars}</div>;
 }
 ```
+
+</div>
+</div>
+
+<div id="nextjs-hooks">
+<button type="button" class="collapsible">+ Lifecycle Hooks: getInitialProps(), getServerSideProps(), getStaticProps() & useSWR()</button>
+<div class="content" style="display: none;" markdown="1">
+
+One of the challenges for SEO is that search engine crawlers will typically not register content that is not rendered immediately when the page loads.  This is one of the main reasons why the following lifecycle hooks have been added by Next.js.
+
+**Example without Next.js Hooks**
+
+```jsx
+// users/page.jsx
+// data fetched from an external data source with axios
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const Users = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const fetchData = async () => {
+    await axios.get('https://jsonplaceholder.typicode.com/users')
+      .then(res => {
+        setError(false);
+        setUsers(prevState => [...prevState, ...res.data]);
+      })
+      .catch(() => {
+        setError(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <section>
+      <header>
+        <h1>List of users</h1>
+      </header>
+      {!error && loading && <div>Loading data...</div>}
+      {error && <div>There was an error.</div>}
+      {!error && users && (
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, key) => (
+              <tr key={key}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+};
+
+export default Users;
+```
+
+**getInitialProps()**
+
+`getInitialProps()` is a lifecycle hook that allows the props for a Next.js page to be populated before any further processing or rendering of the page is performed.  The first time the page is requested (e.g. if the user manually enters the URL or refreshes the page), the function is run on the server before the HTML page is served to the client.  Subsequent renders of the page are done on the client-side.  Typically, this method will access the backend via an API layer (to avoid publically exposing the low-level backend API). This method has been deprecated in favour of the other hooks, however it is still commonly used.  It is recommended that future development should use the other hooks.
+
+Example:
+
+```jsx
+TBD
+```
+
+**getServerSideProps()**
+
+`getServerSideProps()` is a relatively new lifecycle hook that *only* runs on the server.  It returns JSON to the client, which the client then renders as HTML.  Everytime the page is rendered. the server-side function will run.  Because the function runs on the server, it can access the backend directly (and locally), without an intervening API layer, which can have performance advantages when accessing data infrequently.  It also improves security by reducing the information passed back-and-forth, and improves compatability (since the data fetching process is less dependent on the browser).  The downside of this method is that it can impact performance if data must be fetched frequently.  In this case, the recommended solution is to use `getServerSideProps()` for first access, and then `useSWR()` for further accesses.
+
+Example:
+
+```jsx
+// users/page.jsx
+// data fetched from an external data source with axios
+// using `getServerSideProps`
+import axios from 'axios';
+
+const fetchData = async () => await axios.get('https://jsonplaceholder.typicode.com/users')
+  .then(res => ({
+    error: false,
+    users: res.data,
+  }))
+  .catch(() => ({
+      error: true,
+      users: null,
+    }),
+  );
+
+const Users = ({ users, error }) => {
+  return (
+    <section>
+      <header>
+        <h1>List of users</h1>
+      </header>
+      {error && <div>There was an error.</div>}
+      {!error && users && (
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, key) => (
+              <tr key={key}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+};
+
+export const getServerSideProps = async () => {
+  const data = await fetchData();
+
+  return {
+    props: data,
+  };
+}
+
+export default Users;
+```
+
+**getStaticProps()**
+
+...
+
+Example:
+
+```jsx
+// users/page.jsx
+// data fetched from an external data source with axios
+// using `getStaticProps`
+import axios from 'axios';
+
+const fetchData = async () => await axios.get('https://jsonplaceholder.typicode.com/users')
+  .then(res => ({
+    error: false,
+    users: res.data,
+  }))
+  .catch(() => ({
+      error: true,
+      users: null,
+    }),
+  );
+
+const Users = ({ users, error }) => {
+  return (
+    <section>
+      <header>
+        <h1>List of users</h1>
+      </header>
+      {error && <div>There was an error.</div>}
+      {!error && users && (
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, key) => (
+              <tr key={key}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+};
+
+export const getStaticProps = async () => {
+  const data = await fetchData();
+
+  return {
+    props: data,
+  };
+}
+
+export default Users;
+```
+
+</div>
+</div>
+
+<div id="nextjs-info">
+<button type="button" class="collapsible">+ Further Information</button>
+<div class="content" style="display: none;" markdown="1">
+
+* [https://nextjs.org/docs/getting-started](Next.js Documentation)
+* [https://www.youtube.com/playlist?list=PLYSZyzpwBEWSQsrukurP09ksi49H9Yj40](Next.js Video Tutorials)
+
+</div>
+</div>
 
 </div>
 </div>
