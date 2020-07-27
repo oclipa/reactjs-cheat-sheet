@@ -8158,25 +8158,94 @@ const Users = () => {
 export default Users;
 ```
 
-Page Type: Static
-Emitted File Size: 6.14 kB
-XMLHttpRequest: Yes
+Behaviour:
+* Emitted File Size: 6.14 kB
+* Page Type: Static
+   * Fetches data from backend API, which is rendered on client.
+* XMLHttpRequest: Yes
+* Slow fetch; slow render.
 
 **getInitialProps()**
 
-`getInitialProps()` is a lifecycle hook that allows the props for a Next.js page to be populated before any further processing or rendering of the page is performed.  The first time the page is requested (e.g. if the user manually enters the URL or refreshes the page), the function is run on the server before the HTML page is served to the client.  Subsequent renders of the page are done on the client-side.  Typically, this method will access the backend via an API layer (to avoid publically exposing the low-level backend API). This method has been deprecated in favour of the other hooks, however it is still commonly used.  It is recommended that future development should use the other hooks.
+`getInitialProps()` runs on both the server and the client.  Its goal is to present a static page on first hit, but then act in a traditional, dynamic manner for subsequent accesses.  
 
-Note that using this function will disable Automatic State Optimization (where the build automatically identifies pages that can be emitted as static).
+The first time the page is requested (e.g. if the user manually enters the URL or refreshes the page), the initial props (hence the name) are obtained by the server querying the backend API and then returning a rendered HTML page to the client.  Subsequent renders of the page are done on the client-side, with props being fetched from the backend API by the client.  Typically, this method will access the data store API via an intermediate API layer (to avoid publically exposing the low-level backend API). 
+
+**NOTE 1**: This method has been deprecated in favour of the other hooks, however it is still commonly used.  It is recommended that future development should use the other hooks.
+
+**NOTE 2**: Note that using this function will disable Automatic State Optimization (where the build automatically identifies pages that can be emitted as static).
 
 Example:
 
 ```jsx
-TBD
+// users/page.jsx
+// data fetched from an external data source with axios
+// using `getInitialProps`
+import axios from 'axios';
+
+const fetchData = async () =>
+  await axios
+    .get('http://jsonplaceholder.typicode.com/users')
+    .then((res) => ({
+      error: null,
+      users: res.data,
+    }))
+    .catch((error) => ({
+      error: JSON.stringify(error),
+      users: null,
+    }));
+
+const UsersPage = ({ users, error }) => {
+  return (
+    <section>
+      <header>
+        <h1>List of users</h1>
+      </header>
+      {error && <div>There was an error: {error}</div>}
+      {!error && users && (
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, key) => (
+              <tr key={key}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+};
+
+UsersPage.getInitialProps = async () => {
+  const data = await fetchData();
+
+  return { users: data.users, error: data.error };
+};
+
+export default UsersPage;
 ```
 
 **getServerSideProps()**
 
-`getServerSideProps()` is a relatively new lifecycle hook that *only* runs on the server.  It returns JSON to the client, which the client then renders as HTML.  Every time the page is rendered, the server-side function will run.  Because the function runs on the server, it can access the backend directly (and locally), without an intervening API layer, which can have performance advantages when accessing data infrequently.  It also improves security by reducing the information passed back-and-forth, and improves compatibility (since the data fetching process is less dependent on the browser).  The downside of this method is that it can impact performance if data must be fetched frequently.  In this case, the recommended solution is to use `getServerSideProps()` for first access, and then `useSWR()` for further accesses.
+`getServerSideProps()` is a lifecycle hook that runs *only* on the server.  
+
+The first time the page is hit, a fully rendered HTML page is returned (effectively presenting a static page to the world).  Subsequent accesses will return only the props, in JSON format, which the client then uses to update the previously received HTML.  Every time the page is rendered, the server-side function will run.  This is subtely different from `getInitialProps()`, which only calls the server-side function on first hit.  
+
+Because the function runs on the server, it can access the backend directly (and locally), without an intervening API layer, which can have performance advantages when accessing data infrequently.  It also improves security by reducing the information passed back-and-forth, and improves compatibility (since the data fetching process is less dependent on the browser).  
+
+**NOTE 1**: The downside of this method is that it can impact performance if data must be fetched frequently.  In this case, the recommended solution is to use `getServerSideProps()` for first access, and then `useSWR()` for further accesses.
+
+**NOTE 2**: Note that using this function will disable Automatic State Optimization (where the build automatically identifies pages that can be emitted as static).
 
 Example:
 
@@ -8239,13 +8308,21 @@ export const getServerSideProps = async () => {
 export default Users;
 ```
 
-Page Type: Server
-Emitted File Size: 429 bytes
-XMLHttpRequest: No
+Behaviour:
+* Emitted File Size: 429 bytes
+* Page Type: Server
+   * If accessed using `<Link>`, returns JSON, which is rendered on client.
+   * If accessed using URL, returns rendered HTML + rest of app.
+* XMLHttpRequest: No
+* Slow fetch; fast render.
 
 **getStaticProps()**
 
-`getStaticProps()` serves a fully rendered version of the page from the server.  This is particularly useful for SEO or if an expensive data transformation is required, or if a private API must be protected.  The chief downside to this approach is that the page only presents data captured at build-time; it cannot present data that changes regularly.
+`getStaticProps()` *always* serves a pre-rendered version of the page from the server.  The rendering happens *at build time*, which means the page can be effectively considered a traditional, static HTML page at runtime.  
+
+This approach is particularly useful for SEO and/or ultra-fast access to a page is required.  Also, it avoids expensive, real-time data transformations, or exposure of private APIs.  
+
+The chief downside to this approach is that the page only presents data captured at build-time; it cannot present data that changes regularly.
 
 Example:
 
@@ -8308,9 +8385,12 @@ export const getStaticProps = async () => {
 export default Users;
 ```
 
-Page Type: Server
-Emitted File Size: 430 bytes
-XMLHttpRequest: No
+Behaviour:
+* Emitted File Size: 430 bytes
+* Page Type: Static
+   * Returns static HTML.
+* XMLHttpRequest: No
+* Fast fetch; ultra-fast render.
 
 </div>
 </div>
