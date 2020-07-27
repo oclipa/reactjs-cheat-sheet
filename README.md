@@ -8089,10 +8089,12 @@ export default function Page({ errorCode, stars, errorDetails }) {
 </div>
 
 <div id="nextjs-hooks">
-<button type="button" class="collapsible">+ Lifecycle Hooks: getInitialProps(), getServerSideProps(), getStaticProps() & useSWR()</button>
+<button type="button" class="collapsible">+ Lifecycle Hooks</button>
 <div class="content" style="display: none;" markdown="1">
 
 One of the challenges for SEO is that search engine crawlers will typically not register content that is not rendered immediately when the page loads.  This is one of the main reasons why the following lifecycle hooks have been added by Next.js.
+
+The following is an example of a page that doesn't use hooks (it simply fetches the data as necessary whenver the page is loaded).  Implementing this page, while sure to always display the latest data, gives slow performance and a potentially heavy impact on the backend API.  Compare with this with the other options discussed in the next sections.
 
 **Example without Next.js Hooks**
 
@@ -8161,11 +8163,16 @@ export default Users;
 Behaviour:
 * Emitted File Size: 6.14 kB
 * Page Type: Static
-   * Fetches data from backend API, which is rendered on client.
-* XMLHttpRequest: Yes
+   * Client always fetches data from backend API and renders it.
+* XMLHttpRequest: Yes (fetch(App) + XHR(JSON), then XHR(JSON))
 * Slow fetch; slow render.
 
-**getInitialProps()**
+</div>
+</div>
+
+<div id="nextjs-gip">
+<button type="button" class="collapsible">+ Lifecycle Hooks: getInitialProps()</button>
+<div class="content" style="display: none;" markdown="1">
 
 `getInitialProps()` runs on both the server and the client.  Its goal is to present a static page on first hit, but then act in a traditional, dynamic manner for subsequent accesses.  
 
@@ -8235,7 +8242,20 @@ UsersPage.getInitialProps = async () => {
 export default UsersPage;
 ```
 
-**getServerSideProps()**
+Behaviour:
+* Emitted File Size: 670 bytes
+* Page Type: Lambda (dynamic)
+   * Initially server fetches data and renders page.
+   * Then client fetches data and renders it.
+* XMLHttpRequest: Yes (Initially fetch(App), then XHR(JSON))
+* Initial fast fetch & fast render; subsequent slow fetch and slow render.
+
+</div>
+</div>
+
+<div id="nextjs-gssp">
+<button type="button" class="collapsible">+ Lifecycle Hooks: getServerSideProps()</button>
+<div class="content" style="display: none;" markdown="1">
 
 `getServerSideProps()` is a lifecycle hook that runs *only* on the server.  
 
@@ -8310,13 +8330,18 @@ export default Users;
 
 Behaviour:
 * Emitted File Size: 429 bytes
-* Page Type: Server
-   * If accessed using `<Link>`, returns JSON, which is rendered on client.
-   * If accessed using URL, returns rendered HTML + rest of app.
-* XMLHttpRequest: No
-* Slow fetch; fast render.
+* Page Type: Lambda (dynamic)
+   * Initially server fetches data and renders page.
+   * Then server fetches data and client renders it.
+* XMLHttpRequest: No (Initially fetch(App), then fetch(JSON))
+* Initial fast fetch and fast render; subsequent slower fetch and slower render.
 
-**getStaticProps()**
+</div>
+</div>
+
+<div id="nextjs-gsp">
+<button type="button" class="collapsible">+ Lifecycle Hooks: getStaticProps()</button>
+<div class="content" style="display: none;" markdown="1">
 
 `getStaticProps()` *always* serves a pre-rendered version of the page from the server.  The rendering happens *at build time*, which means the page can be effectively considered a traditional, static HTML page at runtime.  
 
@@ -8389,8 +8414,29 @@ Behaviour:
 * Emitted File Size: 430 bytes
 * Page Type: Static
    * Returns static HTML.
-* XMLHttpRequest: No
+* XMLHttpRequest: No (Initially fetch(App), then fetch(JSON))  (why do we get JSON fetched once loaded?????)
 * Fast fetch; ultra-fast render.
+
+</div>
+</div>
+
+<div id="nextjs-swr">
+<button type="button" class="collapsible">+ Lifecycle Hooks: useSWR()</button>
+<div class="content" style="display: none;" markdown="1">
+
+`useSWR()` can be thought of as the replacement for the client-side aspects of `getInitialProps()`.  It handles caching, revalidation, focus tracking, refetching on interval, and more.  The name `SWR` derives from `stale-while-revalidate`, an HTTP cache invalidation strategy that first returns the data from cache (stale), then sends a fetch request (revalidate) and finally returns the up-to-date data.
+
+This approach means that pages render fast initially (albeit with potentially out-of-date data), but can subsequently be updated when the latest data is available.
+
+```jsx
+```
+
+Behaviour:
+* Emitted File Size: 4.5 kB
+* Page Type: Static
+   * Fetches data from backend API, which is rendered on client.
+* XMLHttpRequest: Yes (Initially fetch(App) + XHR(JSON), then from cache + XHR(JSON))
+* Initial fast fetch & fast render; later updated with up-to-date data.
 
 </div>
 </div>
