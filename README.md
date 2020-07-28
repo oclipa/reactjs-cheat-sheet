@@ -8161,7 +8161,7 @@ export default Users;
 ```
 
 Behaviour:
-* Emitted File Size: 6.14 kB
+* Emitted File Size: 1.11 kB
 * Page Type: Static
    * Client always fetches data from backend API and renders it.
 * XMLHttpRequest: Yes (fetch(App) + XHR(JSON), then XHR(JSON))
@@ -8245,8 +8245,8 @@ export default UsersPage;
 Behaviour:
 * Emitted File Size: 670 bytes
 * Page Type: Lambda (dynamic)
-   * Initially server fetches data and renders page.
-   * Then client fetches data and renders it.
+   * Initially, server fetches data and renders page.
+   * Then, client fetches data and renders page.
 * XMLHttpRequest: Yes (Initially fetch(App), then XHR(JSON))
 * Initial fast fetch & fast render; subsequent slow fetch and slow render.
 
@@ -8329,10 +8329,10 @@ export default Users;
 ```
 
 Behaviour:
-* Emitted File Size: 429 bytes
+* Emitted File Size: 440 bytes
 * Page Type: Lambda (dynamic)
-   * Initially server fetches data and renders page.
-   * Then server fetches data and client renders it.
+   * Initially, server fetches data and renders page.
+   * Then, server fetches data and client renders page.
 * XMLHttpRequest: No (Initially fetch(App), then fetch(JSON))
 * Initial fast fetch and fast render; subsequent slower fetch and slower render.
 
@@ -8411,7 +8411,7 @@ export default Users;
 ```
 
 Behaviour:
-* Emitted File Size: 430 bytes
+* Emitted File Size: 442 bytes
 * Page Type: Static
    * Returns static HTML.
 * XMLHttpRequest: No (Initially fetch(App), then fetch(JSON))  (why do we get JSON fetched once loaded?????)
@@ -8424,19 +8424,87 @@ Behaviour:
 <button type="button" class="collapsible">+ Lifecycle Hooks: useSWR()</button>
 <div class="content" style="display: none;" markdown="1">
 
-`useSWR()` can be thought of as the replacement for the client-side aspects of `getInitialProps()`.  It handles caching, revalidation, focus tracking, refetching on interval, and more.  The name `SWR` derives from `stale-while-revalidate`, an HTTP cache invalidation strategy that first returns the data from cache (stale), then sends a fetch request (revalidate) and finally returns the up-to-date data.
+`useSWR()` can be thought of as the replacement for the client-side aspects of `getInitialProps()`.  It handles caching, revalidation, focus tracking, refetching on interval, and more.  The name `SWR` derives from `stale-while-revalidate`, an HTTP cache invalidation strategy that first returns the data from cache (stale), then sends a fetch request (revalidate) and finally, if the data has changed, returns the up-to-date data.
 
 This approach means that pages render fast initially (albeit with potentially out-of-date data), but can subsequently be updated when the latest data is available.
 
+By default, revalidation (ie. re-fetch to check data state) is performed under the following conditions:
+* When the component is mounted
+* When the window is focused (with a minimum interval of 5 seconds)
+* When the browser regains a network connection
+
+If it also possible to configure `useSWR` to constantly poll the data source at a set interval using the `refreshInterval` configuration option.
+
+For further details regarding the various configuration options available, see the `useSWR` documentation:
+* [https://github.com/vercel/swr](https://github.com/vercel/swr)
+
 ```jsx
+// users/page.jsx
+// data fetched from an external data source with axios
+// using `useSWR`
+import useSWR from 'swr';
+
+import axios from 'axios';
+
+const fetchData = async (url) =>
+  // errors are handled by useSWR
+  await axios.get(url).then((res) => ({
+    users: res.data,
+  }));
+
+const UsersPage = () => {
+  const { data, error } = useSWR(
+    'http://jsonplaceholder.typicode.com/users',
+    fetchData,
+    // optionally set a refreshInterval
+    // {
+    //   refreshInterval: 5000,
+    // }
+  );
+
+  let users = null;
+  if (data) users = data.users;
+
+  return (
+    <section>
+      <header>
+        <h1>List of users</h1>
+      </header>
+      {!error && !users && <div>Loading data...</div>}
+      {error && <div>There was an error: {error}</div>}
+      {!error && users && (
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, key) => (
+              <tr key={key}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+};
+
+export default UsersPage;
 ```
 
 Behaviour:
-* Emitted File Size: 4.5 kB
+* Emitted File Size: 4.46 kB
 * Page Type: Static
    * Fetches data from backend API, which is rendered on client.
 * XMLHttpRequest: Yes (Initially fetch(App) + XHR(JSON), then from cache + XHR(JSON))
-* Initial fast fetch & fast render; later updated with up-to-date data.
+* Initial slow fetch & slow render; later ultra-fast render, followed by fast fetch, then fast render if data changed.
 
 </div>
 </div>
