@@ -8349,6 +8349,8 @@ This approach is particularly useful for SEO and/or ultra-fast access to a page 
 
 The chief downside to this approach is that the page only presents data captured at build-time; it cannot present data that changes regularly.
 
+**NOTE**: This hook only works properly in a production build.  In a development build, there will be an additional XHR call at runtime to fetch the data.
+
 Example:
 
 ```jsx
@@ -8414,7 +8416,7 @@ Behaviour:
 * Emitted File Size: 442 bytes
 * Page Type: Static
    * Returns static HTML.
-* XMLHttpRequest: No (Initially fetch(App), then fetch(JSON))  (why do we get JSON fetched once loaded?????)
+* XMLHttpRequest: No (Initially fetch(App), then from cache)
 * Fast fetch; ultra-fast render.
 
 </div>
