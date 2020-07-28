@@ -8096,7 +8096,7 @@ One of the challenges for SEO is that search engine crawlers will typically not 
 
 The following is an example of a page that doesn't use hooks (it simply fetches the data as necessary whenver the page is loaded).  Implementing this page, while sure to always display the latest data, gives slow performance and a potentially heavy impact on the backend API.  Compare with this with the other options discussed in the next sections.
 
-**Example without Next.js Hooks**
+**Example without Next.js Hooks (uses useEffect())**
 
 ```jsx
 // users/page.jsx
@@ -8504,7 +8504,27 @@ Behaviour:
 * Page Type: Static
    * Fetches data from backend API, which is rendered on client.
 * XMLHttpRequest: Yes (Initially fetch(App) + XHR(JSON), then from cache + XHR(JSON))
-* Initial slow fetch & slow render; later ultra-fast render, followed by fast fetch, then fast render if data changed.
+* Initial slow fetch & slow render; later ultra-fast render, followed by slow fetch, then fast render if data changed.
+
+</div>
+</div>
+
+<div id="nextjs-deploy">
+<button type="button" class="collapsible">+ Deploying a Next.js App</button>
+<div class="content" style="display: none;" markdown="1">
+
+**NOTE**: Next.js is dependent in Node.js, so Node.js must be installed on the host to which the app is deployed.
+
+To build the app:
+
+1. Add the following to the package.json scripts:
+   * "build": "next build",
+   * "start": "NODE_ENV=production next start",
+1. Then run the build using: `npm run build`
+   * This builds the app into a `.next` folder, in the project root.
+1. In theory, the `.next` folder contains everything that needs to be deployed, however in practice the entire project folder should be deployed, since items such as the `node_modules` folder also need to be deployed.
+1. Once copied to the host, initialize the app using: `npm install`
+1. Then start the app using: `npm run start`
 
 </div>
 </div>
@@ -8515,6 +8535,8 @@ Behaviour:
 
 * [https://nextjs.org/docs/getting-started](Next.js Documentation)
 * [https://www.youtube.com/playlist?list=PLYSZyzpwBEWSQsrukurP09ksi49H9Yj40](Next.js Video Tutorials)
+* [https://medium.com/swlh/fetching-and-hydrating-a-next-js-app-using-getserversideprops-and-getstaticprops-65bfe42afed8](Fetching and hydrating a Next.JS app)
+* [https://github.com/vercel/swr](SWR Documentation)
 
 </div>
 </div>
