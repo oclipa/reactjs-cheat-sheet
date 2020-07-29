@@ -7649,7 +7649,7 @@ The first time the page is requested (e.g. if the user manually enters the URL o
 
 **NOTE 1**: This method has been deprecated in favour of the other hooks, however it is still commonly used.  It is recommended that future development should use the other hooks.
 
-**NOTE 2**: Note that using this function will disable Automatic State Optimization (where the build automatically identifies pages that can be emitted as static).
+**NOTE 2**: If this method is present in a page, the page will always be treated as server-side (i.e. it will not be pre-rendered as HTML).
 
 Example:
 
@@ -7734,7 +7734,7 @@ Because the function runs on the server, it can access the backend directly (and
 
 **NOTE 1**: The downside of this method is that it can impact performance if data must be fetched frequently.  In this case, the recommended solution is to use `getServerSideProps()` for first access, and then `useSWR()` for further accesses.
 
-**NOTE 2**: Note that using this function will disable Automatic State Optimization (where the build automatically identifies pages that can be emitted as static).
+**NOTE 2**: If this method is present in a page, the page will always be treated as server-side (i.e. it will not be pre-rendered as HTML).
 
 Example:
 
@@ -8541,6 +8541,233 @@ export default SideDrawer;
 * [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
 * [Strict Mode](https://reactjs.org/docs/strict-mode.html)
 
+
+</div>
+</div>
+
+<div id="animation">
+<button type="button" class="collapsible">+ Animation</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Simple Show/Hide**
+
+A simple way to hide/show a component is to use the `display` CSS property:
+
+*Modal.css*
+
+```jsx
+.Modal {
+  position: fixed;
+  z-index: 200;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 2px #ccc;
+  background-color: white;
+  padding: 10px;
+  text-align: center;
+  box-sizing: border-box;
+  top: 30%;
+  left: 25%;
+  width: 50%;
+}
+
+.ModalOpen {
+  display: block;
+}
+
+.ModalClosed {
+  display: none;
+}
+```
+
+*Modal.js*
+
+```jsx
+import React from 'react';
+
+import './Modal.css';
+
+const modal = (props) => {
+  const cssClasses = ['Modal', props.show ? 'ModalOpen' : 'ModalClosed'];
+
+  return (
+    <div className={cssClasses.join(' ')}>
+      <h1>A Modal</h1>
+      <button className="Button" onClick={props.closed}>
+        Dismiss
+      </button>
+    </div>
+  );
+};
+
+export default modal;
+```
+
+*App.js*
+
+```jsx
+import React, { Component } from 'react';
+
+import './App.css';
+import Modal from './components/Modal/Modal';
+
+class App extends Component {
+  state = {
+    modalIsOpen: false,
+  };
+
+  showModal = () => {
+    this, this.setState({ modalIsOpen: true });
+  };
+
+  closeModal = () => {
+    this, this.setState({ modalIsOpen: false });
+  };
+
+  render() {
+    return (
+      <div className="App">
+        <Modal show={this.state.modalIsOpen} closed={this.closeModal} />
+        <button className="Button" onClick={this.showModal}>
+          Open Modal
+        </button>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+**CSS Transitions**
+
+An alternative approach is to use the CSS transition properties:
+
+*Modal.css*
+
+```jsx
+.Modal {
+
+  ...etc...
+
+  transition: all 0.3s ease-out;
+}
+
+.ModalOpen {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ModalClosed {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+```
+
+**CSS Animations**
+
+A more sophisticated approach is to use CSS animation keyframes, which allow much finer control of the behaviour:
+
+*Modal.css*
+
+```jsx
+.Modal {
+
+  ...etc...
+
+  transition: all 0.3s ease-out;
+}
+
+.ModalOpen {
+  animation: openModal 0.4s ease-out forwards;
+}
+
+.ModalClosed {
+  animation: closeModal 0.4s ease-out forwards;
+}
+
+@keyframes openModal {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(20%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes closeModal {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(60%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+```
+
+**Limitations of CSS Transitions &amp; Animations**
+
+Although CSS transitions and animations are fine for most simple cases, they have one potentially significant drawback: they always present in the page HTML regardless of whether they are shown or not.  This could impact the performance of the page.
+
+It would be better to take a more React approach and only embed the animated elements when they actually need to be displayed.
+
+A naive implementation might be to use the `modalIsOpen` state to embed the component:
+
+*App.js*
+
+```jsx
+import React, { Component } from 'react';
+
+import './App.css';
+import Modal from './components/Modal/Modal';
+import List from './components/List/List';
+
+class App extends Component {
+  state = {
+    modalIsOpen: false,
+  };
+
+  showModal = () => {
+    this, this.setState({ modalIsOpen: true });
+  };
+
+  closeModal = () => {
+    this, this.setState({ modalIsOpen: false });
+  };
+
+  render() {
+    return (
+      <div className="App">
+        <h1>React Animations</h1>
+        {this.state.modalIsOpen ? (
+          <Modal show={this.state.modalIsOpen} closed={this.closeModal} />
+        ) : null}
+        <button className="Button" onClick={this.showModal}>
+          Open Modal
+        </button>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+The main limitation with this approach is that the component will be removed instantly; it won't have time to display the animations.
+
+A better approach would be to use tools provided by React to help with this.
 
 </div>
 </div>
