@@ -8616,11 +8616,11 @@ class App extends Component {
   };
 
   showModal = () => {
-    this, this.setState({ modalIsOpen: true });
+    this.setState({ modalIsOpen: true });
   };
 
   closeModal = () => {
-    this, this.setState({ modalIsOpen: false });
+    this.setState({ modalIsOpen: false });
   };
 
   render() {
@@ -8732,7 +8732,6 @@ import React, { Component } from 'react';
 
 import './App.css';
 import Modal from './components/Modal/Modal';
-import List from './components/List/List';
 
 class App extends Component {
   state = {
@@ -8740,17 +8739,16 @@ class App extends Component {
   };
 
   showModal = () => {
-    this, this.setState({ modalIsOpen: true });
+    this.setState({ modalIsOpen: true });
   };
 
   closeModal = () => {
-    this, this.setState({ modalIsOpen: false });
+    this.setState({ modalIsOpen: false });
   };
 
   render() {
     return (
       <div className="App">
-        <h1>React Animations</h1>
         {this.state.modalIsOpen ? (
           <Modal show={this.state.modalIsOpen} closed={this.closeModal} />
         ) : null}
@@ -8768,6 +8766,176 @@ export default App;
 The main limitation with this approach is that the component will be removed instantly; it won't have time to display the animations.
 
 A better approach would be to use tools provided by React to help with this.
+
+**react-transition-group**
+
+The `react-transition-group` package is a community-produced package that exposes components to help entering and exiting transitions.
+
+For further information about the package, see here:
+* [https://reactcommunity.org/react-transition-group/](https://reactcommunity.org/react-transition-group/)
+
+* Install: `npm install react-transition-group`
+* Import: `import Transition from 'react-transition-group/Transition'`
+
+For example, consider the following code where a button toggle the display of a `<div>`:
+
+*App.js*
+
+```jsx
+...etc...
+
+class App extends Component {
+  state = {
+    showBlock: false,
+  };
+
+  render() {
+    return (
+      <div className="App">
+        <button
+          className="Button"
+          onClick={() =>
+            this.setState((prevState) => ({ showBlock: !prevState.showBlock }))
+          }
+        >
+          Toggle
+        </button>
+        <br />
+        {this.state.showBlock ? (
+          <div
+            style={{
+              backgroundColor: 'red',
+              width: 100,
+              height: 100,
+              margin: 'auto',
+            }}
+          ></div>
+        ) : null}
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+After installing `react-transition-group`, this can be refactored to be:
+
+*App.js*
+
+```jsx
+...etc...
+
+import Transition from 'react-transition-group/Transition';
+
+class App extends Component {
+
+  ...etc...
+
+  render() {
+    return (
+      <div className="App">
+        
+        ...etc...
+        
+        <Transition
+          in={this.state.showBlock}
+          timeout={1000}
+          mountOnEnter
+          unmountOnExit
+        >
+          {(state) => (
+            <div
+              style={{
+                ...etc...
+                
+                transition: 'opacity 1s ease-out',
+                opacity: state === 'exiting' ? 0 : 1,
+              }}
+            ></div>
+          )}
+        </Transition>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+Note that the `Transition` component has several properties.  In this case they are:
+* in = the trigger for the transition 
+* timeout = time between transitions in ms
+* mountOnEnter = "if in === true, add component to DOM"
+* unmountOnExit = "if in === false, remove component from DOM"
+
+It also emits the `state` object (not to be confused with the `state` of the App), which can have one of four values:
+* 'entering' (component is being displayed)
+* 'entered' (component has been displayed)
+* 'exiting' (component is being hidden)
+* 'exited' (component has been hidden)
+
+The `state` values are used to control which style properties are applied to the component.
+
+If pattern is now applied to the `Modal` component, something like the following results:
+
+*Modal.js*
+
+```jsx
+import React from 'react';
+
+import './Modal.css';
+
+const modal = (props) => {
+  const cssClasses = [
+    'Modal',
+    props.show === 'entering'
+      ? 'ModalOpen'
+      : props.show === 'exiting'
+      ? 'ModalClosed'
+      : null,
+  ];
+  
+  return (
+    <div className={cssClasses.join(' ')}>
+      <h1>A Modal</h1>
+      <button className="Button" onClick={props.closed}>
+        Dismiss
+      </button>
+    </div>
+  );
+};
+
+export default modal;
+```
+
+*App.js*
+
+```jsx
+...etc...
+
+import Transition from 'react-transition-group/Transition';
+
+class App extends Component {
+
+  ...etc...
+  
+  render() {
+    return (
+      <div className="App">
+        <Transition in={this.state.modalIsOpen} timeout={300}>
+          {(state) => <Modal show={state} closed={this.closeModal} />}
+        </Transition>
+        <button className="Button" onClick={this.showModal}>
+          Open Modal
+        </button>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
 
 </div>
 </div>
