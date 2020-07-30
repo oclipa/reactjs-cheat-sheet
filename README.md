@@ -8549,7 +8549,9 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Animation</button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Simple Show/Hide**
+<div id="animation-showhide">
+<button type="button" class="collapsible">+ Simple Show/Hide</button>   
+<div class="content" style="display: none;" markdown="1">
 
 A simple way to hide/show a component is to use the `display` CSS property:
 
@@ -8638,7 +8640,12 @@ class App extends Component {
 export default App;
 ```
 
-**CSS Transitions**
+</div>
+</div>
+
+<div id="animation-csstrans">
+<button type="button" class="collapsible">+ CSS Transitions</button>   
+<div class="content" style="display: none;" markdown="1">
 
 An alternative approach is to use the CSS transition properties:
 
@@ -8663,7 +8670,12 @@ An alternative approach is to use the CSS transition properties:
 }
 ```
 
-**CSS Animations**
+</div>
+</div>
+
+<div id="animation-cssanim">
+<button type="button" class="collapsible">+ CSS Animations</button>   
+<div class="content" style="display: none;" markdown="1">
 
 A more sophisticated approach is to use CSS animation keyframes, which allow much finer control of the behaviour:
 
@@ -8717,7 +8729,12 @@ A more sophisticated approach is to use CSS animation keyframes, which allow muc
 
 ```
 
-**Limitations of CSS Transitions &amp; Animations**
+</div>
+</div>
+
+<div id="animation-limits">
+<button type="button" class="collapsible">+ Limitations of CSS Transitions &amp; Animations</button>   
+<div class="content" style="display: none;" markdown="1">
 
 Although CSS transitions and animations are fine for most simple cases, they have one potentially significant drawback: they always present in the page HTML regardless of whether they are shown or not.  This could impact the performance of the page.
 
@@ -8767,7 +8784,12 @@ The main limitation with this approach is that the component will be removed ins
 
 A better approach would be to use tools provided by React to help with this.
 
-**react-transition-group**
+</div>
+</div>
+
+<div id="animation-rtg">
+<button type="button" class="collapsible">+ react-transition-group</button>   
+<div class="content" style="display: none;" markdown="1">
 
 The `react-transition-group` package is a community-produced package that exposes components to help entering and exiting transitions.
 
@@ -8923,7 +8945,12 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Transition in={this.state.modalIsOpen} timeout={300}>
+        <Transition
+          in={this.state.modalIsOpen}
+          timeout={300}
+          mountOnEnter
+          unmountOnExit
+        >
           {(state) => <Modal show={state} closed={this.closeModal} />}
         </Transition>
         <button className="Button" onClick={this.showModal}>
@@ -8936,6 +8963,472 @@ class App extends Component {
 
 export default App;
 ```
+
+</div>
+</div>
+
+<div id="animation-rtgwrap">
+<button type="button" class="collapsible">+ Wrapping The Transition Component</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Of course, it is also possible to wrap the Transition in the Modal component, in the following manner:
+
+*Modal.js*
+
+```jsx
+import React from 'react';
+
+import './Modal.css';
+
+const modal = (props) => {
+
+  return (
+    <Transition in={props.show} timeout={1000} mountOnEnter unmountOnExit>
+      {(state) => {
+        const cssClasses = [
+          'Modal',
+          state === 'entering'
+            ? 'ModalOpen'
+            : state === 'exiting'
+            ? 'ModalClosed'
+            : null,
+        ];
+
+        return (
+          <div className={cssClasses.join(' ')}>
+            <h1>A Modal</h1>
+            <button className="Button" onClick={props.closed}>
+              Dismiss
+            </button>
+          </div>
+        );
+      }}
+    </Transition>
+  );
+};
+
+export default modal;
+```
+
+*App.js*
+
+```jsx
+...etc...
+
+class App extends Component {
+
+  ...etc...
+  
+  render() {
+    return (
+      <div className="App">
+        <Modal show={this.state.modalIsOpen} closed={this.closeModal} />
+        <button className="Button" onClick={this.showModal}>
+          Open Modal
+        </button>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+</div>
+</div>
+
+<div id="animation-timing">
+<button type="button" class="collapsible">+ Animation Timing</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Care should be taken when setting the timings for animations.  Timings can be set in several places, for example:
+* The `timeout` property of the `Transition` component.
+   * Determines how long each state ('entering' &amp; 'exiting') will be held before transitioning.
+   * If this is much shorter than 
+* The `duration` property of the `animation` CSS property.
+   * Determines how long the animation will last.
+* The `duration` property of the `transition` CSS property.
+
+If the transition time is much shorter than the animation time, the animation will be cut-off too soon.
+
+It is also possible to set different timings for the enter and exit transitions.  This is done in the following manner:
+
+*Modal.js* 
+
+```jsx
+...etc...
+
+const animationTiming = {
+  enter: 400,
+  exit: 1000,
+};
+
+const modal = (props) => {
+  ...etc...
+
+  return (
+    <Transition
+      ...etc...
+      timeout={animationTiming}
+    >
+      ...etc...
+    </Transition>
+  );
+};
+
+export default modal;
+```
+
+</div>
+</div>
+
+<div id="animation-events">
+<button type="button" class="collapsible">+ Transition Events</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The `Transition` components provides events for specific parts of the transitions:
+* onEnter = Before entering 'entering' mode
+* onEntering = Upon entering 'entering' mode
+* onEntered = Upon entering 'entered' mode
+* onExit = Before entering 'exiting' mode
+* onExiting = Upon entering 'exiting' mode
+* onExited = Upon entering 'exited' mode
+
+```jsx
+  <Transition
+    ...etc...
+    
+    onEnter={() => console.log('onEnter')}
+    onEntering={() => console.log('onEntering')}
+    onEntered={() => console.log('onEntered')}
+    
+    onExit={() => console.log('onExit')}
+    onExiting={() => console.log('onExiting')}
+    onExited={() => console.log('onExited')}
+  >
+    ...etc...
+  </Transition>
+```
+</div>
+</div>
+
+<div id="animation-csstrans">
+<button type="button" class="collapsible">+ CSSTransition Component</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Although the animation styling can be embedded in the JavaScript, as in the previous examples, it is often more convenient to be able to create some pre-defined CSS classes for the different animation states and ensure that these get attached depending on the state of the animation.  This is the functionality provided by the `CSSTransition` component.
+
+Essentially, `CSSTransition` replaces the need to embed the conditions for controlling the transition in the JavaScript file.  Instead, these can be specified in a CSS file, which can be local or global, where they can be shared by other components.
+
+Rather then specifying the transition conditions, a prefix is specified (can be anything).  This identified CSS classes that relate to these transitions.
+
+In the CSS file, the prefix is combined with well-known suffixes to indicate the applicable styles.  The well-known suffixes are:
+* [prefix]-enter : appears for one frame at the start of the enter animation (use to initialize the animation, e.g. set initial opacity)
+* [prefix]-enter-active : controls the enter animation
+* [prefix]-exit : appears for one frame at the start of the exit animation (use to initialize the animation, e.g. set initial opacity)
+* [prefix]-exit-active : controls the exit animation
+
+The following only apply to components that are hardcoded in the DOM (such as the `<button>` in App.js) and are only called the first time the component is mounted.
+* [prefix]-appear : appears for one frame at the start of the appear animation (use to initialize the animation, e.g. set initial opacity)
+* [prefix]-appear-active : controls the appear animation
+
+*Modal.js*
+
+Note the `classNames` prop added to the `CSSTransition` component.
+
+```jsx
+...etc...
+
+import CSSTransition from 'react-transition-group/CSSTransition';
+
+...etc...
+
+const modal = (props) => {
+  return (
+    <CSSTransition
+      ...etc...
+      
+      {/* Note: classNames (plural), not className (singular) */}
+      {/* Indicates the prefix for the CSS classes to be used for the transition */}
+      classNames="fade-slide"
+    >
+      <div className="Modal">
+        <h1>A Modal</h1>
+        <button className="Button" onClick={props.closed}>
+          Dismiss
+        </button>
+      </div>
+    </CSSTransition>
+  );
+};
+
+export default modal;
+
+```
+
+*Modal.css*
+
+```jsx
+...etc...
+
+.fade-slide-enter {
+}
+
+.fade-slide-enter-active {
+  animation: openModal 0.4s ease-out forwards;
+}
+
+.fade-slide-exit {
+}
+
+.fade-slide-exit-active {
+  animation: closeModal 1s ease-out forwards;
+}
+
+// ignored
+.ModalOpen {}
+.ModalClosed {}
+
+...etc...
+```
+
+**Customizing CSS Classnames**
+
+If there is a need to avoid using the standard [prefix]-[suffix] class names, custom class names can be used in the following manner:
+
+*Modal.js*
+
+Note that `classNames` prop added to the `CSSTransition` component.
+
+```jsx
+...etc...
+
+import CSSTransition from 'react-transition-group/CSSTransition';
+
+...etc...
+
+const modal = (props) => {
+  return (
+    <CSSTransition
+      ...etc...
+      
+      classNames={{
+        enter: '',
+        enterActive: 'ModalOpen',
+        exit: '',
+        exitActive: 'ModalClosed',
+      }}
+    >
+      <div className="Modal">
+        <h1>A Modal</h1>
+        <button className="Button" onClick={props.closed}>
+          Dismiss
+        </button>
+      </div>
+    </CSSTransition>
+  );
+};
+
+export default modal;
+
+```
+
+*Modal.css*
+
+```jsx
+...etc...
+
+*Modal.css*
+
+```jsx
+...etc...
+
+.ModalOpen {
+  animation: openModal 0.4s ease-out forwards;
+}
+
+.ModalClosed {
+  animation: closeModal 1s ease-out forwards;
+}
+
+// ignored
+.fade-slide-enter {}
+.fade-slide-enter-active {}
+.fade-slide-exit {}
+.fade-slide-exit-active {}
+
+...etc...
+```
+
+...etc...
+```
+</div>
+</div>
+
+<div id="animation-lists">
+<button type="button" class="collapsible">+ Animating Lists (TransitionGroup)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The `TransitionGroup` component can be used to animate lists.  Note, however, that it can only wrap either the `Transition` or `CSSTransition` components (e.g. `<li>` must be wrapped in `Transition` or `CSSTransition`).
+
+Essentially, the `TransitionGroup` controls the `in` prop of the child `Transition` or `CSSTransition` components.  Other than that, these components behave as described above.
+
+The `TransitionGroup`
+
+*List.js*
+
+```jsx
+import React, { Component } from 'react';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
+import CSSTransition from 'react-transition-group/CSSTransition';
+
+import './List.css';
+
+class List extends Component {
+  state = {
+    items: [1, 2, 3],
+  };
+
+  addItemHandler = () => {
+    this.setState((prevState) => {
+      return {
+        items: prevState.items.concat(prevState.items.length + 1),
+      };
+    });
+  };
+
+  removeItemHandler = (selIndex) => {
+    this.setState((prevState) => {
+      return {
+        items: prevState.items.filter((item, index) => index !== selIndex),
+      };
+    });
+  };
+
+  render() {
+    const listItems = this.state.items.map((item, index) => (
+      <CSSTransition key={index} classNames="fade" timeout={300}>
+        <li className="ListItem" onClick={() => this.removeItemHandler(index)}>
+          {item}
+        </li>
+      </CSSTransition>
+    ));
+
+    return (
+      <div>
+        <button className="Button" onClick={this.addItemHandler}>
+          Add Item
+        </button>
+        <p>Click Item to Remove.</p>
+        <TransitionGroup component="ul" className="List">
+          {listItems}
+        </TransitionGroup>
+      </div>
+    );
+  }
+}
+
+export default List;
+```
+
+*List.css*
+
+```jsx
+.List {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  width: 280px;
+}
+
+.ListItem {
+  margin: 0;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #521751;
+  background-color: white;
+  text-align: center;
+  cursor: pointer;
+}
+
+.ListItem:hover,
+.ListItem:active {
+  background-color: #ccc;
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+```
+
+*App.js*
+
+```jsx
+...etc...
+
+import List from './components/List/List';
+
+class App extends Component {
+  
+  ...etc...
+
+  render() {
+    return (
+      <div className="App">
+
+        ...etc...
+
+        <h3>Animating Lists</h3>
+        <List />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+</div>
+</div>
+
+<div id="animation-alt">
+<button type="button" class="collapsible">+ Alternative Animation Packages</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**react-motion**
+
+* Further information: [https://github.com/chenglou/react-motion](https://github.com/chenglou/react-motion)
+
+This package behaves in a totally different way to `react-trasition-group`.  `react-motion` tries to use real-world physics to interpolate between states, rather than leaving the configuration to the user.  It can be complex to use, and cannot handle some types of animation.
+
+**react-move**
+
+* Further information: [https://github.com/sghall/react-move](https://github.com/chenglou/react-motion)
+
+`react-move` always works with objects that describe the state of an animation.  This enables much more complex animations (and accordingly is a bit more complex to use).
+
+**react-router-transition**
+
+* Further information: [https://github.com/maisano/react-router-transition](https://github.com/maisano/react-router-transition)
+
+This builds on top of `react-motion` to create animated transitions between routes (switching between pages).  It is much easier to do route transitions using this package than `react-transition-group'.
+
+</div>
+</div>
 
 </div>
 </div>
