@@ -9410,7 +9410,6 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Animation
 * Redux-saga
 * Gatsby.js
 * React Native
@@ -9429,6 +9428,15 @@ export default SideDrawer;
 * [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
 * [Strict Mode](https://reactjs.org/docs/strict-mode.html)
 
+
+</div>
+</div>
+
+-------------------------------------------------------------------------------------------------------
+
+<div id="saga">
+<button type="button" class="collapsible">+ Redux Saga</button>   
+<div class="content" style="display: none;" markdown="1">
 
 </div>
 </div>
