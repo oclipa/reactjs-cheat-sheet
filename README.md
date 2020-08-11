@@ -4304,7 +4304,9 @@ import * as actionCreators from './actions/index';
 <button type="button" class="collapsible">+ Asynchronous Redux</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Redux Thunk is a library which adds a middleware to a project that allows an action creator to return a function (which will eventually dispatch an action).
+Redux Thunk is middleware that can intercept Redux actions and then run them asynchronously.  The actions wrap functions that can be executed by the middleware, which can pass the state of the Redux store (plus other arguments) to the wrapped function.
+
+The wrapped function is known as a `thunk`.
 
 Further details can be found here:
    * [https://github.com/reduxjs/redux-thunk](https://github.com/reduxjs/redux-thunk)
@@ -4314,7 +4316,7 @@ To use Redux Thunk:
 * Install: `npm install redux-thunk`
 * Import: `import thunk from 'redux-thunk';`
 
-`redux-thunk` is middleware and so it registered with the store using `applyMiddleware` in index.js:
+To register `redux-thunk` as middleware, do the following:
 
 *index.js*
 
@@ -4332,6 +4334,7 @@ const store = createStore(
 
 ...etc...
 ```
+
 To make use of Redux Thunk, both synchronous and asynchronous versions of an action are defined, with the asynchronous version calling the synchronous version when it is ready to do so.
 
 *actions/result.js*
@@ -4350,9 +4353,11 @@ export const saveResult = (result) => {
 // returns eventually
 export const storeResult = (result) => {
   // because redux-thunk is middleware,
-  // this function allows it so intercept the
-  // action and then return the result at a
+  // the following function can be intercepted 
+  // and then return the result at a
   // later time
+  
+  // this function is the "thunk"
   return (dispatch) => {
     // simulate a server query use setTimeout
     setTimeout(() => {
@@ -9437,6 +9442,266 @@ export default SideDrawer;
 <div id="saga">
 <button type="button" class="collapsible">+ Redux Saga</button>   
 <div class="content" style="display: none;" markdown="1">
+
+Redux Saga is an alternative to Redux Thunk.  The goal of Redux Saga is to provide a clearer separation between actions and side-effects, so that code is cleaner.
+
+* Install: `npm install redux-saga`
+* Import: `import { put } from 'redux-saga/effects'`
+
+A "saga" is essentially a function that runs in response to actions and handles all of the side-effects (e.g. accessing local storage, or querying a server) associated with the action.
+* A side-effect is any behaviour that does not directly affect the Redux store (it might change the state, but is not directly consumed by the reducer).
+
+More specifically, a saga is an example of a **Generator**, which is a special form of function that allows code to be paused and resumed.
+
+The basic pattern for the Redux Saga approach is:
+1. A watcher is registered for an action (using Saga)
+   * sagaMiddleware.run(watchSignOut);
+1. An action is requested (using Thunk)
+   * doSignOut = () => { dispatch(initiateSignOut()); }
+1. An action trigger is returned by the action creator (using Redux)
+   * initiateSignOut = () => { return { type: actionTypes.AUTH_INITIATE_SIGN_OUT, }; }
+1. Watcher intercepts the action trigger (using Saga) and triggers the action
+   * watchSignOut = () => { yield takeEvery(actionTypes.AUTH_INITIATE_SIGN_OUT, doSideEffects); }
+1. Action updates the store
+   * function* doSideEffects() { yield* removeTokenFromLocalStorage(); yield put({ type: actionTypes.AUTH_SIGN_OUT, }); }
+
+yield
+put()
+takeEvery()
+
+For example:
+
+**Redux Thunk Example* 
+
+*index.js*
+
+* Register the thunk middleware.
+
+```js
+...etc...
+
+import thunk from 'redux-thunk';
+
+...etc...
+
+const sagaMiddleware = createSagaMiddleware();
+
+const store = createStore(
+  rootReducer,
+  composeEnhancers(applyMiddleware(thunk))
+);
+
+...etc...
+```
+
+*store/actions/auth.js*
+
+* Trigger the logout action.
+
+```js
+import * as actionTypes from './actionTypes';
+
+import firebase from 'firebase/app';
+import 'firebase/auth';
+
+import { firebaseConfig } from '../../fire';
+
+const fire = firebase.initializeApp(firebaseConfig);
+
+const AUTH_TOKEN = 'AUTH_TOKEN';
+const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
+const AUTH_USER_ID = 'AUTH_USER_ID';
+
+...etc...
+
+// Remove the token from localStorage when the user logs out.
+// Note that this function executes both side-effects and notifies
+// that sign-out should occur.
+export const authSignOut = () => {
+  removeTokenFromLocalStorage();
+  return {
+    type: actionTypes.AUTH_SIGN_OUT,
+  };
+};
+
+// delete the token from localStorage
+const removeTokenFromLocalStorage = () => {
+  localStorage.removeItem(AUTH_TOKEN);
+  localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
+  localStorage.removeItem(AUTH_USER_ID);
+};
+
+...etc...
+
+// Log the user out of the firebase instance
+// and delete the token.
+// Called from wherever logout is required
+// using dispatch(actions.signOut()).
+export const signOut = () => {
+
+  // this is the "thunk"
+  return (dispatch) => {
+    fire
+      .auth()
+      .signOut()
+      .then((response) => {
+        dispatch(authSignOut());
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(authFail(err));
+      });
+  };
+};
+```
+
+*store/actions/actionTypes.js*
+
+* Create an identifier for logout action.
+
+```js
+...etc...
+
+export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
+
+...etc...
+```
+
+*store/reducers/auth.js*
+
+* Create a reducer that updates the Redux store with the new login state.
+
+```js
+import * as actionTypes from '../actions/actionTypes';
+import { updateObject } from '../../shared/utility';
+
+const initialState = {
+  userId: null,
+  token: null,
+  error: null,
+  loading: false,
+  authRedirectPath: '/',
+};
+
+...etc...
+
+const authSignOut = (state, action) => {
+  return updateObject(state, { token: null, userId: null });
+};
+
+...etc...
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    ...etc...
+
+    case actionTypes.AUTH_SIGN_OUT: {
+      return authSignOut(state, action);
+    }
+    
+    ...etc...
+  }
+};
+
+export default reducer;
+```
+
+**Redux Saga Example*
+
+*store/sagas/auth.js*
+
+* Create a saga that executes the logout action.
+
+```js
+import { put } from 'redux-saga/effects';
+import * as actionTypes from '../actions/actionTypes';
+
+const AUTH_TOKEN = 'AUTH_TOKEN';
+const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
+const AUTH_USER_ID = 'AUTH_USER_ID';
+
+export function* logoutSaga(action) {
+  yield* removeTokenFromLocalStorage();
+  yield put({
+    type: actionTypes.AUTH_SIGN_OUT,
+  });
+}
+
+// delete the token from localStorage
+function* removeTokenFromLocalStorage() {
+  yield localStorage.removeItem(AUTH_TOKEN);
+  yield localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
+  yield localStorage.removeItem(AUTH_USER_ID);
+}
+```
+
+*store/actions/actionTypes.js*
+
+* Create an identifier for initiate logout action.
+
+```js
+...etc...
+
+export const AUTH_INITIATE_SIGN_OUT = 'AUTH_INITIATE_SIGN_OUT';
+
+...etc...
+```
+
+*store/sagas/index.js*
+
+* Create a watcher for the initiate logout action.
+
+```js
+import { takeEvery } from 'redux-saga/effects';
+
+import * as actionTypes from '../actions/actionTypes';
+import { logoutSaga } from './auth';
+
+export function* watchAuth() {
+  // sets up a listener for AUTH_INITIATE_SIGN_OUT and then
+  // executes logoutSaga when that appears
+  yield takeEvery(actionTypes.AUTH_INITIATE_SIGN_OUT, logoutSaga);
+}
+```
+
+*index.js*
+
+* Register the logout watcher with the saga middleware.
+
+```js
+...etc...
+
+import createSagaMiddleware from 'redux-saga';
+
+import { watchAuth } from './store/sagas/index';
+
+...etc...
+
+const sagaMiddleware = createSagaMiddleware();
+
+const store = createStore(
+  rootReducer,
+  composeEnhancers(applyMiddleware(thunk, sagaMiddleware))
+);
+
+sagaMiddleware.run(watchAuth);
+
+...etc...
+```
+
+*store/actions/auth.js*
+
+* Request the initiate logout action.
+
+```js
+import * as actionTypes from '../actions/actionTypes';
+
+export const authSignOut = () => {
+  return {
+    type: actionTypes.AUTH_INITIATE_SIGN_OUT,
+  };
+};
+```
 
 </div>
 </div>
