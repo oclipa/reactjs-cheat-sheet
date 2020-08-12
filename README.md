@@ -9454,21 +9454,24 @@ A "saga" is essentially a function that runs in response to actions and handles 
 More specifically, a saga is an example of a **Generator**, which is a special form of function that allows code to be paused and resumed.
 
 The basic pattern for the Redux Saga approach is:
-1. A watcher is registered for an action (using Saga)
-   * sagaMiddleware.run(watchSignOut);
-1. An action is requested (using Thunk)
-   * doSignOut = () => { dispatch(initiateSignOut()); }
-1. An action trigger is returned by the action creator (using Redux)
-   * initiateSignOut = () => { return { type: actionTypes.AUTH_INITIATE_SIGN_OUT, }; }
-1. Watcher intercepts the action trigger (using Saga) and triggers the action
-   * watchSignOut = () => { yield takeEvery(actionTypes.AUTH_INITIATE_SIGN_OUT, doSideEffects); }
-1. Action updates the store
-   * function* doSideEffects() { yield* removeTokenFromLocalStorage(); yield put({ type: actionTypes.AUTH_SIGN_OUT, }); }
+1. A watcher is registered for an action (using Saga):
+   * `sagaMiddleware.run(watchSomething);`
+1. An action is requested somewhere in the code:
+   * `doSomething = () => { dispatch(actions.initiateSomething()); }`
+1. An action trigger id is returned by the action creator (using Redux):
+   * `initiateSomething = () => { return { type: actionTypes.INITIATE_SOMETHING, }; }`
+1. Watcher intercepts the action trigger (using Saga) and triggers the action:
+   * `function* watchSomething() => { yield takeEvery(actionTypes.INITIATE_SOMETHING, doSideEffectsSaga); }`
+   * `takeEvery()` watches for the specified id and then calls the specified function.
+1. Action performs side-effects and then returns a reducer trigger id (using Redux):
+   * `function* doSideEffectsSaga() { yield sideEffect(); yield put({ type: actionTypes.COMPLETE_SOMETHING, }); }`
+   * `put()` is the Redux Saga version of `dispatch`
+1. Reducer updates the Redux store:
+   * `updateStateOfSomethingInStore = (state, action) => { return updateStore(state, updatedState); };`
 
-yield
-put()
-takeEvery()
-delay()
+Additionally:
+* `delay()` is the Redux Saga version of `setTimeout()`.
+* `yield()` pauses while asynchronous functions complete.
 
 For example:
 
@@ -9501,7 +9504,6 @@ const store = createStore(
 ...etc...
 
 export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
-export const AUTH_REQUEST_SIGN_OUT = 'AUTH_REQUEST_SIGN_OUT';
 
 ...etc...
 ```
@@ -9519,6 +9521,13 @@ const AUTH_USER_ID = 'AUTH_USER_ID';
 
 ...etc...
 
+// delete the token from localStorage
+const removeTokenFromLocalStorage = () => {
+  localStorage.removeItem(AUTH_TOKEN);
+  localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
+  localStorage.removeItem(AUTH_USER_ID);
+};
+
 // Remove the token from localStorage when the user logs out.
 // Note that this function executes both side-effects and notifies
 // that sign-out should occur.
@@ -9529,20 +9538,11 @@ export const authSignOut = () => {
   };
 };
 
-// delete the token from localStorage
-const removeTokenFromLocalStorage = () => {
-  localStorage.removeItem(AUTH_TOKEN);
-  localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
-  localStorage.removeItem(AUTH_USER_ID);
-};
-
-...etc...
-
 // Log the user out of the firebase instance
 // and delete the token.
 // Called from wherever logout is required
-// using dispatch(actions.authRequestSignOut()).
-export const authRequestSignOut = () => {
+// using dispatch(actions.authSignOut()).
+export const signOut = () => {
 
   // this is the "thunk"
   return (dispatch) => {
@@ -9569,8 +9569,7 @@ export const authRequestSignOut = () => {
 
 export {
   ...etc...
-  authSignOut,
-  authRequestSignOut,
+  signOut,
 } from './auth';
 ```
 
@@ -9594,7 +9593,7 @@ const initialState = {
 
 const authSignOut = (state, action) => {
   return updateObject(state, { token: null, userId: null });
-};
+};;
 
 ...etc...
 
@@ -9649,7 +9648,7 @@ sagaMiddleware.run(watchAuth);
 
 export const AUTH_INITIATE_SIGN_OUT = 'AUTH_INITIATE_SIGN_OUT';
 export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
-export const AUTH_REQUEST_SIGN_OUT = 'AUTH_REQUEST_SIGN_OUT';
+export const AUTH_SIGN_OUT_SUCCEED = 'AUTH_SIGN_OUT_SUCCEED';
 
 ...etc...
 ```
@@ -9667,31 +9666,37 @@ const AUTH_TOKEN = 'AUTH_TOKEN';
 const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
 const AUTH_USER_ID = 'AUTH_USER_ID';
 
-export function* authSignOutSaga() {
-  yield* removeTokenFromLocalStorage();
-  yield put(actions.authSignOut());
-}
-
-// log the user out of the firebase instance
-// and delete the token
-// (in this case the 'action' arg is not used)
-export function* authInitiateSignOutSaga(action) {
-  try {
-    const response = yield fire.auth().signOut();
-    if (response) {
-      yield put(actions.authInitiateSignOut());
-    }
-  } catch (err) {
-    console.log(err);
-    yield put(actions.authFail(err));
-  }
-}
+...etc...
 
 // delete the token from localStorage
 function* removeTokenFromLocalStorage() {
   yield localStorage.removeItem(AUTH_TOKEN);
   yield localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
   yield localStorage.removeItem(AUTH_USER_ID);
+}
+
+// logout from firebase
+function doLogout() {
+  return fire.auth().signOut();
+}
+
+// clean-up local storage
+export function* authInitiateSignOutSaga() {
+  // run side-effects (i.e. clean-up)
+  yield removeTokenFromLocalStorage();
+  // attempt to logout from server
+  yield put(actions.authSignOut());
+}
+
+// log the user out of the firebase instance
+export function* authSignOutSaga(action) {
+  try {
+    yield doLogout();
+    yield put(actions.authSignOutSucceed());
+  } catch (err) {
+    console.log(err);
+    yield put(actions.authFail(err));
+  }
 }
 ```
 
@@ -9703,14 +9708,17 @@ function* removeTokenFromLocalStorage() {
 import { takeEvery } from 'redux-saga/effects';
 
 import * as actionTypes from '../actions/actionTypes';
-import { authSignOutSaga, authCheckStateSaga, authInitiateSignOutSaga } from './auth';
+import {
+  authInitiateSignOutSaga,
+  authSignOutSaga,
+} from './auth';
+
 
 export function* watchAuth() {
   // sets up a listener for id and then
   // executes function when it appears
-  yield takeEvery(actionTypes.AUTH_INITIATE_SIGN_OUT, authSignOutSaga);
-  yield takeEvery(actionTypes.AUTH_CHECK_STATE, authCheckStateSaga);
-  yield takeEvery(actionTypes.AUTH_REQUEST_SIGN_OUT, authInitiateSignOutSaga);
+  yield takeEvery(actionTypes.AUTH_INITIATE_SIGN_OUT, authInitiateSignOutSaga); // clean-up
+  yield takeEvery(actionTypes.AUTH_SIGN_OUT, authSignOutSaga); // sign-out
 }
 ```
 
@@ -9723,21 +9731,24 @@ import * as actionTypes from '../actions/actionTypes';
 
 ...etc...
 
+// clean-up local storage before sign-out
 export const authInitiateSignOut = () => {
   return {
     type: actionTypes.AUTH_INITIATE_SIGN_OUT,
   };
 };
 
+// log the user out of the firebase instance
 export const authSignOut = () => {
   return {
     type: actionTypes.AUTH_SIGN_OUT,
   };
 };
 
-export const authRequestSignOut = () => {
+// clear the token from the Redux store
+export const authSignOutSucceed = () => {
   return {
-    type: actionTypes.AUTH_REQUEST_SIGN_OUT,
+    type: actionTypes.AUTH_SIGN_OUT_SUCCEED,
   };
 };
 ```
@@ -9753,13 +9764,13 @@ export {
   ...etc...
   authInitiateSignOut,
   authSignOut,
-  authRequestSignOut,
+  authSignOutSucceed,
 } from './auth';
 ```
 
 *store/reducers/auth.js*
 
-* Same as Redux Thunk example..
+* Same as Redux Thunk example.
 
 </div>
 </div>
