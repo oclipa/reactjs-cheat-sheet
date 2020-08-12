@@ -9484,8 +9484,6 @@ import thunk from 'redux-thunk';
 
 ...etc...
 
-const sagaMiddleware = createSagaMiddleware();
-
 const store = createStore(
   rootReducer,
   composeEnhancers(applyMiddleware(thunk))
@@ -9494,19 +9492,25 @@ const store = createStore(
 ...etc...
 ```
 
-*store/actions/auth.js*
+*store/actions/actionTypes.js*
 
-* Trigger the logout action.
+* Create identifiers for sign-out actions.
 
 ```js
-import * as actionTypes from './actionTypes';
+...etc...
 
-import firebase from 'firebase/app';
-import 'firebase/auth';
+export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
+export const AUTH_REQUEST_SIGN_OUT = 'AUTH_REQUEST_SIGN_OUT';
 
-import { firebaseConfig } from '../../fire';
+...etc...
+```
 
-const fire = firebase.initializeApp(firebaseConfig);
+*store/actions/auth.js*
+
+* Create sign-out actions.
+
+```js
+...etc...
 
 const AUTH_TOKEN = 'AUTH_TOKEN';
 const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
@@ -9536,8 +9540,8 @@ const removeTokenFromLocalStorage = () => {
 // Log the user out of the firebase instance
 // and delete the token.
 // Called from wherever logout is required
-// using dispatch(actions.signOut()).
-export const signOut = () => {
+// using dispatch(actions.authRequestSignOut()).
+export const authRequestSignOut = () => {
 
   // this is the "thunk"
   return (dispatch) => {
@@ -9555,16 +9559,18 @@ export const signOut = () => {
 };
 ```
 
-*store/actions/actionTypes.js*
+*store/actions/index.js*
 
-* Create an identifier for logout action.
+* Export action creators related to sign-out
 
 ```js
 ...etc...
 
-export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
-
-...etc...
+export {
+  ...etc...
+  authSignOut,
+  authRequestSignOut,
+} from './auth';
 ```
 
 *store/reducers/auth.js*
@@ -9608,62 +9614,6 @@ export default reducer;
 
 **Redux Saga Example*
 
-*store/sagas/auth.js*
-
-* Create a saga that executes the logout action.
-
-```js
-import { put } from 'redux-saga/effects';
-import * as actionTypes from '../actions/actionTypes';
-
-const AUTH_TOKEN = 'AUTH_TOKEN';
-const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
-const AUTH_USER_ID = 'AUTH_USER_ID';
-
-export function* logoutSaga(action) {
-  yield* removeTokenFromLocalStorage();
-  yield put({
-    type: actionTypes.AUTH_SIGN_OUT,
-  });
-}
-
-// delete the token from localStorage
-function* removeTokenFromLocalStorage() {
-  yield localStorage.removeItem(AUTH_TOKEN);
-  yield localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
-  yield localStorage.removeItem(AUTH_USER_ID);
-}
-```
-
-*store/actions/actionTypes.js*
-
-* Create an identifier for initiate logout action.
-
-```js
-...etc...
-
-export const AUTH_INITIATE_SIGN_OUT = 'AUTH_INITIATE_SIGN_OUT';
-
-...etc...
-```
-
-*store/sagas/index.js*
-
-* Create a watcher for the initiate logout action.
-
-```js
-import { takeEvery } from 'redux-saga/effects';
-
-import * as actionTypes from '../actions/actionTypes';
-import { logoutSaga } from './auth';
-
-export function* watchAuth() {
-  // sets up a listener for AUTH_INITIATE_SIGN_OUT and then
-  // executes logoutSaga when that appears
-  yield takeEvery(actionTypes.AUTH_INITIATE_SIGN_OUT, logoutSaga);
-}
-```
-
 *index.js*
 
 * Register the logout watcher with the saga middleware.
@@ -9689,19 +9639,126 @@ sagaMiddleware.run(watchAuth);
 ...etc...
 ```
 
+*store/actions/actionTypes.js*
+
+* Create identifiers for sign-out actions.
+
+```js
+...etc...
+
+export const AUTH_INITIATE_SIGN_OUT = 'AUTH_INITIATE_SIGN_OUT';
+export const AUTH_SIGN_OUT = 'AUTH_SIGN_OUT';
+export const AUTH_REQUEST_SIGN_OUT = 'AUTH_REQUEST_SIGN_OUT';
+
+...etc...
+```
+
+*store/sagas/auth.js*
+
+* Create a saga that executes the sign-out actions.
+
+```js
+import { put } from 'redux-saga/effects';
+
+...etc...
+
+const AUTH_TOKEN = 'AUTH_TOKEN';
+const AUTH_TOKEN_EXPIRATION = 'AUTH_TOKEN_EXPIRATION';
+const AUTH_USER_ID = 'AUTH_USER_ID';
+
+export function* authSignOutSaga() {
+  yield* removeTokenFromLocalStorage();
+  yield put(actions.authSignOut());
+}
+
+// log the user out of the firebase instance
+// and delete the token
+// (in this case the 'action' arg is not used)
+export function* authInitiateSignOutSaga(action) {
+  try {
+    const response = yield fire.auth().signOut();
+    if (response) {
+      yield put(actions.authInitiateSignOut());
+    }
+  } catch (err) {
+    console.log(err);
+    yield put(actions.authFail(err));
+  }
+}
+
+// delete the token from localStorage
+function* removeTokenFromLocalStorage() {
+  yield localStorage.removeItem(AUTH_TOKEN);
+  yield localStorage.removeItem(AUTH_TOKEN_EXPIRATION);
+  yield localStorage.removeItem(AUTH_USER_ID);
+}
+```
+
+*store/sagas/index.js*
+
+* Create a watcher for the sign-out actions.
+
+```js
+import { takeEvery } from 'redux-saga/effects';
+
+import * as actionTypes from '../actions/actionTypes';
+import { authSignOutSaga, authCheckStateSaga, authInitiateSignOutSaga } from './auth';
+
+export function* watchAuth() {
+  // sets up a listener for id and then
+  // executes function when it appears
+  yield takeEvery(actionTypes.AUTH_INITIATE_SIGN_OUT, authSignOutSaga);
+  yield takeEvery(actionTypes.AUTH_CHECK_STATE, authCheckStateSaga);
+  yield takeEvery(actionTypes.AUTH_REQUEST_SIGN_OUT, authInitiateSignOutSaga);
+}
+```
+
 *store/actions/auth.js*
 
-* Request the initiate logout action.
+* Create the sign-out actions.
 
 ```js
 import * as actionTypes from '../actions/actionTypes';
 
-export const authSignOut = () => {
+...etc...
+
+export const authInitiateSignOut = () => {
   return {
     type: actionTypes.AUTH_INITIATE_SIGN_OUT,
   };
 };
+
+export const authSignOut = () => {
+  return {
+    type: actionTypes.AUTH_SIGN_OUT,
+  };
+};
+
+export const authRequestSignOut = () => {
+  return {
+    type: actionTypes.AUTH_REQUEST_SIGN_OUT,
+  };
+};
 ```
+
+*store/actions/index.js*
+
+* Export action creators related to sign-out
+
+```js
+...etc...
+
+export {
+  ...etc...
+  authInitiateSignOut,
+  authSignOut,
+  authRequestSignOut,
+} from './auth';
+```
+
+*store/reducers/auth.js*
+
+* Same as Redux Thunk example..
 
 </div>
 </div>
