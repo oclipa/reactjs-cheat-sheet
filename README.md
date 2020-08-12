@@ -9465,17 +9465,15 @@ The basic pattern for the Redux Saga approach is:
    * `takeEvery()` watches for the specified id and then calls the specified function.
 1. Action performs side-effects and then returns a reducer trigger id (using Redux):
    * `function* doSideEffectsSaga() { yield sideEffect(); yield put({ type: actionTypes.COMPLETE_SOMETHING, }); }`
-   * `put()` is the Redux Saga version of `dispatch`
+   * `put()` is the Redux Saga version of `dispatch()`
 1. Reducer updates the Redux store:
    * `updateStateOfSomethingInStore = (state, action) => { return updateStore(state, updatedState); };`
 
 Additionally:
 * `delay()` is the Redux Saga version of `setTimeout()`.
-* `yield()` pauses while asynchronous functions complete.
+* `yield` pauses while asynchronous functions complete.
 
-For example:
-
-**Redux Thunk Example* 
+**Redux Thunk Example**
 
 *index.js*
 
@@ -9612,7 +9610,7 @@ const reducer = (state = initialState, action) => {
 export default reducer;
 ```
 
-**Redux Saga Example*
+**Redux Saga Example**
 
 *index.js*
 
@@ -9770,7 +9768,42 @@ export {
 
 *store/reducers/auth.js*
 
-* Same as Redux Thunk example.
+* Create a reducer that updates the Redux store with the new login state.
+
+```js
+import * as actionTypes from '../actions/actionTypes';
+import { updateObject } from '../../shared/utility';
+
+const initialState = {
+  userId: null,
+  token: null,
+  error: null,
+  loading: false,
+  authRedirectPath: '/',
+};
+
+...etc...
+
+const authSignOutSucceed = (state, action) => {
+  return updateObject(state, { token: null, userId: null });
+};;
+
+...etc...
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    ...etc...
+
+    case actionTypes.AUTH_SIGN_OUT_SUCCEED: {
+      return authSignOutSucceed(state, action);
+    }
+    
+    ...etc...
+  }
+};
+
+export default reducer;
+```
 
 </div>
 </div>
