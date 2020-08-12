@@ -9468,6 +9468,7 @@ The basic pattern for the Redux Saga approach is:
 yield
 put()
 takeEvery()
+delay()
 
 For example:
 
