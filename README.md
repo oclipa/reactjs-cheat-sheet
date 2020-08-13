@@ -9518,13 +9518,16 @@ export function* setIncrementSaga(action) {
 
 **call()**
 
-`call()` is a function that allows another function to be passed to the middleware for execution.
+`call()` is a function that allows another function or generator to be passed to the middleware for execution.
 
 An example might be:
 
 `call(doQuery, url)`
 
-This returns an object with the form `{ CALL: {fn: doQuery, args: [url]}}` to the middleware.  The middleware then evaluates the function.
+This returns an object with the form `{ CALL: {fn: doQuery, args: [url]}}` to the middleware.  The middleware then invokes the function and evaluate the result.  The subsequent behaviour depends upn the result:
+* If the result is a generator function, the parent generator will be suspended until the child generator completes.  The parent will then resume with the value returned by the child.
+* If the result is a normal function that returns a promise, the parent generator will be suspended until the promise is settled.  The parent will then resume with the value resolved by the promise.
+* If the result is neither a generator nor a promise, the result will be immediately returned and the parent generator will resume.
 
 For comparison, yielding the function (`yield doQuery(url)`) will cause `doQuery()` to be evaluated *first*, with the *result* being returned to the middleware.
 
