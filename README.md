@@ -9443,10 +9443,14 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Redux Saga</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Redux Saga is an alternative to Redux Thunk.  The goal of Redux Saga is to provide a clearer separation between actions and side-effects, so that code is cleaner.
+<div id="saga-intro">
+<button type="button" class="collapsible">+ Introduction</button>   
+<div class="content" style="display: none;" markdown="1">
+  
+Redux Saga is an alternative to Redux Thunk.  The goal of Redux Saga is to provide a clearer separation between actions and side-effects, so that code is cleaner and easier to test.
 
 * Install: `npm install redux-saga`
-* Import: `import { put } from 'redux-saga/effects'`
+* Import: `import { put, takeEvery, call, delay } from 'redux-saga/effects'`
 
 A "saga" is essentially a function that runs in response to actions and handles all of the side-effects (e.g. accessing local storage, or querying a server) associated with the action.
 * A side-effect is any behaviour that does not directly affect the Redux store (it might change the state, but is not directly consumed by the reducer).
@@ -9454,24 +9458,154 @@ A "saga" is essentially a function that runs in response to actions and handles 
 More specifically, a saga is an example of a **Generator**, which is a special form of function that allows code to be paused and resumed.
 
 The basic pattern for the Redux Saga approach is:
-1. A watcher is registered for an action (using Saga):
+1. A watcher is registered with the middleware:
    * `sagaMiddleware.run(watchSomething);`
-1. An action is requested somewhere in the code:
+1. An action is requested somewhere in the app:
    * `doSomething = () => { dispatch(actions.initiateSomething()); }`
-1. An action trigger id is returned by the action creator (using Redux):
+1. An action trigger id is returned by an action creator:
    * `initiateSomething = () => { return { type: actionTypes.INITIATE_SOMETHING, }; }`
-1. Watcher intercepts the action trigger (using Saga) and triggers the action:
+1. The watcher intercepts the action trigger id and triggers a related action:
    * `function* watchSomething() => { yield takeEvery(actionTypes.INITIATE_SOMETHING, doSideEffectsSaga); }`
-   * `takeEvery()` watches for the specified id and then calls the specified function.
-1. Action performs side-effects and then returns a reducer trigger id (using Redux):
+1. The action performs side-effects and then returns a reducer trigger id:
    * `function* doSideEffectsSaga() { yield sideEffect(); yield put({ type: actionTypes.COMPLETE_SOMETHING, }); }`
-   * `put()` is the Redux Saga version of `dispatch()`
-1. Reducer updates the Redux store:
+1. The reducer intercepts the trigger id and triggers a related action:
+   * `switch (action.type) { case actionTypes.COMPLETE_SOMETHING: { return updateStateOfSomethingInStore(state, action); } }`
+1. The action updates the Redux store:
    * `updateStateOfSomethingInStore = (state, action) => { return updateStore(state, updatedState); };`
 
-Additionally:
-* `delay()` is the Redux Saga version of `setTimeout()`.
-* `yield` pauses while asynchronous functions complete.
+</div>
+</div>
+
+<div id="saga-functions">
+<button type="button" class="collapsible">+ Common Functions</button>   
+<div class="content" style="display: none;" markdown="1">
+
+The functions provided by Redux Saga are generally known as "effects", since they tend to trigger side-effects (actions other than those that update the store).
+
+**put()** 
+
+This is a non-blocking function is the equivalent of Redux's `dispatch()`).
+
+The function passes an object to the middleware, which will forward it to the reducer, which can then update the store.  
+
+The object consists of a well-known `type` property and (optionally) any additional properties required by the reducer.
+
+An example might be:
+
+`put({type: 'SET_INCREMENT', inc: 5})`
+
+This returns an object with the form `{ PUT: {type: 'SET_INCREMENT', inc: 5} }` to the middleware.  
+* The `type` is the trigger id that `takeEvery()` is watching for.  
+* The middleware will combine any other properties into a single `action` object before passing it to the reducer.
+
+**takeEvery()**
+
+`takeEvery()` watches the objects passed by `put()` to the middleware and checks for a specific `type` id. When the id is found, this triggers a specific 'saga' function.
+
+An example might be:
+
+`yield takeEvery('SET_INCREMENT', setIncrementSaga);`
+
+Any properties required by the saga function will be included in the same object as the id.  These will be combined (by the middleware) into a single `action` object, which is then passed to the saga function.
+
+An example of `setIncrementSaga` might be:
+
+```js
+export function* setIncrementSaga(action) {
+  yield put(actions.setIncrement(action.inc));
+}
+```
+
+**call()**
+
+`call()` is a function that allows another function to be passed to the middleware for execution.
+
+An example might be:
+
+`call(doQuery, url)`
+
+This returns an object with the form `{ CALL: {fn: doQuery, args: [url]}}` to the middleware.  The middleware then evaluates the function.
+
+For comparison, yielding the function (`yield doQuery(url)`) will cause `doQuery()` to be evaluated *first*, with the *result* being returned to the middleware.
+
+**delay()**
+
+`delay()` is the Redux Saga equivalent of `setTimeout()`.
+
+If an existing action creator looks like this:
+
+*actions/cleanUp.js*
+
+```js
+export const checkCloseWindow = (timeout) => {
+  return dispatch => {
+    setTimeout(() => {
+      dispatch(closeWindow());
+    }, timeout);
+  };
+};
+
+export const closeWindow = () => {
+  // close window
+};
+```
+
+An alternative approach, using `delay` could be:
+
+*actions/cleanUp.js*
+
+```js
+export const checkCloseWindow = (timeout) => {
+  return {
+    type: 'CHECK_CLOSE_WINDOW',
+    timeout: timeout
+};
+
+export const closeWindow = () => {
+  // close window
+};
+```
+
+*sagas/actions.js*
+
+```js
+export {
+  checkCloseWindowSaga
+} from './cleanUp';
+```
+
+*sagas/watcher.js*
+
+```js
+export function* watcher() {
+  yield takeEvery('CHECK_CLOSE_WINDOW', checkCloseWindowSaga);
+}
+```
+
+*actions/actions.js*
+
+```js
+export {
+  closeWindow
+} from './cleanUp';
+```
+
+*sagas/cleanUp.js*
+
+```js
+export function* checkCloseWindowSaga(action) {
+  yield delay(action.timeout)
+  yield put(actions.closeWindow);
+}
+```
+
+
+</div>
+</div>
+
+<div id="saga-compare">
+<button type="button" class="collapsible">+ Thunk vs Saga</button>   
+<div class="content" style="display: none;" markdown="1">
 
 **Redux Thunk Example**
 
@@ -9609,6 +9743,8 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 ```
+
+---------------------------------------------------------------
 
 **Redux Saga Example**
 
@@ -9804,6 +9940,9 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 ```
+
+</div>
+</div>
 
 </div>
 </div>
