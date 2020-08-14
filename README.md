@@ -9450,10 +9450,10 @@ export default SideDrawer;
 Redux Saga is an alternative to Redux Thunk.  The goal of Redux Saga is to provide a clearer separation between actions and side-effects, so that code is cleaner and easier to test.
 
 * Install: `npm install redux-saga`
-* Import: `import { put, takeEvery, call, delay } from 'redux-saga/effects'`
+* Import: `import { put, takeEvery, call, delay, race } from 'redux-saga/effects'`
 
 A "saga" is essentially a function that runs in response to actions and handles all of the side-effects (e.g. accessing local storage, or querying a server) associated with the action.
-* A side-effect is any behaviour that does not directly affect the Redux store (it might change the state, but is not directly consumed by the reducer).
+   * A side-effect is any behaviour that does not directly affect the Redux store (it might change the state, but is not directly consumed by the reducer).
 
 More specifically, a saga is an example of a **Generator**, which is a special form of function that allows code to be paused and resumed.
 
@@ -9482,9 +9482,9 @@ The basic pattern for the Redux Saga approach is:
 
 The functions provided by Redux Saga are generally known as "effects", since they tend to trigger side-effects (actions other than those that update the store).
 
-**put()** 
+## put() 
 
-This is a non-blocking function is the equivalent of Redux's `dispatch()`).
+This is a non-blocking function is the equivalent of Redux's `dispatch()`.
 
 The function passes an object to the middleware, which will forward it to the reducer, which can then update the store.  
 
@@ -9498,9 +9498,9 @@ This returns an object with the form `{ PUT: {type: 'SET_INCREMENT', inc: 5} }` 
 * The `type` is the trigger id that `takeEvery()` is watching for.  
 * The middleware will combine any other properties into a single `action` object before passing it to the reducer.
 
-**takeEvery()**
+## takeEvery()
 
-`takeEvery()` watches the objects passed by `put()` to the middleware and checks for a specific `type` id. When the id is found, this triggers a specific 'saga' function.
+`takeEvery()` watches the objects passed by `put()` to the middleware and checks for a specific `type` id. When the id is found, this triggers a specific "saga" function.
 
 An example might be:
 
@@ -9516,7 +9516,7 @@ export function* setIncrementSaga(action) {
 }
 ```
 
-**call()**
+## call()
 
 `call()` is a function that allows another function or generator to be passed to the middleware for execution.
 
@@ -9524,14 +9524,14 @@ An example might be:
 
 `call(doQuery, url)`
 
-This returns an object with the form `{ CALL: {fn: doQuery, args: [url]}}` to the middleware.  The middleware then invokes the function and evaluate the result.  The subsequent behaviour depends upn the result:
+This returns an object with the form `{ CALL: {fn: doQuery, args: [url]}}` to the middleware.  The middleware then invokes the function and evaluates the result.  The subsequent behaviour depends upon the result:
 * If the result is a generator function, the parent generator will be suspended until the child generator completes.  The parent will then resume with the value returned by the child.
 * If the result is a normal function that returns a promise, the parent generator will be suspended until the promise is settled.  The parent will then resume with the value resolved by the promise.
 * If the result is neither a generator nor a promise, the result will be immediately returned and the parent generator will resume.
 
-For comparison, yielding the function (`yield doQuery(url)`) will cause `doQuery()` to be evaluated *first*, with the *result* being returned to the middleware.
+For comparison, if, rather than using `call()`, the function is yielded directly (`yield doQuery(url)`), `doQuery()` will be invoked *first*, with the *result* being returned to the middleware.  Using `call()`, the middleware controls when the function is invoked.
 
-**delay()**
+## delay()
 
 `delay()` is the Redux Saga equivalent of `setTimeout()`.
 
@@ -9602,6 +9602,30 @@ export function* checkCloseWindowSaga(action) {
 }
 ```
 
+## race()
+
+The `race()` function is useful in cases where you want to run several effects in parallel but you only care about the result from the first to complete.  Essentially, the effects "race" to complete.
+
+A simple example of this would be setting a timeout for an effect, e.g.:
+
+```js
+import { race, take, put, call, delay } from 'redux-saga/effects'
+
+function* startPollingSaga(action) {
+    // Race the following commands with a timeout of 1 minute
+    const { response, cancel, failed, timeout } = yield race({
+      response: call(checkJobStatus), // start the effect
+      cancel: take("CANCEL_POLLING"), // check if effect canceled
+      failed: take("POLLING_FAILED"), // check if effect failed
+      timeout: call(delay, 60000)     // check if timeout exceeded
+    });
+    
+    // handle failure scenario
+    if (failed) {
+      yield put({type: "HANDLE_POLLING_FAILURE"});
+    }
+}
+```
 
 </div>
 </div>
@@ -9610,7 +9634,7 @@ export function* checkCloseWindowSaga(action) {
 <button type="button" class="collapsible">+ Thunk vs Saga</button>   
 <div class="content" style="display: none;" markdown="1">
 
-**Redux Thunk Example**
+## Redux Thunk Example
 
 *index.js*
 
@@ -9749,7 +9773,7 @@ export default reducer;
 
 ---------------------------------------------------------------
 
-**Redux Saga Example**
+## Redux Saga Example
 
 *index.js*
 
