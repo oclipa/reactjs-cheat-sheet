@@ -9450,7 +9450,7 @@ export default SideDrawer;
 Redux Saga is an alternative to Redux Thunk.  The goal of Redux Saga is to provide a clearer separation between actions and side-effects, so that code is cleaner and easier to test.
 
 * Install: `npm install redux-saga`
-* Import: `import { put, takeEvery, call, delay, race } from 'redux-saga/effects'`
+* Import: `import { put, take, takeEvery, call, delay, race } from 'redux-saga/effects'`
 
 A "saga" is essentially a function that runs in response to actions and handles all of the side-effects (e.g. accessing local storage, or querying a server) associated with the action.
    * A side-effect is any behaviour that does not directly affect the Redux store (it might change the state, but is not directly consumed by the reducer).
@@ -9458,15 +9458,15 @@ A "saga" is essentially a function that runs in response to actions and handles 
 More specifically, a saga is an example of a **Generator**, which is a special form of function that allows code to be paused and resumed.
 
 The basic pattern for the Redux Saga approach is:
-1. A watcher is registered with the middleware:
-   * `sagaMiddleware.run(watchSomething);`
+1. A central saga file is created that exposes all other sagas: 
+   * `export function rootSaga() { yield takeEvery(actionTypes.INITIATE_SOMETHING, doSideEffectsSaga); ...etc... }`
+1. The sagas are registered with the middleware:
+   * `sagaMiddleware.run(rootSaga);`
 1. An action is requested somewhere in the app:
    * `doSomething = () => { dispatch(actions.initiateSomething()); }`
 1. An action trigger id is returned by an action creator:
    * `initiateSomething = () => { return { type: actionTypes.INITIATE_SOMETHING, }; }`
-1. The watcher intercepts the action trigger id and triggers a related action:
-   * `function* watchSomething() => { yield takeEvery(actionTypes.INITIATE_SOMETHING, doSideEffectsSaga); }`
-1. The action performs side-effects and then returns a reducer trigger id:
+1. The watcher intercepts the action trigger id and triggers the related saga, which performs side-effects and then returns a reducer trigger id:
    * `function* doSideEffectsSaga() { yield sideEffect(); yield put({ type: actionTypes.COMPLETE_SOMETHING, }); }`
 1. The reducer intercepts the trigger id and triggers a related action:
    * `switch (action.type) { case actionTypes.COMPLETE_SOMETHING: { return updateStateOfSomethingInStore(state, action); } }`
@@ -9488,33 +9488,71 @@ This is a non-blocking function is the equivalent of Redux's `dispatch()`.
 
 The function passes an object to the middleware, which will forward it to the reducer, which can then update the store.  
 
-The object consists of a well-known `type` property and (optionally) any additional properties required by the reducer.
+The object consists of a well-known `type` pattern and (optionally) any additional properties required by the reducer.
 
 An example might be:
 
 `put({type: 'SET_INCREMENT', inc: 5})`
 
 This returns an object with the form `{ PUT: {type: 'SET_INCREMENT', inc: 5} }` to the middleware.  
-* The `type` is the trigger id that `takeEvery()` is watching for.  
+* The `type` is the trigger pattern that `takeEvery()` (or a similar function) is watching for.  
 * The middleware will combine any other properties into a single `action` object before passing it to the reducer.
 
 ## takeEvery()
 
-`takeEvery()` watches the objects passed by `put()` to the middleware and checks for a specific `type` id. When the id is found, this triggers a specific "saga" function.
+`takeEvery()` is a non-blocking function that watches for objects passed to the middleware by `put()` and then checks if they have a specific `type` property. When the property is matched, a specific "saga" function is triggered.
 
 An example might be:
 
-`yield takeEvery('SET_INCREMENT', setIncrementSaga);`
+```js
+yield takeEvery('SET_INCREMENT', function* setIncrementSaga(action) {
+  yield put(actions.setIncrement(action.inc));
+});
+```
 
-Any properties required by the saga function will be included in the same object as the id.  These will be combined (by the middleware) into a single `action` object, which is then passed to the saga function.
+Any properties required by the saga function (e.g. `inc` in the above example) will be included in the object passed by `put()`.  The middleware extracts these properties and passes them to the saga function as a single `action` object.
 
-An example of `setIncrementSaga` might be:
+**Under The Covers**
+
+The `takeEvery()` function is actually a wrapper on a more powerful, lower-level implementation that use the `take()` and `fork()` functions.  An example of what the lower-level implementation might look like this is the following:
 
 ```js
-export function* setIncrementSaga(action) {
-  yield put(actions.setIncrement(action.inc));
+const takeEvery = (patternOrChannel, saga, ...args) => fork(function*() { // start function in parallel
+  while (true) {
+    const action = yield take(pattern) // wait for pattern to be matched and take() to yield an action
+    yield fork(saga, ...args.concat(action)) // start action in parallel
+    // loop back to take() and wait for pattern
+  }
+})
+```
+
+This approach allows `takeEvery()` to handle multiple saga functions in parallel, although there is no guarantee that the tasks will complete in the same order they were started.  
+
+Note that there is a similar function called `takeLatest()`, which will only allows the latest requested action to complete (all previously started ones will be canceled).
+
+For finer control of the flow of actions, the lower-level `take()` function needs to be used.
+
+## take()
+
+As noted above, the `takeEvery()` function is based on the `take()` function, which waits for a specified pattern to be passed by `put()` and then returns a specific saga function.  Unlike `takeEvery()`, `take()` is a blocking function, which will wait until the pattern is matched. 
+
+One particular use of `take()` is if there is a desire to control the flow of actions, such as in the following example:
+
+```js
+function* loginFlow() {
+  while (true) {
+    yield take('LOGIN') // wait for login
+    // ... perform the login logic
+    yield take('LOGOUT') // wait for logout
+    // ... perform the logout logic
+  }
 }
 ```
+
+In this case, 'LOGIN' will always be followed by 'LOGOUT', which in turn will always be followed by 'LOGIN', etc.
+
+For further discussion of how to implement non-blocking flow control using `take()`, see here:
+* [https://redux-saga.js.org/docs/advanced/NonBlockingCalls.html](https://redux-saga.js.org/docs/advanced/NonBlockingCalls.html)
 
 ## call()
 
@@ -9533,7 +9571,7 @@ For comparison, if, rather than using `call()`, the function is yielded directly
 
 ## delay()
 
-`delay()` is the Redux Saga equivalent of `setTimeout()`.
+`delay()` is the Redux Saga equivalent of `setTimeout()` and is a blocking function.
 
 If an existing action creator looks like this:
 
@@ -9601,6 +9639,92 @@ export function* checkCloseWindowSaga(action) {
   yield put(actions.closeWindow);
 }
 ```
+
+## fork()
+
+As the name suggests, `fork()` launches Effects in parallel and is non-blocking.  However, the parent Saga can only complete once all attached child effects have also completed.
+
+Take, for example, the following:
+
+```js
+import { fork, call, put, delay } from 'redux-saga/effects'
+import api from './somewhere/api' // app specific
+import { receiveData } from './somewhere/actions' // app specific
+
+function* fetchAll() {
+  const task1 = yield fork(fetchResource, 'users')
+  const task2 = yield fork(fetchResource, 'comments')
+  yield delay(1000)
+}
+
+function* fetchResource(resource) {
+  const {data} = yield call(api.fetch, resource)
+  yield put(receiveData(data))
+}
+
+function* main() {
+  yield call(fetchAll)
+}
+```
+
+`call(fetchAll)` will terminate after:
+
+1. The `fetchAll()` body itself terminates, this means all 3 effects are performed. Since fork effects are non blocking, the task will block on `delay(1000)`
+1. The 2 forked tasks terminate, i.e. after fetching the required resources and putting the corresponding receiveData actions
+
+So the whole task will block until a delay of 1000 millisecond passed and both task1 and task2 finished their business.
+
+Say for example, the delay of 1000 milliseconds elapsed and the 2 tasks haven't yet finished, then `fetchAll()` will still wait for all forked tasks to finish before terminating the whole task.
+
+With regard to error handling, if at a moment, for example, `fetchAll()` is blocked on the `delay(1000)` Effect, and say, task1 failed, then the whole `fetchAll()` task will fail causing cancellation of all other pending tasks. This includes:
+
+1. The main task (the body of `fetchAll()`): cancelling it means cancelling the current Effect `delay(1000)`
+1. The other forked tasks which are still pending. i.e. task2 in our example.
+1. The `call(fetchAll)` will raise itself an error which will be caught in the catch body of main
+
+Note we're able to catch the error from `call(fetchAll)` inside main only because we're using a blocking call. And that we can't catch the error directly from `fetchAll()`. This is a rule of thumb, **you can't catch errors from forked tasks**. 
+
+```js
+...etc...
+
+function* main() {
+  try {
+    yield call(fetchAll)
+  } catch (e) {
+    // handle fetchAll errors
+  }
+}
+```
+
+## spawn()
+
+The `spawn()` function is essentially the same as `fork()` except that the launched processes are detached from the parent saga; once started they have no connection back to the parent.  This means that each spawned saga must be cancalled individually, and any errors will not be propagated back to the parent.
+
+## all()
+
+An alternative to using `fork()` is the `all()` Effect, where an array of Effects is passed to `all()`, each of which will be launched as a process in parallel.
+
+Taking the example used in the `fork()` section above, note that this can be rewritten as:
+
+```js
+function* fetchAll() {
+  yield all([
+    call(fetchResource, 'users'),
+    call(fetchResource, 'comments'),
+  ])
+  yield delay(1000)
+}
+```
+
+The result will be similar except for two significant details:
+* The `all()` effect is blocking, so `delay(1000)` is not executed until all children sagas complete, while `fork()` effects are non-blocking so `delay(1000)` is executed immediately after yielding the fork effects.
+* You can get task descriptors when using `fork()` effects, so in the subsequent code you can cancel/join the forked task via task descriptors. This is not possible in the `all()` case.
+
+A work around for these two differences is to combine `all()` and `fork()` in the following manner:
+
+`const [task1, task2, task3] = yield all([ fork(saga1), fork(saga2), fork(saga3) ])`
+
+In this case, since the `fork()` effects are non-blocking, `all()` will return immediately, and the returned tasks can be used to cancel/join a process.  It is not possible, however, to catch errors in the parent task.
 
 ## race()
 
