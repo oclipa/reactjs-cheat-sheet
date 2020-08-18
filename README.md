@@ -9449,6 +9449,9 @@ export default SideDrawer;
   
 Redux Saga is an alternative to Redux Thunk.  The goal of Redux Saga is to provide a clearer separation between actions and side-effects, so that code is cleaner and easier to test.
 
+Full documentation for Redux Saga can be found here:
+* [https://redux-saga.js.org/](https://redux-saga.js.org/)
+
 * Install: `npm install redux-saga`
 * Import: `import { put, take, takeEvery, call, delay, race } from 'redux-saga/effects'`
 
@@ -9558,16 +9561,22 @@ For further discussion of how to implement non-blocking flow control using `take
 
 `call()` is a function that allows another function or generator to be passed to the middleware for execution.
 
-An example might be:
+For example, the following function:
 
-`call(doQuery, url)`
+`server.doQuery(url, queryId)`
 
-This returns an object with the form `{ CALL: {fn: doQuery, args: [url]}}` to the middleware.  The middleware then invokes the function and evaluates the result.  The subsequent behaviour depends upon the result:
+could be written as:
+
+`call([server, "doQuery"], url, queryId)`
+
+One of the primary reasons why this is desirable is that it makes it much easier to test the generator.
+
+`call()` returns an object with the form `{ CALL: {fn: [server, doQuery], args: [url, queryId]}}` to the middleware.  The middleware then invokes the function and evaluates the result.  The subsequent behaviour depends upon the result:
 * If the result is a generator function, the parent generator will be suspended until the child generator completes.  The parent will then resume with the value returned by the child.
 * If the result is a normal function that returns a promise, the parent generator will be suspended until the promise is settled.  The parent will then resume with the value resolved by the promise.
 * If the result is neither a generator nor a promise, the result will be immediately returned and the parent generator will resume.
 
-For comparison, if, rather than using `call()`, the function is yielded directly (`yield doQuery(url)`), `doQuery()` will be invoked *first*, with the *result* being returned to the middleware.  Using `call()`, the middleware controls when the function is invoked.
+For comparison, if, rather than using `call()`, the function is yielded directly (`yield doQuery(url, queryId)`), `doQuery()` will be invoked *first*, with the *result* being returned to the middleware.  Using `call()`, the middleware controls when the function is invoked.
 
 ## delay()
 
@@ -10090,6 +10099,54 @@ const reducer = (state = initialState, action) => {
 };
 
 export default reducer;
+```
+
+</div>
+</div>
+
+<div id="saga-promises">
+<button type="button" class="collapsible">+ Handling Promises</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In cases where a function returns a promise (such as when querying a web server), the `promise().then().catch()` syntax is not used (due to the complications present by the asynchronous nature of generators).
+
+So, if we consider the following example:
+
+```js
+export const queryIngredients = () => {
+  return (dispatch) => {
+    axios
+      .get('/ingredients.json')
+      .then((response) => {
+        dispatch(setIngredients(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(fetchIngredientsFailed());
+      });
+  };
+};
+```
+
+To be converted to a saga, this should be implemented in the following manner:
+
+```js
+export function* queryIngredientsSaga(action) {
+  try {
+    // yield wait until the promise is resolved and
+    // then return the *value* of the promise
+    const response = yield axios.get('/ingredients.json');
+    
+    // the resolved value can then be returned using the
+    // usual yield put() pattern.
+    yield put(actions.setIngredients(response.data));
+  } catch (error) {
+    // for error handling, try/catch is used, rather
+    // than .catch().
+    yield console.log(error);
+    yield put(actions.fetchIngredientsFailed());
+  }
+}
 ```
 
 </div>
