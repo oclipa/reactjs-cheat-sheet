@@ -3561,6 +3561,46 @@ There are two main issues to be aware of what deploying a React app to a server:
 <button type="button" class="collapsible">+ Redux</button>   
 <div class="content" style="display: none;" markdown="1">
 
+<div id="redux-overview">
+<button type="button" class="collapsible">+ Redux Overview</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Redux is not a part of React, however it is a concept/feature that React can take advantage of via the `react-redux` module.  Essentially, the module is wrapping the Redux logic and providing a way to access it in a more React-friendly manner.
+
+So, just to recap, the basic idea behind Redux is that you are taking an initial state and performing one or more actions on it to "reduce" it to a final state. 
+
+In both the basic and React versions, the application state is maintained by a "store".  You don't need to know the fine details of the store, other than that the state is passed to/from the store as a JavaScript object.  The state object is automatically passed into the reducer whenever an action is triggered. 
+
+The store is maintained in memory and so is reset if the application is refreshed.
+
+The store is initialized by passing it a reducer (or multiple reducers, if `combineReducers` is used).  The state object is initialized the very first time an action runs using a dummy initial state object.
+
+In React, the store is made accessible to the app using the `<Provider />` component.
+
+The reducer contains the logic that actually updates the state/store.  Each function in the reducer maps to a similar function in the actions.
+
+Triggering the reducer logic is done using the actions, which essentially just broadcast (i.e. `dispatch`) an identifier for a particular reducer function, plus the data required by the reducer function.  The reducer listens for these dispatches and ensures that the correct reducer function is triggered with the correct data.
+
+The individual React app components are linked to the Redux store using the `connect` function (provided by `react-redux`).  The `connect` function serves two purposes:
+1. It exposes the functions that dispatch the actions to the component via the `mapDispatchToProps` function.
+1. It exposes the current state to the component via the `mapStateToProps` function.
+
+So, in summary, the app functions like this:
+
+1. Intialize store with a reducer
+1. Wrap app in `<Provider />` tags to make the store accessible
+1. In a component that wishes to update the state:
+  * Map function to actions using `mapDispatchToProps`
+  * Map local props to state properties using `mapStateToProps`
+  * Link the map functions to the store using `connect` function.
+1. When component calls a mapped function, `dispatch` the related action
+1. When the reducer receives the action and current state, trigger the related reducer function.
+1. The reducer function updates the state, which is returned to the store.
+1. The updated state is exposed to the app via the mapped props.
+
+</div>
+</div>
+
 <div id="redux-basics">
 <button type="button" class="collapsible">+ Redux Basics</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -10097,7 +10137,7 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Introduction</button>   
 <div class="content" style="display: none;" markdown="1">
   
-React Hooks were introduced in React 16.8.  They extend the functionality of Functional Components to reproduce - and replace - functionality seen in Class-Based Components.  In particular they introduce State Management and the equivalent of Lifecycle Hooks.  THey make it possible to build complete applications without using Class-Based Components.  Hooks are intended to be highly re-usable and are independent of components.
+React Hooks were introduced in React 16.8.  They extend the functionality of Functional Components to reproduce - and replace - functionality seen in Class-Based Components.  In particular they introduce State Management and the equivalent of Lifecycle Hooks.  They make it possible to build complete applications without using Class-Based Components.  Hooks are intended to be highly re-usable and are independent of components.
 
 * Lifecycle Hooks (a.k.a. Lifecycle Methods) are not related to React Hooks, although React Hooks can replicate their functionality.
 * React Hooks are functions (as opposed to components).  
@@ -10107,6 +10147,10 @@ Hooks can be used for the following:
    * Managing state
    * Side effects (e.g. http requests)
    * Sharing stateful or stateless logic across multiple components
+
+**Rules for Hooks**
+1. Hooks can only be used in Functional Components (or other castables ?????).
+1. Hooks can only be used on the root level of a component (you cannot use them inside child functions or blocks, such as `if` statements).
 
 </div>
 </div>
@@ -10193,6 +10237,70 @@ const IngredientForm = React.memo((props) => {
 });
 
 export default IngredientForm;
+```
+
+Note that this example has three issues:
+1) There is a closure issue that means that care needs to be taken to ensure the correct value is passed into the update function.
+2) Since there is only a since state object, care must be taken to merge in values for all properties, even if they haven't changed.
+3) Since unchanged values must be merged, care must be taken to ensure that the latest version of the values are used.
+
+These three issues can be avoided if, rather than using a single state object, a different state is used for each property.
+
+If the above example is updated along these lines, the following is the result:
+
+```js
+import React, { useState } from 'react';
+
+...etc...
+
+const IngredientForm = React.memo((props) => {
+
+  // get initial state at beginning of render cycle
+  const [enteredTitle, setEnteredTitle] = useState('');
+  const [enteredAmount, setEnteredAmount] = useState('');
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    // ...
+  };
+
+  return (
+    <section className="ingredient-form">
+      <Card>
+        <form onSubmit={submitHandler}>
+          <div className="form-control">
+            <label htmlFor="title">Name</label>
+            <input
+              type="text"
+              id="title"
+              value={enteredTitle}
+              onChange={(event) => {
+                setEnteredTitle(event.target.value);
+              }}
+            />
+          </div>
+          <div className="form-control">
+            <label htmlFor="amount">Amount</label>
+            <input
+              type="number"
+              id="amount"
+              value={enteredAmount}
+              onChange={(event) => {
+                setEnteredAmount(event.target.value);
+              }}
+            />
+          </div>
+          <div className="ingredient-form__actions">
+            <button type="submit">Add Ingredient</button>
+          </div>
+        </form>
+      </Card>
+    </section>
+  );
+});
+
+export default IngredientForm;
+
 ```
 
 </div>
