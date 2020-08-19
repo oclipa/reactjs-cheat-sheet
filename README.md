@@ -10170,6 +10170,8 @@ Probably the most important hook is the `useState()` function, which allows Func
 
 An example implementation using `useState()` is the following:
 
+*IngredientForm.js*
+
 ```jsx
 import React, { useState } from 'react';
 
@@ -10248,6 +10250,8 @@ These three issues can be avoided if, rather than using a single state object, a
 
 If the above example is updated along these lines, the following is the result:
 
+*IngredientForm.js*
+
 ```js
 import React, { useState } from 'react';
 
@@ -10300,8 +10304,91 @@ const IngredientForm = React.memo((props) => {
 });
 
 export default IngredientForm;
-
 ```
+
+**Passing State Between Components**
+
+`props` are used to pass state from parent to child.
+
+Extending the example above, IngredientForm is a child of the Ingredients component, which controls the list of ingredients.  This means that Ingredients can pass props (in the following case, an `addIngredientHandler()` function) to IngredientForm.
+
+The Ingredients component maintains its own state, which can be updated by addIngredientHandler
+
+*Ingredients.js*
+
+This is the parent object that controls the list of ingredients.
+
+```js
+import React, { useState } from 'react';
+
+import IngredientForm from './IngredientForm';
+import IngredientList from './IngredientList';
+import Search from './Search';
+
+function Ingredients() {
+  const [ingredients, setIngredients] = useState([]);
+
+  const addIngredientHandler = (ingredient) => {
+    setIngredients((latestIngredients) => [
+      ...latestIngredients,
+      { id: Math.random().toString(), ...ingredient },
+    ]);
+  };
+
+  return (
+    <div className="App">
+      {/* Pass handler to form via props */}
+      <IngredientForm onAddIngredient={addIngredientHandler} />
+
+      <section>
+        <Search />
+        <IngredientList ingredients={ingredients} onRemoveItem={() => {}} />
+      </section>
+    </div>
+  );
+}
+
+export default Ingredients;
+```
+
+*IngredientForm.js*
+
+The form is a child of the list of ingredients.
+
+```js
+...etc...
+
+const IngredientForm = React.memo((props) => {
+
+  ...etc...
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+
+    // call handler from props passed by parent Ingredients component
+    props.onAddIngredient({ title: enteredTitle, amount: enteredAmount });
+  };
+
+  return (
+    <section className="ingredient-form">
+      <Card>
+        <form onSubmit={submitHandler}>
+        
+          ...etc...
+          
+          <div className="ingredient-form__actions">
+            <button type="submit">Add Ingredient</button>
+          </div>
+        </form>
+      </Card>
+    </section>
+  );
+});
+
+export default IngredientForm;
+```
+
+
 
 </div>
 </div>
