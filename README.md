@@ -2038,13 +2038,7 @@ export default withErrorHandler;
 </div>
 
 <div id="fetch">
-<button type="button" class="collapsible">+ HTTP Requests with fetch: <br/><code class="ex">
-fetch(url, {
-    method: method,
-    body: jsonObj,
-    headers: { ... }
-  });
-</code></button>   
+<button type="button" class="collapsible">+ HTTP Requests with fetch</button>   
 <div class="content" style="display: none;" markdown="1">
 
 The simplest way to query a URL is the `fetch()` function, which is a feature provided by the browser, and thus does not require additional imports.  
@@ -10253,7 +10247,9 @@ Hooks can be used for the following:
 <div id="hooks-useState">
 <button type="button" class="collapsible">+ useState()</button>   
 <div class="content" style="display: none;" markdown="1">
-  
+
+**Overview**
+
 Probably the most important hook is the `useState()` function, which allows Functional Components to update the application state.
   * When using `useState()`, the state can be initialized with any value (unlike class-based state that can only use simple objects).
   * `useState()` returns an array with exactly two elements.
@@ -10261,7 +10257,7 @@ Probably the most important hook is the `useState()` function, which allows Func
      * The second element will always be a update function that allows the state to be overwritten.
   * This update function returned by `useState()` requires that the **entire** state be overwritten; it does not allow specific properties to be updated (unlike `setState()`).
 
-**NOTE:** If the state is updated multiple times in the same render, there is a risk that the current state may be out of date (due to the unpredictable way in which rendering happens).  To avoid this, the actual updating can be delegated to a function that can be passed as an argument to the update function.  In this case, the delegate function will receive the latest state, even if it hasn't yet been fully committed for this render cycle.
+NOTE: If the state is updated multiple times in the same render, there is a risk that the current state may be out of date (due to the unpredictable way in which rendering happens).  To avoid this, the actual updating can be delegated to a function that can be passed as an argument to the update function.  In this case, the delegate function will receive the latest state, even if it hasn't yet been fully committed for this render cycle.
 
 **Using useState()**
 
@@ -10485,8 +10481,6 @@ const IngredientForm = React.memo((props) => {
 export default IngredientForm;
 ```
 
-
-
 </div>
 </div>
 
@@ -10494,19 +10488,43 @@ export default IngredientForm;
 <button type="button" class="collapsible">+ useEffect()</button>   
 <div class="content" style="display: none;" markdown="1">
 
-Another important hook is the `useEffect()` function, which enable lifecycle-like behaviour in Functional Components.
-  * `import React, {useEffect} from 'react';`
-  * Takes a function that will run for every render cycle.
-    * `useEffect( () => { somefunction; }); )`
-  * Can have multiple calls to `useEffect()` in the same function (e.g. each reacting to different object).
-  * Essentially, `componentDidMount()` and `componentDidUpdate()` combined in one effect (see below).
-  * Controlled by passing an object (or array of objects) into the method and the method only reacts if the object has changed:
-    * `useEffect( () => { somefunction; }, [props.somedata] ); )`
-    * To have the method run only the first time an object is rendered, pass an empty array.
-  * To perform clean-up using `useEffect()`, return a function:
-    * `useEffect( () => { somefunction; return () => { cleanupfunction }; }, [props.somedata] );`
-    * Runs BEFORE the main `useEffect()` function runs, but AFTER the (first) render cycle.
-    * If an empty array is passed, the cleanup function will only run when the component is unmounted (destroyed).
+**Overview**
+
+Another important hook is the `useEffect()` function, which allows side-effects, such as querying data sources, to be performed.  A side-effect is any action that cannot be handled as part of the normal rendering flow.
+
+The function can be reference multiple times in the same component (as long as it obeys the general rules for hooks).
+
+By default, `useEffect()` is called **after every** render cycle.  This can be a problem because if `useEffect()` updates the app, this will force a re-render, which will call `useEffect()` again, which will force a re-render, etc.
+
+**Controlling The Function**
+
+To avoid an infinite loop, `useEffect()` can be controlled by passing a dependency (an object, or array of objects) into the function and the function only reacts if the dependency has changed.  In this case, the function emulates `componentDidUpdate()`.
+
+For example,
+
+```js
+useEffect( () => { somefunction; }, [props.somedata] ); )
+```
+
+To have the function run only the **first time** an object is rendered, pass an empty array.  In this case, the function emulates `componentDidMount()`.
+
+```js
+useEffect( () => { somefunction; }, [] ); )
+```
+
+**Cleaning Up**
+
+The `useEffect()` function can also be used to clean-up after a render cycle, or when a component is unmounted (destroyed).
+
+This is done by returning a function from `useEffect()`, e.g.
+
+```js
+useEffect( () => { somefunction; return () => { cleanupfunction }; }, [props.somedata] );
+```
+
+The returned function runs **BEFORE** the main `useEffect()` function runs, but **AFTER** the (first) render cycle.
+
+If an empty array is passed, the cleanup function will only run when the component is unmounted (destroyed).
 
 </div>
 </div>
