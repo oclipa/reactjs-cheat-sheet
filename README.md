@@ -2037,6 +2037,101 @@ export default withErrorHandler;
 </div>
 </div>
 
+<div id="fetch">
+<button type="button" class="collapsible">+ HTTP Requests with fetch: <br/><code class="ex">
+fetch(url, {
+    method: method,
+    body: jsonObj,
+    headers: { ... }
+  });
+</code></button>   
+<div class="content" style="display: none;" markdown="1">
+
+The simplest way to query a URL is the `fetch()` function, which is a feature provided by the browser, and thus does not require additional imports.  
+
+However, to test `fetch()` outside of a browser, the `node-fetch` module can be used:
+
+* Install: `npm i node-fetch`
+* Import: `const fetch = require('node-fetch');'
+
+In either case, the `fetch()` function returns a `Promise`.
+
+**Usage**
+
+In its simplest form, the syntax looks like this:
+
+```js
+fetch('https://api.kanye.rest')
+  .then(response => response.json())
+  .then(quote => console.log(quote));
+```
+
+By default `fetch()` performs a `GET` request, however this can overridden be passing an options object:
+
+```js
+fetch('https://api.kanye.rest', {
+  method: 'POST', // `GET`, `POST` or 'PUT'
+  body: JSON.stringify('hello'), // request contents (if any)
+  headers: { 'Content-Type': 'application/json' }, // header overrides (if any)
+})
+  .then(response => response.json())
+  .then(quote => console.log(quote));
+```
+
+Note that, generally, the response will need to be converted to either JSON (`response.json()`) or text (`response.text()`) before is it useful.
+
+**Query Status**
+
+HTTP responses are identified by codes, of which 200 (success) and 404 (not found) are probably the most familiar.
+
+Any response in the range 200-299 is identified by `response.ok` being `true`.
+
+A more detailed response status can be seen using the following properties:
+  * `response.status` - this is the familiar HTTP response code, with 200 indicating a successful query.
+  * `response.statusText` - this provides an additional information about the status.
+
+A failure to connect to the resources (for example, due to network or permission issues) will result in a `TypeError` rejection.
+
+An example of error handling is the following:
+
+```js
+fetch('notExists')
+  .then(function (response) {
+    if (!response.ok) {
+      // one option might be to make the promise be rejected
+      // by throwing an error
+      // throw new Error("Not 2xx response")
+
+      // but a more nuanced approach might be:
+      switch (response.status) {
+        case 404:
+          throw new Error(`Not found: ${response.statusText}`);
+        case 500:
+          throw new Error(`Server error: ${response.statusText}`);
+        default:
+          throw new Error(
+            `Query failed: ${response.status} - ${response.statusText}`
+          );
+      }
+    } else {
+      // go the desired response
+    }
+  })
+  .catch((err) => {
+    // some error here
+    console.log(`Error: ${err}`);
+  });
+```
+
+**Further Information**
+
+For further details see:
+* [https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch](Using Fetch)
+* [https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch](Fetch API)
+
+</div>
+</div>
+
 <div id="http">
 <button type="button" class="collapsible">+ HTTP Requests with Axios</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -10167,6 +10262,8 @@ Probably the most important hook is the `useState()` function, which allows Func
   * This update function returned by `useState()` requires that the **entire** state be overwritten; it does not allow specific properties to be updated (unlike `setState()`).
 
 **NOTE:** If the state is updated multiple times in the same render, there is a risk that the current state may be out of date (due to the unpredictable way in which rendering happens).  To avoid this, the actual updating can be delegated to a function that can be passed as an argument to the update function.  In this case, the delegate function will receive the latest state, even if it hasn't yet been fully committed for this render cycle.
+
+**Using useState()**
 
 An example implementation using `useState()` is the following:
 
