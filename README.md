@@ -10503,13 +10503,23 @@ To avoid an infinite loop, `useEffect()` can be controlled by passing a dependen
 For example,
 
 ```js
-useEffect( () => { somefunction; }, [props.somedata] ); )
+useEffect( () => { somefunction; }, [someobject] ); )
 ```
 
 To have the function run only the **first time** an object is rendered, pass an empty array.  In this case, the function emulates `componentDidMount()`.
 
 ```js
 useEffect( () => { somefunction; }, [] ); )
+```
+
+NOTE: the dependencies should be listed only if they actually change so, for example, `props` should not be listed as a dependency unless the goal is for the component to rerender whenever any child of `props` changes.  A typical fix for this is to use object destructing to extract out the specific objects of interest from `props`, e.g.
+
+```js
+
+const { onLoadIngredients } = props;
+
+// avoid useEffect( () => { somefunction; }, [props.onLoadIngredients] ); )
+useEffect( () => { somefunction; }, [onLoadIngredients] ); )
 ```
 
 **Cleaning Up**
@@ -10525,6 +10535,13 @@ useEffect( () => { somefunction; return () => { cleanupfunction }; }, [props.som
 The returned function runs **BEFORE** the main `useEffect()` function runs, but **AFTER** the (first) render cycle.
 
 If an empty array is passed, the cleanup function will only run when the component is unmounted (destroyed).
+
+</div>
+</div>
+
+<div id="hooks-useCallback">
+<button type="button" class="collapsible">+ useCallback()</button>   
+<div class="content" style="display: none;" markdown="1">
 
 </div>
 </div>
