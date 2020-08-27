@@ -1068,50 +1068,13 @@ class Person extends Component {
 };
 ```
 
-**Refs and Functional Components - useRef() <-- move this to React Hooks section?**
+**Refs and Functional Components**
 
-As mentioned above, you cannot use refs to refer to functional components, but they can be used inside functional components by using React Hooks, specifically `useRef()`.
+For further information on how to refs can be emulated in functional components, see the React Hook section, below.
 
-The basic pattern is:
-1. Create ref to null before the `return` method: `const myBtnRef = useRef(null);`
-1. Add the ref to the element of interest: `<button ref={myBtnRef} onClick={props.clicked}>`
-1. Call the ref using the `useEffect()` hook: `useEffect(() => { myBtnRef.current.click(); }, []);`
+**Further Information*
 
-The reason the ref must be called from `useEffect()` is that it cannot be called before the functional component has returned (since the elements of the component must be initialized).  
-
-Since `useEffect()` is only called after the `return` method, this makes it an appropriate place to access the ref.
-
-```jsx
-import React, { useEffect, useRef } 
-        from 'react';
-
-const Cockpit = (props) => {
-  const toggleBtnRef = useRef(null);
-
-  // runs after first render cycle
-  useEffect(() => {
-  
-    toggleBtnRef.current.click();
-    
-  }, []);
-
-  ...
-
-  return (
-    <div>
-      <button 
-        ref={toggleBtnRef} 
-        onClick={props.clicked}
-      >
-        Toggle Persons
-      </button>
-    </div>
-  );
-};
-```
-
-For further information, see here:
-   * [https://reactjs.org/docs/refs-and-the-dom.html](https://reactjs.org/docs/refs-and-the-dom.html)
+* [https://reactjs.org/docs/refs-and-the-dom.html](https://reactjs.org/docs/refs-and-the-dom.html)
 
 </div>
 </div>
@@ -10522,6 +10485,8 @@ const { onLoadIngredients } = props;
 useEffect( () => { somefunction; }, [onLoadIngredients] ); )
 ```
 
+NOTE: the dependencies must exist in the enclosing context if there are to be used as triggers.
+
 **Cleaning Up**
 
 The `useEffect()` function can also be used to clean-up after a render cycle, or when a component is unmounted (destroyed).
@@ -10542,6 +10507,81 @@ If an empty array is passed, the cleanup function will only run when the compone
 <div id="hooks-useCallback">
 <button type="button" class="collapsible">+ useCallback()</button>   
 <div class="content" style="display: none;" markdown="1">
+
+To understand `useCallback()`, it is crucial to remember that JavaScript functions are objects, which means that, by default, they get created anew whenever they are called.  If this is not desirable, it is necessary to cache the function and re-use the cached version.
+
+At first glance, the `useCallback()` hook appears to work in a similar fashion to the `useEffect()` hook: it allows control over how a function behaves based on changes to a dependency.  The crucial difference between the two hooks is that, while `useEffect()` controls whether a function runs, `useCallback()` controls whether a function is re-created before being run.
+
+The hook works by caching the wrapped function and then only re-executing it once a dependency has changed.
+
+For example, in the following case it may not be desirable for `setIngredients()` to be created anew the enclosing function is executed (e.g. this might involve an expensive HTTP call):
+
+```js
+  const filteredIngredientsHandler = (filteredIngredients) => {
+    setIngredients(filteredIngredients);
+  };
+```
+
+To avoid the unnecessary re-runs, the call to `setIngredients()` is wrapped with `useCallback()`:
+
+```js
+  const filteredIngredientsHandler = useCallback((filteredIngredients) => {
+    setIngredients(filteredIngredients);
+  }, []);
+```
+
+NOTE: in this particular case, an empty array is passed as the dependency, which means that the function will be run the **first time**, but in future a cached version will always be used.
+
+NOTE: as in the `useEffect()` case, the dependencies must exist in the enclosing context (so, in the above example, `setIngredients()` could be used as a dependency but `filterIngredients` cannot).
+
+</div>
+</div>
+
+<div id="hooks-useRef">
+<button type="button" class="collapsible">+ useRef()</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In the section on Refs, it is discussed how these are used to accessed specific elements of the DOM.  Specifically, they are used for accessing HTML elements or class components.  They cannot, however, be used to refer to functional components.
+
+To emulate this behaviour with functional components, the `useRef()` hook is used.
+
+The basic pattern is:
+1. Create ref to null before the `return` method: `const myBtnRef = useRef(null);`
+1. Add the ref to the element of interest: `<button ref={myBtnRef} onClick={props.clicked}>`
+1. Call the ref using the `useEffect()` hook (`.current` gives the current value of the referenced element): `useEffect(() => { myBtnRef.current.click(); }, []);`
+
+The reason the ref must be called from `useEffect()` is that it cannot be called before the functional component has returned (since the elements of the component must be initialized).  
+
+Since `useEffect()` is only called after the `return` method, this makes it an appropriate place to access the ref.
+
+```jsx
+import React, { useEffect, useRef } 
+        from 'react';
+
+const Cockpit = (props) => {
+  const toggleBtnRef = useRef(null);
+
+  // clicks the button after *first* render cycle
+  useEffect(() => {
+  
+    toggleBtnRef.current.click();
+    
+  }, []);
+
+  ...
+
+  return (
+    <div>
+      <button 
+        ref={toggleBtnRef} 
+        onClick={props.clicked}
+      >
+        Toggle Persons
+      </button>
+    </div>
+  );
+};
+```
 
 </div>
 </div>
