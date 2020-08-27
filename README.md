@@ -2027,7 +2027,7 @@ By default `fetch()` performs a `GET` request, however this can overridden be pa
 
 ```js
 fetch('https://api.kanye.rest', {
-  method: 'POST', // `GET`, `POST` or 'PUT'
+  method: 'POST', // 'GET', 'POST', 'PUT', 'DELETE'
   body: JSON.stringify('hello'), // request contents (if any)
   headers: { 'Content-Type': 'application/json' }, // header overrides (if any)
 })
@@ -2049,7 +2049,9 @@ A more detailed response status can be seen using the following properties:
 
 A failure to connect to the resources (for example, due to network or permission issues) will result in a `TypeError` rejection.
 
-An example of error handling is the following:
+**Error Handling**
+
+Errors are handled using `catch`.  An example of this is the following:
 
 ```js
 fetch('notExists')
@@ -10566,7 +10568,7 @@ const Cockpit = (props) => {
   
     toggleBtnRef.current.click();
     
-  }, []);
+  }, []); // empty array, so only runs first time
 
   ...
 
@@ -10582,6 +10584,15 @@ const Cockpit = (props) => {
   );
 };
 ```
+
+</div>
+</div>
+
+<div id="hooks-useReducer">
+<button type="button" class="collapsible">+ useReducer()</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In the case where there are multiple, closely related state changes (e.g. setIngredients, setIsLoadingIngredients, setIngredientsError), an alternative approach to using `useState()` is `useReducer()`.
 
 </div>
 </div>
