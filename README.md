@@ -3165,7 +3165,7 @@ An example might be:
     }
     const searchParams = new URLSearchParams(location.search);
     return match.isExact && searchParams.has('id');
-  }}
+  } }
 >
   User
 </NavLink>
@@ -6587,7 +6587,7 @@ describe('<BurgerBuilder />', () => {
 
   beforeEach(() => {
     // for the onInitIngredients() prop, just pass in a dummy function
-    wrapper = shallow(<BurgerBuilder onInitIngredients={() => {}} />);
+    wrapper = shallow(<BurgerBuilder onInitIngredients={() => {} } />);
   });
 
   it('should render <BuildControls /> when receving ingredients', () => {
@@ -7313,7 +7313,7 @@ Pages are typically created using stateless functional components, although clas
 
 To handle linking between pages, Next.js provides components that can be used in place of those provided by React.  For example:
    * `<Link href="url"><a>Text</a></Link>` (imported using: `import Link from 'next/link';`)
-   * `<button onClick={() => Router.push('url')}}>Text</button>` (imported using: `import Router from 'next/router';`)
+   * `<button onClick={() => Router.push('url')} }>Text</button>` (imported using: `import Router from 'next/router';`)
    
 For example:
 
@@ -7336,7 +7336,7 @@ const indexPage = () => (
     <button
       onClick={() => {
         Router.push('/auth');
-      }}
+      } }
     >
       Got to Auth
     </button>
@@ -8305,12 +8305,12 @@ class App extends Component {
         <br />
         {this.state.showBlock ? (
           <div
-            style={{
+            style={ {
               backgroundColor: 'red',
               width: 100,
               height: 100,
               margin: 'auto',
-            }}
+            } }
           ></div>
         ) : null}
       </div>
@@ -8348,12 +8348,12 @@ class App extends Component {
         >
           {(state) => (
             <div
-              style={{
+              style={ {
                 ...etc...
                 
                 transition: 'opacity 1s ease-out',
                 opacity: state === 'exiting' ? 0 : 1,
-              }}
+              } }
             ></div>
           )}
         </Transition>
@@ -8482,7 +8482,7 @@ const modal = (props) => {
             </button>
           </div>
         );
-      }}
+      } }
     </Transition>
   );
 };
@@ -8692,12 +8692,12 @@ const modal = (props) => {
     <CSSTransition
       ...etc...
       
-      classNames={{
+      classNames={ {
         enter: '',
         enterActive: 'ModalOpen',
         exit: '',
         exitActive: 'ModalClosed',
-      }}
+      } }
     >
       <div className="Modal">
         <h1>A Modal</h1>
@@ -9039,7 +9039,7 @@ could be written as:
 
 One of the primary reasons why this is desirable is that it makes it much easier to test the generator.
 
-`call()` returns an object with the form `{ CALL: {fn: [server, doQuery], args: [url, queryId]}}` to the middleware.  The middleware then invokes the function and evaluates the result.  The subsequent behaviour depends upon the result:
+`call()` returns an object with the form `{ CALL: {fn: [server, doQuery], args: [url, queryId]} }` to the middleware.  The middleware then invokes the function and evaluates the result.  The subsequent behaviour depends upon the result:
 * If the result is a generator function, the parent generator will be suspended until the child generator completes.  The parent will then resume with the value returned by the child.
 * If the result is a normal function that returns a promise, the parent generator will be suspended until the promise is settled.  The parent will then resume with the value resolved by the promise.
 * If the result is neither a generator nor a promise, the result will be immediately returned and the parent generator will resume.
@@ -9828,10 +9828,10 @@ class Modal extends Component {
         <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
         <div
           className={classes.Modal}
-          style={{
+          style={ {
             transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
             opacity: this.props.show ? '1' : '0',
-          }}
+          } }
         >
           {this.props.children}
         </div>
@@ -10236,7 +10236,7 @@ const IngredientForm = React.memo((props) => {
                   title: newTitle,
                   amount: latestState.amount,
                 }));
-              }}
+              } }
             />
           </div>
           <div className="form-control">
@@ -10255,7 +10255,7 @@ const IngredientForm = React.memo((props) => {
                   title: latestState.title,
                   amount: newAmount,
                 }));
-              }}
+              } }
             />
           </div>
           <div className="ingredient-form__actions">
@@ -10309,7 +10309,7 @@ const IngredientForm = React.memo((props) => {
               value={enteredTitle}
               onChange={(event) => {
                 setEnteredTitle(event.target.value);
-              }}
+              } }
             />
           </div>
           <div className="form-control">
@@ -10320,7 +10320,7 @@ const IngredientForm = React.memo((props) => {
               value={enteredAmount}
               onChange={(event) => {
                 setEnteredAmount(event.target.value);
-              }}
+              } }
             />
           </div>
           <div className="ingredient-form__actions">
@@ -10371,7 +10371,7 @@ function Ingredients() {
 
       <section>
         <Search />
-        <IngredientList ingredients={ingredients} onRemoveItem={() => {}} />
+        <IngredientList ingredients={ingredients} onRemoveItem={() => {} } />
       </section>
     </div>
   );
@@ -10680,7 +10680,7 @@ const AuthContextProvider = (props) => {
 
   return (
     <AuthContext.Provider
-      value=\{\{ login: loginHandler, isAuth: isAuthenticated \}\}
+      value={ { login: loginHandler, isAuth: isAuthenticated } }
     >
       {props.children}
     </AuthContext.Provider>
