@@ -1070,7 +1070,7 @@ class Person extends Component {
 
 **Refs and Functional Components**
 
-For further information on how to refs can be emulated in functional components, see the React Hook section, below.
+For further information on how to refs can be emulated in functional components, see the discussion on `useRef()`, in the React Hook section below.
 
 **Further Information*
 
@@ -1255,42 +1255,13 @@ class Person extends Component {
   }
 ```
 
-**useContext() (functional components only) <-- move this to React Hooks section?**
+**Context and Functional Components**
 
-For functional components, there is a React Hook that can be used: `useContext()`. 
+For further information on how to access context in functional components, see the `useContext()` discussion, in the React Hook section below.
 
-By creating a const reference to the context, `useContext()` makes the context accessible anywhere within the function..
+**Further Information**
 
-*Cockpit.js*
-
-```jsx
-import React, { useContext } from 'react';
-import AuthContext 
-        from 'context/auth-context';
-
-const Cockpit = (props) => {
-
-  const authContext = useContext(AuthContext);
-
-  console.log(authContext.auth);
-
-  render() {
-    return (
-      <Wrapper>
-        <h1>{props.title}</h1>
-      
-        <button onClick={authContext.login}>
-          Log in
-        </button>
-      </Wrapper>
-    );
-  }
-}
-
-```
-
-For further information, see here:
-   * [https://reactjs.org/docs/context.html](https://reactjs.org/docs/context.html)
+* [https://reactjs.org/docs/context.html](https://reactjs.org/docs/context.html)
 
 </div>
 </div>
@@ -10543,7 +10514,7 @@ NOTE: as in the `useEffect()` case, the dependencies must exist in the enclosing
 <button type="button" class="collapsible">+ useRef()</button>   
 <div class="content" style="display: none;" markdown="1">
 
-In the section on Refs, it is discussed how these are used to accessed specific elements of the DOM.  Specifically, they are used for accessing HTML elements or class components.  They cannot, however, be used to refer to functional components.
+In the section on Refs, it is discussed how these are used to access specific elements of the DOM.  Specifically, they are used for accessing HTML elements or class components.  They cannot, however, be used to refer to functional components.
 
 To emulate this behaviour with functional components, the `useRef()` hook is used.
 
@@ -10592,8 +10563,206 @@ const Cockpit = (props) => {
 <button type="button" class="collapsible">+ useReducer()</button>   
 <div class="content" style="display: none;" markdown="1">
 
-In the case where there are multiple, closely related state changes (e.g. setIngredients, setIsLoadingIngredients, setIngredientsError), an alternative approach to using `useState()` is `useReducer()`.
+In the case where there are multiple, closely related state changes (e.g. setIngredients, addIngredient, deleteIngredient), an alternative approach to using `useState()` is `useReducer()`.  This can often result in cleaner code as well.
 
+NOTE: There is no connection between `useReducer()` and Redux!
+
+The general pattern for a reducer is:
+
+```js
+const myReducer = (currentState, action) => {
+  switch (action.type) {
+    case 'ACTION1': {
+      return doAction1(currentState, action.prop1);
+    }
+    case 'ACTION2': {
+      return doAction2(currentState, action.prop2);
+    }
+    case 'ACTION3': {
+      return doAction2(currentState, action.prop2, action.prop3);
+    }
+    default: {
+      // typically this wouldn't be reached, so maybe:
+      throw new Error('Should not get here!');
+    }
+  }
+};
+
+function MyComponent() {
+  // startingState could be an empty array []
+  const [updatedState, dispatch] = useReducer(myReducer, startingState);
+  
+  return (
+    ...etc...
+  );
+}
+```
+
+For a more concrete example:
+
+```js
+import React, { useReducer, useCallback } from 'react';
+
+const ingredientReducer = (currentIngredients, action) => {
+  switch (action.type) {
+    case 'SET': {
+      return action.ingredients;
+    }
+    case 'ADD': {
+      return [...currentIngredients, action.ingredient];
+    }
+    case 'DELETE': {
+      return currentIngredients.filter((ing) => ing.id !== action.id);
+    }
+    default: {
+      throw new Error('Should not get here!');
+    }
+  }
+};
+
+function Ingredients() {
+  const [ingredients, dispatch] = useReducer(ingredientReducer, []);
+
+  const filteredIngredientsHandler = useCallback((filteredIngredients) => {
+    dispatch({ type: 'SET', ingredients: filteredIngredients });
+  }, []);
+
+  const addIngredientHandler = (ingredient) => {
+      dispatch({
+        type: 'ADD',
+        ingredient: { id: ingredient.id, ...ingredient },
+      });
+  };
+
+  const removeIngredientHandler = (id) => {
+    dispatch({ type: 'DELETE', id: id });
+  };
+
+  return (
+    ...etc...
+  );
+}
+
+export default Ingredients;
+```
+
+</div>
+</div>
+
+<div id="hooks-useContext">
+<button type="button" class="collapsible">+ useContext()</button>   
+<div class="content" style="display: none;" markdown="1">
+
+`useContext()` allows the Context API (discussed previously) to be emulated for functional components.  Its purpose is to share some common context between the multiple components of an app. 
+
+There are two main steps to accomplist this:
+1) Wrap the app in an `AuthContextProvider` component, provides access to the shared context throughout the app.
+2) Use `useContext()` to access the shared context in a specific functional component.
+
+*context/auth-context.js*
+
+Initially create a context using `React.createContext()`, as in the class component case, but also add an `AuthContextProvider` component that exposes the shared context to any children it wraps.
+
+```jsx
+import React, { useState } from 'react';
+
+export const AuthContext = React.createContext({
+  isAuth: false,
+  logn: () => {},
+});
+
+const AuthContextProvider = (props) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const loginHandler = () => {
+    setIsAuthenticated(true);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ login: loginHandler, isAuth: isAuthenticated }}
+    >
+      {props.children}
+    </AuthContext.Provider>
+  );
+};
+
+export default AuthContextProvider;
+```
+
+*index.js*
+
+Wrap the app in the `AuthContextProvider` component.
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import './index.css';
+import App from './App';
+import AuthContextProvider from './context/auth-context';
+
+ReactDOM.render(
+  <AuthContextProvider>
+    <App />
+  </AuthContextProvider>,
+  document.getElementById('root')
+);
+```
+
+*components/Auth.js*
+
+Obtain a reference to the shared context (using `useContext()`) and then use the shared `login()` function in this component.
+
+```jsx
+import React, { useContext } from 'react';
+
+import { AuthContext } from '../context/auth-context';
+import './Auth.css';
+
+const Auth = (props) => {
+  const authContext = useContext(AuthContext);
+  const loginHandler = () => {
+    authContext.login();
+  };
+
+  return (
+    <div className="auth">
+      <Card>
+        <h2>You are not authenticated!</h2>
+        <p>Please log in to continue.</p>
+        <button onClick={loginHandler}>Log In</button>
+      </Card>
+    </div>
+  );
+};
+
+export default Auth;
+```
+
+*App.js*
+
+Obtain a reference to the shared context (using `useContext()`) and then use the shared `isAuth()` property in this component.
+
+```jsx
+import React, { useContext } from 'react';
+
+import Ingredients from './components/Ingredients/Ingredients';
+import Auth from './components/Auth';
+import { AuthContext } from './context/auth-context';
+
+const App = (props) => {
+  const authContext = useContext(AuthContext);
+
+  let content = <Auth />;
+  if (authContext.isAuth) {
+    content = <Ingredients />;
+  }
+  return content;
+};
+
+export default App;
+```
 </div>
 </div>
 
