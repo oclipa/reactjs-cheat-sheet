@@ -10843,6 +10843,20 @@ const App = (props) => {
 
 export default App;
 ```
+
+</div>
+</div>
+
+<div id="hooks-customHooks">
+<button type="button" class="collapsible">+ Custom Hooks()</button>   
+<div class="content" style="display: none;" markdown="1">
+
+If there is duplicate logic that affects the state of the components that use that logic, it not possible extract that logic to a normal function and re-use it (because an event in a child function cannot change the state of the parent function).  This can be done, however, using hooks.
+
+Note: when using custom hooks, you don't have one function shared by multiple components; each functional components get its own snapshot of the hook (i.e. each component gets the same logic, but not the same state).
+
+Also note that hooks get executed for every render cycle, so they need to be coded accordingly.
+
 </div>
 </div>
 
