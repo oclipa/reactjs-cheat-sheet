@@ -10130,7 +10130,6 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Redux-saga
 * Gatsby.js
 * React Native
 * Component Libraries
@@ -10420,6 +10419,25 @@ export default IngredientForm;
 </div>
 </div>
 
+<div id="hooks-perf-overview">
+<button type="button" class="collapsible">+ Overview of Performance-Related Hooks</button>   
+<div class="content" style="display: none;" markdown="1">
+
+There are 3 hooks that can be used to improve rendering performance for functional components:
+  * `useEffect()` 
+    * Behaviour: controls whether a function runs.
+    * Returns: does not return a result.
+  * `useCallback()`
+    * Behaviour: controls whether a function is re-created.
+    * Returns: returns a call-back to either a new function or a cached function.
+  * `useMemo()`
+    * Behaviour: controls whether a function returns a new result.
+    * Returns: returns either a new result or a cached result.
+
+There is also `React.memo()`, which is effectively the same as `useMemo()` but is not a hook (it's an HOC).  This can also be used with class components.
+</div>
+</div>
+
 <div id="hooks-useEffect">
 <button type="button" class="collapsible">+ useEffect()</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -10483,11 +10501,11 @@ If an empty array is passed, the cleanup function will only run when the compone
 
 To understand `useCallback()`, it is crucial to remember that JavaScript functions are objects, which means that, by default, they get created anew whenever they are called.  If this is not desirable, it is necessary to cache the function and re-use the cached version.
 
-At first glance, the `useCallback()` hook appears to work in a similar fashion to the `useEffect()` hook: it allows control over how a function behaves based on changes to a dependency.  The crucial difference between the two hooks is that, while `useEffect()` controls whether a function runs, `useCallback()` controls whether a function is re-created before being run.
+At first glance, the `useCallback()` hook appears to work in a similar fashion to the `useEffect()` hook: it allows control over how a function behaves based on changes to a dependency.  It does not, however, actually run a function; it merely returns a callback to a function.
 
-The hook works by caching the wrapped function and then only re-executing it once a dependency has changed.
+The hook works by caching the wrapped function and then only re-creating it once a dependency has changed.
 
-For example, in the following case it may not be desirable for `setIngredients()` to be created anew the enclosing function is executed (e.g. this might involve an expensive HTTP call):
+For example, in the following case it may not be desirable for `setIngredients()` to be created anew every time `filterIngredientsHandler` is triggered (e.g. this might involve an expensive HTTP call):
 
 ```js
   const filteredIngredientsHandler = (filteredIngredients) => {
@@ -10503,9 +10521,71 @@ To avoid the unnecessary re-runs, the call to `setIngredients()` is wrapped with
   }, []);
 ```
 
-NOTE: in this particular case, an empty array is passed as the dependency, which means that the function will be run the **first time**, but in future a cached version will always be used.
+NOTE: in this particular case, an empty array is passed as the dependency, which means that the function will be created the **first time**, but in future a cached version will always be used.
 
 NOTE: as in the `useEffect()` case, the dependencies must exist in the enclosing context (so, in the above example, `setIngredients()` could be used as a dependency but `filterIngredients` cannot).
+
+</div>
+</div>
+
+<div id="hooks-useMemo">
+<button type="button" class="collapsible">+ useMemo() vs React.memo()</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In terms of functionality, there is no significant difference between `useMemo()` and `React.memo()`; both memorize the result of a function and only re-run the function if the `props` change.  Having said that, `React.memo()` can be used in both class and functional components (it is not a hook!), whereas `useMemo()` can only be used in functional components.
+
+Note that these functions differ from `useCallback()` in that `useCallback()` returns a **function**, whereas `useMemo()` and `React.memo()` both return the **result** of a function.
+
+`React.memo()`:
+
+```js
+const Counter = (props) => {
+  console.log('Render: ', props.children);
+
+  return (
+    <div>
+      {props.children}: {props.value}
+    </div>
+  );
+
+  // areEqual is an optional function that allows finer
+  // controls over how changes in props are detected
+  const areEqual = (prevProps, nextProps) => {
+    /*
+      return true if passing nextProps to render would return
+      the same result as passing prevProps to render,
+      otherwise return false
+    */
+  };
+};
+
+// if neither value nor children change, the Counter 
+// function is not re-run.
+// areEqual is an optional argument
+export default React.memo(Counter, areEqual);
+```
+
+`useMemo()`:
+
+```js
+const renderCounter = (props) => {
+  console.log('Render: ', props.children);
+
+  return (
+    <div>
+      {props.children}: {props.value}
+    </div>
+  );
+};
+
+const Counter = (props) => {
+  return useMemo(() => renderCounter(props), [props.children, props.value]);
+};
+
+export default Counter
+```
+
+**NOTE:** It is possible to make performance worse by use `useMemo()` in small apps, since more time may be spent checking if rendering should happen than actually doing the rendering.
 
 </div>
 </div>
