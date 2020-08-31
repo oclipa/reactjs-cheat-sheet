@@ -10320,7 +10320,7 @@ export default App;
 </div>
 
 <div id="hooks-customHooks">
-<button type="button" class="collapsible">+ Custom Hooks()</button>   
+<button type="button" class="collapsible">+ Custom Hooks</button>   
 <div class="content" style="display: none;" markdown="1">
 
 If there is duplicate logic that affects the state of the components that use that logic, it not possible extract that logic to a normal function and re-use it (because an event in a child function cannot change the state of the parent function).  This can be done, however, using hooks.
