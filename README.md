@@ -10471,6 +10471,71 @@ export default MyComponent;
 </div>
 </div>
 
+<div id="hooks-convert">
+<button type="button" class="collapsible">+ Converting An App To Use Hooks</button>   
+<div class="content" style="display: none;" markdown="1">
+
+1. Convert class components to functional components:
+
+```js
+class App extends Component { 
+  ...etc...
+
+  render() {
+
+    ...etc...
+    
+    return (
+      <div>
+        ...etc...
+      </div>
+    );
+  }
+}
+```
+
+```js
+const App = (props) => {
+  ...etc...
+  
+  return (
+    <div>
+      ...etc...
+    </div>
+  );
+};
+```
+
+1. Replace `componentDidMount()` with `useEffect()`:
+
+```js
+class App extends Component { 
+
+  componentDidMount() {
+    this.props.doSomething();
+  }
+  
+  ...etc...
+}
+```
+
+```js
+const App = (props) => {
+
+  // cannot use "this"
+  const doSomething = props.doSomething;
+  
+  useEffect(() => {
+    doSomething();
+  }, [doSomething]); // don't use props as dependency (changes too often)
+  
+  ...etc...
+};
+```
+
+</div>
+</div>
+
 </div>
 </div>
 
