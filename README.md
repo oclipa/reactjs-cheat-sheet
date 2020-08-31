@@ -9625,534 +9625,6 @@ export function* queryIngredientsSaga(action) {
 
 -------------------------------------------------------------------------------------------------------
 
-<div id="code-examples">
-<button type="button" class="collapsible">+ Code Examples</button>   
-<div class="content" style="display: none;" markdown="1">
-
-<div id="spinner">
-<button type="button" class="collapsible">+ Creating A Simple Spinner</button>   
-<div class="content" style="display: none;" markdown="1">
-
-*Spinner.js*
-
-```jsx
-import React from 'react';
-import classes from './Spinner.module.css';
-
-const Spinner = (props) => <div className={classes.Loader}>Loading...</div>;
-
-export default Spinner;
-```
-
-*Spinner.module.css*
-
-Generate the CSS using the following tool:
-* [https://projects.lukehaas.me/css-loaders/](https://projects.lukehaas.me/css-loaders/)
-
-*MyPage.js*
-
-```jsx
-import React, { Component } from 'react';
-import axios from 'axios';
-
-import Input from './Input';
-import Button from './Button';
-import Spinner from './Spinner';
-
-class MyPage extends Component {
-  state = {
-    loading: false,
-  };
-
-  submitHandler = (event) => {
-  
-    this.setState({ loading: true });
-    
-    axios
-      .post('https://mydatabase/my-data.json', data)
-      .then((response) => {
-        this.setState({ loading: false });
-        this.props.history.push('/');
-      })
-      .catch((error) => {
-        this.setState({ loading: false });
-      });
-  };
-  
-  render() {
-    let content = (
-      <form onSubmit={this.submitHandler}>
-        <Input />
-        <Button>
-          SUBMIT
-        </Button>
-      </form>
-    );
-    
-    if (this.state.loading) {
-      content = <Spinner />;
-    }
-
-    return (
-      <div>
-        <h4>Enter your Data</h4>
-        {content}
-      </div>
-    );
-  }
-}
-
-export default MyPage;
-```
-
-</div>
-</div>
-
-<div id="hamburger">
-<button type="button" class="collapsible">+ Creating A Simple Hamburger Icon</button>   
-<div class="content" style="display: none;" markdown="1">
-
-A "Hamburger Button" is the nickname given to the icon that is commonly used for toggling a menu, particularly on mobile apps.  The name comes from the resemblance with a hamburger.
-
-*HamburgerButton.js*
-
-```jsx
-import React from 'react';
-import classes from './HamburgerButton.module.css';
-
-const HamburgerButton = (props) => (
-  <div className={classes.HamburgerButton} onClick={props.clicked}>
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-);
-
-export default HamburgerButton;
-```
-
-*HamburgerButton.module.css*
-
-```css
-.HamburgerButton {
-  width: 40px;
-  height: 100%;
-  display: flex;
-  flex-flow: column;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  box-sizing: border-box;
-  cursor: pointer;
-}
-
-.HamburgerButton div {
-  width: 90%;
-  height: 3px;
-  background-color: white;
-}
-
-@media (min-width: 500px) {
-  .HamburgerButton {
-      display: none;
-  }
-}
-```
-</div>
-</div>
-
-<div id="backdrop">
-<button type="button" class="collapsible">+ Creating A Simple Backdrop</button>   
-<div class="content" style="display: none;" markdown="1">
-
-In this context, a backdrop refers to an overlay that is displayed to hide the background while something else is displayed in the foreground (e.g. a message dialog, or a slide-in dialog). 
-
-*Backdrop.js*
-
-```jsx
-import React from 'react';
-import classes from './Backdrop.module.css';
-
-const Backdrop = (props) =>
-  props.show ? <div className={classes.Backdrop} onClick={props.clicked}></div> : null;
-
-export default Backdrop;
-
-```
-
-*Backdrop.module.css*
-
-```css
-.Backdrop {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: 100;
-  left: 0;
-  top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* If width < 350px or height < 300px  */
-@media (max-width: 500px), (max-height: 500px) {
-  .Backdrop {
-    width: 500px;
-    height: 715px;
-  }
-}
-```
-</div>
-</div>
-
-<div id="modal">
-<button type="button" class="collapsible">+ Creating A Simple Modal Pop-Up</button>   
-<div class="content" style="display: none;" markdown="1">
-
-*Modal.js*
-
-```jsx
-import React, { Component } from 'react';
-import classes from './Modal.module.css';
-import Wrapper from './Wrapper';
-import Backdrop from './Backdrop';
-
-class Modal extends Component {
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
-  }
-
-  render() {
-    return (
-      <Wrapper>
-        <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
-        <div
-          className={classes.Modal}
-          style={ {
-            transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
-            opacity: this.props.show ? '1' : '0',
-          } }
-        >
-          {this.props.children}
-        </div>
-      </Wrapper>
-    );
-  }
-}
-
-export default Modal;
-```
-
-*Backdrop.module.css*
-
-```css
-.Backdrop {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: 100;
-  left: 0;
-  top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* If width < 350px or height < 300px  */
-@media (max-width: 500px), (max-height: 500px) {
-  .Backdrop {
-    width: 500px;
-    height: 715px;
-  }
-}
-```
-
-*MyPage.js*
-
-```jsx
-class MyPage extends Component {
-  state = {
-    data: {},
-    showData: false
-  };
-  
-  modelOpenedHandler = (data) => {
-    this.setState({ data: data, showData: true });
-  };
-  
-  modalClosedHandler = () => {
-    this.setState({ showData: false });
-  };
-  
-  render() {
-    let myData = (
-        <MyData data={this.state.data} />
-      );
-    }
-
-    if (this.state.loading) {
-      myData = <Spinner />;
-    }
-
-    return (
-      <Wrapper>
-        <Modal show={this.state.showData} modalClosed={this.modalClosedHandler}>
-          {myData}
-        </Modal>
-        <Content modelOpened={this.modalOpenedHandler} />
-      </Wrapper>
-    );
-  }
-}
-```
-
-</div>
-</div>
-
-<div id="sidedrawer">
-<button type="button" class="collapsible">+ Creating A Simple Toolbar And Side Drawer</button>   
-<div class="content" style="display: none;" markdown="1">
-
-*Layout.js*
-
-```jsx
-import React, { Component } from 'react';
-
-import classes from './Layout.module.css';
-
-import Wrapper from './Wrapper';
-import Toolbar from './Toolbar';
-import SideDrawer from './SideDrawer';
-
-class Layout extends Component {
-  state = {
-    showSideDrawer: false,
-  };
-
-  sideDrawerToggleHandler = () => {
-    this.setState((prevState) => {
-      return { showSideDrawer: !prevState.showSideDrawer };
-    });
-  };
-
-  render() {
-    return (
-      <Wrapper>
-        <Toolbar toggle={this.sideDrawerToggleHandler} />
-
-        <SideDrawer open={this.state.showSideDrawer} closed={this.sideDrawerToggleHandler} />
-
-        <main className={classes.Content}>{this.props.children}</main>
-      </Wrapper>
-    );
-  }
-}
-
-export default Layout;
-```
-
-*Layout.module.css*
-
-```css
-.Content {
-  margin-top: 72px;
-  width: 100%;
-}
-
-/* If width < 350px or height < 300px  */
-@media (max-width: 350px), (max-height: 300px) {
-  .Content {
-    width: 350px;
-    height: 600px;
-    background-color: red;
-  }
-}
-```
-
-*Toolbar.js*
-
-```jsx
-import React from 'react';
-
-import classes from './Toolbar.module.css';
-
-import Logo from './Logo';
-import NavigationItems from '../NavigationItems';
-import HamburgerButton from './HamburgerButton'
-
-const Toolbar = (props) => (
-  <header className={classes.Toolbar}>
-    <div className={[classes.HamburgerButton, classes.MobileOnly].join(' ')}>
-      <HamburgerButton clicked={props.toggle} />
-    </div>
-    <div className={classes.Logo}>
-      <Logo />
-    </div>
-    <nav className={classes.DesktopOnly}>
-      <NavigationItems/>
-    </nav>
-  </header>
-);
-
-export default Toolbar;
-```
-
-*Toolbar.module.css*
-
-```css
-.Toolbar {
-  height: 56px;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: #703b09;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  box-sizing: border-box;
-  z-index: 90;
-}
-
-.Toolbar nav {
-  height: 100%;
-}
-
-.Logo {
-  height: 80%;
-}
-
-.HamburgerButton {
-  height: 100%;
-}
-
-/* If width > 500px */
-@media (max-width: 500px) {
-  .DesktopOnly {
-    display: none;
-  }
-}
-
-/* If width < 499px */
-@media (min-width: 499px) {
-  .MobileOnly {
-    display: none;
-  }
-}
-```
-
-*SideDrawer.js*
-
-```jsx
-import React from 'react';
-
-import classes from './SideDrawer.module.css';
-
-import Wrapper from './Wrapper';
-import Backdrop from '../Backdrop';
-import Logo from './Logo';
-import NavigationItems from './NavigationItems';
-
-const SideDrawer = (props) => {
-  let attachedClasses = [classes.SideDrawer, classes.Close];
-  if (props.open) {
-    attachedClasses = [classes.SideDrawer, classes.Open];
-  }
-
-  return (
-    <Wrapper>
-      <Backdrop show={props.open} clicked={props.closed} />
-      <div className={attachedClasses.join(' ')}>
-        <div className={classes.Logo}>
-          <Logo />
-        </div>
-        <nav>
-          <NavigationItems />
-        </nav>
-      </div>
-    </Wrapper>
-  );
-};
-
-export default SideDrawer;
-```
-
-*SideDrawer.module.css*
-
-```css
-.SideDrawer {
-  position: fixed;
-  width: 280px;
-  max-width: 70%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  z-index: 200;
-  background-color: white;
-  padding: 32px 16px;
-  box-sizing: border-box;
-  transition: transform 0.3s ease-out;
-}
-
-@media (min-width: 500px) {
-  .SideDrawer {
-    display: none;
-  }
-}
-
-.Open {
-  transform: translateX(0);
-}
-
-.Close {
-  transform: translateX(-100%);
-}
-
-.Logo {
-  position: relative;
-  height: 11%;
-  width: 45%;
-  max-width: 100%;
-  margin-bottom: 32px;
-}
-```
-
-</div>
-</div>
-
-</div>
-</div>
-
-&nbsp;
-
--------------------------------------------------------------------------------------------------------
-
-<div id="future">
-<button type="button" class="collapsible">+ Future Updates</button>   
-<div class="content" style="display: none;" markdown="1">
-
-* Gatsby.js
-* React Native
-* Component Libraries
-* Preact
-* [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
-* [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
-* [React Hooks](https://reactjs.org/docs/hooks-overview.html)
-   * [Basic Hooks](https://reactjs.org/docs/hooks-reference.html#basic-hooks)
-   * [Additional Hooks](https://reactjs.org/docs/hooks-reference.html#additional-hooks)
-   * [Building Your Own Hooks](https://reactjs.org/docs/hooks-custom.html)
-* [React Top Level API](https://reactjs.org/docs/react-api.html)
-* [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
-* [componentDidCatch](https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html)
-* [Portals](https://reactjs.org/docs/portals.html)
-* [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
-* [Strict Mode](https://reactjs.org/docs/strict-mode.html)
-* React.memo
-
-</div>
-</div>
-
--------------------------------------------------------------------------------------------------------
-
 <div id="hooks">
 <button type="button" class="collapsible">+ React Hooks</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -10853,12 +10325,678 @@ export default App;
 
 If there is duplicate logic that affects the state of the components that use that logic, it not possible extract that logic to a normal function and re-use it (because an event in a child function cannot change the state of the parent function).  This can be done, however, using hooks.
 
-Note: when using custom hooks, you don't have one function shared by multiple components; each functional components get its own snapshot of the hook (i.e. each component gets the same logic, but not the same state).
+Note: when using custom hooks, you don't have one function shared by multiple components; each functional component get its own snapshot of the hook (i.e. each component gets the same logic, but not the same state).
 
 Also note that hooks get executed for every render cycle, so they need to be coded accordingly.
 
+The basic structure of a custom hook is:
+
+1. An internal state.
+1. A reducer function that inputs an initial state and returns an updated state based on an action.
+1. An exported hook (function), with a name beginning with "use".
+   * The hook should returns an object that contains the current state of the data maintained in the hook, and the methods to update the state of the data in the hook.
+   * The methods that update the state do so by dispatching actions (and data related to the actions) to the reducer.
+
+A generic example might be:
+
+*hooks/useMyHook.js*
+
+```js
+import { useReducer, useCallback } from 'react';
+
+const ACTION_TYPE_1 = 'ACTION_TYPE_1';
+const ACTION_TYPE_2 = 'ACTION_TYPE_2';
+const ACTION_TYPE_3 = 'ACTION_TYPE_3';
+const CLEAR = 'CLEAR';
+
+const initialState = {
+  prop1: null,
+  isActive: false,
+  prop3: null,
+};
+
+const myHookReducer = (currentHookState, action) => {
+  switch (action.type) {
+    case ACTION_TYPE_1: {
+      return {
+        ...currentHookState,
+        prop1: action.prop1,
+        prop3: action.prop3,
+      };
+    }
+    case ACTION_TYPE_2: {
+      return {
+        ...currentHookState,
+        isActive: true,
+      };
+    }
+    case ACTION_TYPE_3: {
+      return {
+        ...currentHookState,
+        isActive: false,
+      };
+    }
+    case CLEAR: {
+      return initialState;
+    }
+    default: {
+      throw new Error('Should not get here!');
+    }
+  }
+};
+
+const useMyHook = () => {
+  const [myHookState, dispatch] = useReducer(myHookReducer, initialState);
+
+  // use useCallback(), with an empty array, to avoid this action being
+  // re-created every time the parent component is rendered.
+  const clear = useCallback(() => dispatch({ type: CLEAR }), []);
+
+  // use useCallback(), with an empty array, to avoid this action being
+  // re-created every time the parent component is rendered.
+  const updateProps = useCallback((prop1, prop3) => {
+    // something to update prop values
+  }, []);
+
+  // use useCallback() to avoid this action being
+  // re-created every time the parent component is rendered.
+  // updateProps() is passed as a dependency, since it too is wrapped
+  // with useCallback().
+  const doSomething = useCallback(
+    (val1, val3) => {
+      dispatch({ type: ACTION_TYPE_2 });
+
+      const { updatedVal1, updatedVal3 } = updateProps(val1, val3);
+      dispatch({
+        type: ACTION_TYPE_1,
+        prop1: updatedVal1,
+        prop3: updatedVal3,
+      });
+
+      dispatch({ type: ACTION_TYPE_3 });
+    },
+    [updateProps]
+  );
+
+  // can return any type of object; in this case a simple
+  // JavaScript object
+  return {
+    prop1: myHookState.prop1,
+    isActive: myHookState.isActive,
+    prop3: myHookState.prop3,
+    doSomething: doSomething,
+    clear: clear,
+  };
+};
+
+export default useMyHook;
+```
+
+This hook could then be used in the following manner:
+
+*MyComponent.js*
+
+```js
+import React, { useEffect } from 'react';
+
+import useMyHook from './hooks/useMyHook';
+
+// React.memo() is used to ensure that the function 
+// only re-runs if props changes
+const MyComponent = React.memo((props) => {
+
+  // get references to properties and methods of interest from hook
+  const { prop1, isActive, prop3, doSomething, clear } = useMyHook();
+  
+  // useEffect() runs *after* the render but only if prop1,
+  // prop3 or doSomething() have changed
+  useEffect(() => {  
+    // update the state stored in the hook
+    doSomething(prop1, prop3);
+  }, [prop1, prop3, doSomething]);
+
+  return (
+    <div>
+      {isActive ? <span>Prop1: {prop1}</span> : <span>Prop3: {prop3}</span>}
+      <button type="button" onClick={clear}>
+        Clear
+      </button>
+    </div>
+  );
+});
+
+export default MyComponent;
+```
+
 </div>
 </div>
+
+</div>
+</div>
+
+-------------------------------------------------------------------------------------------------------
+
+<div id="code-examples">
+<button type="button" class="collapsible">+ Code Examples</button>   
+<div class="content" style="display: none;" markdown="1">
+
+<div id="spinner">
+<button type="button" class="collapsible">+ Creating A Simple Spinner</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Spinner.js*
+
+```jsx
+import React from 'react';
+import classes from './Spinner.module.css';
+
+const Spinner = (props) => <div className={classes.Loader}>Loading...</div>;
+
+export default Spinner;
+```
+
+*Spinner.module.css*
+
+Generate the CSS using the following tool:
+* [https://projects.lukehaas.me/css-loaders/](https://projects.lukehaas.me/css-loaders/)
+
+*MyPage.js*
+
+```jsx
+import React, { Component } from 'react';
+import axios from 'axios';
+
+import Input from './Input';
+import Button from './Button';
+import Spinner from './Spinner';
+
+class MyPage extends Component {
+  state = {
+    loading: false,
+  };
+
+  submitHandler = (event) => {
+  
+    this.setState({ loading: true });
+    
+    axios
+      .post('https://mydatabase/my-data.json', data)
+      .then((response) => {
+        this.setState({ loading: false });
+        this.props.history.push('/');
+      })
+      .catch((error) => {
+        this.setState({ loading: false });
+      });
+  };
+  
+  render() {
+    let content = (
+      <form onSubmit={this.submitHandler}>
+        <Input />
+        <Button>
+          SUBMIT
+        </Button>
+      </form>
+    );
+    
+    if (this.state.loading) {
+      content = <Spinner />;
+    }
+
+    return (
+      <div>
+        <h4>Enter your Data</h4>
+        {content}
+      </div>
+    );
+  }
+}
+
+export default MyPage;
+```
+
+</div>
+</div>
+
+<div id="hamburger">
+<button type="button" class="collapsible">+ Creating A Simple Hamburger Icon</button>   
+<div class="content" style="display: none;" markdown="1">
+
+A "Hamburger Button" is the nickname given to the icon that is commonly used for toggling a menu, particularly on mobile apps.  The name comes from the resemblance with a hamburger.
+
+*HamburgerButton.js*
+
+```jsx
+import React from 'react';
+import classes from './HamburgerButton.module.css';
+
+const HamburgerButton = (props) => (
+  <div className={classes.HamburgerButton} onClick={props.clicked}>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+);
+
+export default HamburgerButton;
+```
+
+*HamburgerButton.module.css*
+
+```css
+.HamburgerButton {
+  width: 40px;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.HamburgerButton div {
+  width: 90%;
+  height: 3px;
+  background-color: white;
+}
+
+@media (min-width: 500px) {
+  .HamburgerButton {
+      display: none;
+  }
+}
+```
+</div>
+</div>
+
+<div id="backdrop">
+<button type="button" class="collapsible">+ Creating A Simple Backdrop</button>   
+<div class="content" style="display: none;" markdown="1">
+
+In this context, a backdrop refers to an overlay that is displayed to hide the background while something else is displayed in the foreground (e.g. a message dialog, or a slide-in dialog). 
+
+*Backdrop.js*
+
+```jsx
+import React from 'react';
+import classes from './Backdrop.module.css';
+
+const Backdrop = (props) =>
+  props.show ? <div className={classes.Backdrop} onClick={props.clicked}></div> : null;
+
+export default Backdrop;
+
+```
+
+*Backdrop.module.css*
+
+```css
+.Backdrop {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 500px), (max-height: 500px) {
+  .Backdrop {
+    width: 500px;
+    height: 715px;
+  }
+}
+```
+</div>
+</div>
+
+<div id="modal">
+<button type="button" class="collapsible">+ Creating A Simple Modal Pop-Up</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Modal.js*
+
+```jsx
+import React, { Component } from 'react';
+import classes from './Modal.module.css';
+import Wrapper from './Wrapper';
+import Backdrop from './Backdrop';
+
+class Modal extends Component {
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
+  }
+
+  render() {
+    return (
+      <Wrapper>
+        <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
+        <div
+          className={classes.Modal}
+          style={ {
+            transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
+            opacity: this.props.show ? '1' : '0',
+          } }
+        >
+          {this.props.children}
+        </div>
+      </Wrapper>
+    );
+  }
+}
+
+export default Modal;
+```
+
+*Backdrop.module.css*
+
+```css
+.Backdrop {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 500px), (max-height: 500px) {
+  .Backdrop {
+    width: 500px;
+    height: 715px;
+  }
+}
+```
+
+*MyPage.js*
+
+```jsx
+class MyPage extends Component {
+  state = {
+    data: {},
+    showData: false
+  };
+  
+  modelOpenedHandler = (data) => {
+    this.setState({ data: data, showData: true });
+  };
+  
+  modalClosedHandler = () => {
+    this.setState({ showData: false });
+  };
+  
+  render() {
+    let myData = (
+        <MyData data={this.state.data} />
+      );
+    }
+
+    if (this.state.loading) {
+      myData = <Spinner />;
+    }
+
+    return (
+      <Wrapper>
+        <Modal show={this.state.showData} modalClosed={this.modalClosedHandler}>
+          {myData}
+        </Modal>
+        <Content modelOpened={this.modalOpenedHandler} />
+      </Wrapper>
+    );
+  }
+}
+```
+
+</div>
+</div>
+
+<div id="sidedrawer">
+<button type="button" class="collapsible">+ Creating A Simple Toolbar And Side Drawer</button>   
+<div class="content" style="display: none;" markdown="1">
+
+*Layout.js*
+
+```jsx
+import React, { Component } from 'react';
+
+import classes from './Layout.module.css';
+
+import Wrapper from './Wrapper';
+import Toolbar from './Toolbar';
+import SideDrawer from './SideDrawer';
+
+class Layout extends Component {
+  state = {
+    showSideDrawer: false,
+  };
+
+  sideDrawerToggleHandler = () => {
+    this.setState((prevState) => {
+      return { showSideDrawer: !prevState.showSideDrawer };
+    });
+  };
+
+  render() {
+    return (
+      <Wrapper>
+        <Toolbar toggle={this.sideDrawerToggleHandler} />
+
+        <SideDrawer open={this.state.showSideDrawer} closed={this.sideDrawerToggleHandler} />
+
+        <main className={classes.Content}>{this.props.children}</main>
+      </Wrapper>
+    );
+  }
+}
+
+export default Layout;
+```
+
+*Layout.module.css*
+
+```css
+.Content {
+  margin-top: 72px;
+  width: 100%;
+}
+
+/* If width < 350px or height < 300px  */
+@media (max-width: 350px), (max-height: 300px) {
+  .Content {
+    width: 350px;
+    height: 600px;
+    background-color: red;
+  }
+}
+```
+
+*Toolbar.js*
+
+```jsx
+import React from 'react';
+
+import classes from './Toolbar.module.css';
+
+import Logo from './Logo';
+import NavigationItems from '../NavigationItems';
+import HamburgerButton from './HamburgerButton'
+
+const Toolbar = (props) => (
+  <header className={classes.Toolbar}>
+    <div className={[classes.HamburgerButton, classes.MobileOnly].join(' ')}>
+      <HamburgerButton clicked={props.toggle} />
+    </div>
+    <div className={classes.Logo}>
+      <Logo />
+    </div>
+    <nav className={classes.DesktopOnly}>
+      <NavigationItems/>
+    </nav>
+  </header>
+);
+
+export default Toolbar;
+```
+
+*Toolbar.module.css*
+
+```css
+.Toolbar {
+  height: 56px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #703b09;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 90;
+}
+
+.Toolbar nav {
+  height: 100%;
+}
+
+.Logo {
+  height: 80%;
+}
+
+.HamburgerButton {
+  height: 100%;
+}
+
+/* If width > 500px */
+@media (max-width: 500px) {
+  .DesktopOnly {
+    display: none;
+  }
+}
+
+/* If width < 499px */
+@media (min-width: 499px) {
+  .MobileOnly {
+    display: none;
+  }
+}
+```
+
+*SideDrawer.js*
+
+```jsx
+import React from 'react';
+
+import classes from './SideDrawer.module.css';
+
+import Wrapper from './Wrapper';
+import Backdrop from '../Backdrop';
+import Logo from './Logo';
+import NavigationItems from './NavigationItems';
+
+const SideDrawer = (props) => {
+  let attachedClasses = [classes.SideDrawer, classes.Close];
+  if (props.open) {
+    attachedClasses = [classes.SideDrawer, classes.Open];
+  }
+
+  return (
+    <Wrapper>
+      <Backdrop show={props.open} clicked={props.closed} />
+      <div className={attachedClasses.join(' ')}>
+        <div className={classes.Logo}>
+          <Logo />
+        </div>
+        <nav>
+          <NavigationItems />
+        </nav>
+      </div>
+    </Wrapper>
+  );
+};
+
+export default SideDrawer;
+```
+
+*SideDrawer.module.css*
+
+```css
+.SideDrawer {
+  position: fixed;
+  width: 280px;
+  max-width: 70%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  background-color: white;
+  padding: 32px 16px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-out;
+}
+
+@media (min-width: 500px) {
+  .SideDrawer {
+    display: none;
+  }
+}
+
+.Open {
+  transform: translateX(0);
+}
+
+.Close {
+  transform: translateX(-100%);
+}
+
+.Logo {
+  position: relative;
+  height: 11%;
+  width: 45%;
+  max-width: 100%;
+  margin-bottom: 32px;
+}
+```
+
+</div>
+</div>
+
+</div>
+</div>
+
+&nbsp;
+
+-------------------------------------------------------------------------------------------------------
+
+<div id="future">
+<button type="button" class="collapsible">+ Future Updates</button>   
+<div class="content" style="display: none;" markdown="1">
+
+* Gatsby.js
+* React Native
+* Component Libraries
+* Preact
+* [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
+* [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
+* [React Hooks](https://reactjs.org/docs/hooks-overview.html)
+   * [Basic Hooks](https://reactjs.org/docs/hooks-reference.html#basic-hooks)
+   * [Additional Hooks](https://reactjs.org/docs/hooks-reference.html#additional-hooks)
+   * [Building Your Own Hooks](https://reactjs.org/docs/hooks-custom.html)
+* [React Top Level API](https://reactjs.org/docs/react-api.html)
+* [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
+* [componentDidCatch](https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html)
+* [Portals](https://reactjs.org/docs/portals.html)
+* [Hydration](https://reactjs.org/docs/react-dom.html#hydrate)
+* [Strict Mode](https://reactjs.org/docs/strict-mode.html)
 
 </div>
 </div>
