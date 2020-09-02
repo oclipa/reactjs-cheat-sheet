@@ -10648,11 +10648,6 @@ export default BurgerBuilder;
 </div>
 </div>
 
-</div>
-</div>
-
--------------------------------------------------------------------------------------------------------
-
 <div id="hooks-convert">
 <button type="button" class="collapsible">+ Converting An App To Use Hooks</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -11007,6 +11002,9 @@ export default React.memo(
     nextProps.show === prevProps.show && nextProps.children === props.children
 );
 ```
+
+</div>
+</div>
 
 </div>
 </div>
