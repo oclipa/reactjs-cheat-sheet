@@ -3705,6 +3705,28 @@ There are four main stages when hooking the Store up to a React application:
    * Inject the Store into the App using a Provider (imported from `react-redux`)
    * Indicate which components are interested in which state properties using the `connect` function (imported from `react-redux`)
 
+**`<Provider/>`**
+
+Under the covers, the `<Provider store={store}/>` implementation basically boils down to this:
+
+```js
+const Provider = (props) => {
+
+  const store = props.store;
+
+  return (
+    <div>
+      {props.children}
+    </div>
+  );
+}
+```
+
+The actual implementation can be reviewed here:
+* [https://github.com/reduxjs/react-redux/blob/master/src/components/Provider.js](https://github.com/reduxjs/react-redux/blob/master/src/components/Provider.js)
+
+In this way, the `store` is accessible to all of the children (i.e. the app) of `<Provider>`, although the children cannot access it directly; they need to use the various functions provided by Redux.
+
 **Simple Example of Redux in a React App**
 
 Usually, the Store is created in the *index.js* file (where the `<App />` is added to the DOM).  Note that the Provider component wraps the entire app, including the BrowserRouter component.
@@ -10530,10 +10552,26 @@ export default MyComponent;
 <div class="content" style="display: none;" markdown="1">
 
 Two hooks introduced by Redux allow the `connect()()` function to be replaced.  These hooks are:
-   * `useDispatch` - replaces `mapDispatchToProps`
-   * `useSelector` - replaces `mapStateToProps`
+   * `useDispatch` - effectively the same as `mapDispatchToProps`
+   * `useSelector` - effectively the same as `mapStateToProps`
 
-For example, to convert the following component to use these hooks:
+**`useDispatch()`**
+
+WIP
+
+**`useSelector()`**
+
+`useSelector()` allows specific properties of the current state to be accessed.  For example, in the following case, the `ingredients` object can be accessed directly.
+
+```js
+const ingredients = useSelector((state) => state.burgerBuilder.ingredients);
+```
+
+WIP
+
+**An Example**
+
+The following is an example of converting a component to use these hooks:
 
 ```js
 import React, { useState, useEffect } from 'react';
