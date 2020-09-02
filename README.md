@@ -11228,6 +11228,8 @@ const App = (props) => {
 };
 ```
 
+&nbsp;
+
 **Replace `componentDidMount()` with `useEffect()`**
 
 ```js
@@ -11262,6 +11264,8 @@ const App = (props) => {
   ...etc...
 };
 ```
+
+&nbsp;
 
 **Replace `asyncComponent()` with `React.lazy()`**
 
@@ -11321,6 +11325,8 @@ const App = (props) => {
   );
 };
 ```
+
+&nbsp;
 
 **Replace `state` with `useState()`**
 
@@ -11384,6 +11390,8 @@ const Layout = (props) => {
 }
 ```
 
+&nbsp;
+
 **Refactor `componentWillMount()`**
 
 ```js
@@ -11438,6 +11446,8 @@ The solution is simply to move the contents of `componentWillMount()` out of the
   );
 ```
 
+&nbsp;
+
 **Replace `componentWillUnmount()` with `useEffect()`**
 
 ```js
@@ -11459,6 +11469,8 @@ import React, { useEffect } from 'react';
     };
   }, [reqInterceptor, resInterceptor]);
 ```
+
+&nbsp;
 
 **Assign functions to constants**
 
@@ -11490,6 +11502,8 @@ import React, { useEffect } from 'react';
     </div>
   )
 ```
+
+&nbsp;
 
 **Replace `shouldComponentUpdate()` with `React.memo()`**
 
