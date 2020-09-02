@@ -10653,6 +10653,366 @@ export default BurgerBuilder;
 
 -------------------------------------------------------------------------------------------------------
 
+<div id="hooks-convert">
+<button type="button" class="collapsible">+ Converting An App To Use Hooks</button>   
+<div class="content" style="display: none;" markdown="1">
+
+**Convert class components to functional components**
+
+```js
+import React, { Component } from 'react';
+
+class App extends Component { 
+  ...etc...
+
+  render() {
+
+    ...etc...
+    
+    if (this.props.isAuthenticated) {
+    }
+    
+    return (
+      <div>
+        ...etc...
+      </div>
+    );
+  }
+}
+```
+
+1. Remove `Component` and convert to arrow function
+1. Extract `return()` from `render()`
+1. Remove `render()`
+1. Replace `this.props` with `props`
+
+```js
+import React from 'react';
+
+const App = (props) => {
+  ...etc...
+  
+  if (props.isAuthenticated) {
+  }
+  
+  return (
+    <div>
+      ...etc...
+    </div>
+  );
+};
+```
+
+&nbsp;
+
+**Replace `componentDidMount()` with `useEffect()`**
+
+```js
+import React from 'react';
+
+const App = (props) => {
+
+  componentDidMount() {
+    this.props.doSomething();
+  }
+  
+  ...etc...
+}
+```
+
+1. Import `useEffect`
+1. Replace `componentDidMount()` from `useEffect()`
+1. Replace `this.props` with `props`
+1. Avoid using `props` as a dependency for `useEffect()`
+
+```js
+import React, { useEffect } from 'react';
+
+const App = (props) => {
+
+  const doSomething = props.doSomething;
+  
+  useEffect(() => {
+    doSomething();
+  }, [doSomething]);
+  
+  ...etc...
+};
+```
+
+&nbsp;
+
+**Replace `asyncComponent()` with `React.lazy()`**
+
+```js
+import React from 'react';
+
+const asyncCheckout = asyncComponent(() => {
+  return import('./containers/Checkout/Checkout');
+});
+
+const App = (props) => {  
+
+  let routes = (
+    <Switch>
+      <Route path="/checkout" component={asyncCheckout} />
+      <Redirect to="/" />
+    </Switch>
+  );
+  
+  return (
+    <div>
+      {routes}
+    </div>
+  );
+};
+```
+
+1. Replace `asyncComponent()` with `React.lazy()`
+1. Rename `asyncCheckout` variable to `Checkout` (so that it can be used as a component)
+1. In `Route`, replace `component` with `render`
+1. Ensure `props` are passed to components
+1. Import `Suspense`
+1. Wrap lazy loading code with `Suspense`
+
+```js
+import React, { Suspense } from 'react';
+
+const Checkout = React.lazy(() => {
+  return import('./containers/Checkout/Checkout');
+});
+
+const App = (props) => {  
+
+  let routes = (
+    <Switch>
+      <Route path="/checkout" render={(props) => <Checkout {...props} />} />
+      <Redirect to="/" />
+    </Switch>
+  );
+
+  return (
+    <div>
+      <Suspense fallback={<p>Loading...</p>}> 
+        {routes}
+      </Suspense>
+    </div>
+  );
+};
+```
+
+&nbsp;
+
+**Replace `state` with `useState()`**
+
+```js
+import React, { Component } from 'react';
+
+class Layout extends Component {
+  state = {
+    showSideDrawer: false,
+  };
+
+  sideDrawerToggleHandler = () => {
+    this.setState((prevState) => {
+      return { showSideDrawer: !prevState.showSideDrawer };
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <Toolbar toggle={this.sideDrawerToggleHandler} />
+
+        <SideDrawer
+          isAuth={this.props.isAuthenticated}
+          open={this.state.showSideDrawer}
+          closed={this.sideDrawerToggleHandler}
+        />
+      </div>
+    );
+  }
+}
+```
+
+1. Import `useState`
+1. Replace local `state` with `useState`
+   * For large or complex states, use multiple `useState` functions.
+1. Replace `setState()` with `useState` setter
+1. Replace `this.state` with `useState` value
+
+```js
+import React, { useState } from 'react';
+
+const Layout = (props) => {
+  const [sideDrawerIsVisible, setSideDrawerIsVisible] = useState(false);
+
+  const sideDrawerToggleHandler = () => {
+    setSideDrawerIsVisible(!sideDrawerIsVisible);
+  };
+
+  return (
+    <div>
+      <Toolbar toggle={sideDrawerToggleHandler} />
+
+      <SideDrawer
+        isAuth={props.isAuthenticated}
+        open={sideDrawerIsVisible}
+        closed={sideDrawerToggleHandler}
+      />
+    </div>
+  );
+}
+```
+
+&nbsp;
+
+**Refactor `componentWillMount()`**
+
+```js
+  UNSAFE_componentWillMount() {
+    this.reqInterceptor = axios.interceptors.request.use((req) => {
+      this.setState({ error: null });
+      return req;
+    });
+    
+    this.resInterceptor = axios.interceptors.response.use(
+      (res) => {
+        return res;
+      },
+      (error) => {
+        this.setState({ error: error });
+      }
+    );
+  }
+  
+  render() {
+    return (
+      ...etc...
+    );
+  }
+```
+
+Cannot use `useEffect()` because `componentWillMount()` runs before rendering.
+
+The solution is simply to move the contents of `componentWillMount()` out of the function so that it runs inline.  This will then run before the function renders (i.e. the `return` statement), which is effectively the same behaviour as `componentWillMount()`.
+
+**NOTE:** When wrapping a functional app in `StrictMode` (which create-react-app now does by default), you need to ensure that the Axios error handler explicitly returns a rejected `Promise`, otherwise behaviour may be unexpected (this is related to the face that `StrictMode` causes some functions to run multiple times in dev mode - see [https://stackoverflow.com/questions/60305074/react-strictmode-setstate-function-in-useeffect-is-run-multiple-times-when-effe](here) for further details.)
+
+```js
+  const reqInterceptor = axios.interceptors.request.use((req) => {
+    setError(null);
+    return req;
+  });
+  
+  const resInterceptor = axios.interceptors.response.use(
+    (res) => {
+      return res;
+    },
+    (err) => {
+      setError(err);
+      // required by StrictMode
+      return Promise.reject(err);
+    }
+  );
+     
+  return (
+    ...etc...
+  );
+```
+
+&nbsp;
+
+**Replace `componentWillUnmount()` with `useEffect()`**
+
+```js
+  componentWillUnmount() {
+    axios.interceptors.request.eject(this.reqInterceptor);
+    axios.interceptors.response.eject(this.resInterceptor);
+  }
+```
+
+In this case, the purpose of `componentWillUnmount()` is to ensure the code runs when the component exits.  This is effectively the same behaviour as only specifying a clean-up function for `useEffect()`.
+
+```js
+import React, { useEffect } from 'react';
+
+  useEffect(() => {
+    return () => {
+      axios.interceptors.request.eject(reqInterceptor);
+      axios.interceptors.response.eject(resInterceptor);
+    };
+  }, [reqInterceptor, resInterceptor]);
+```
+
+&nbsp;
+
+**Assign functions to constants**
+
+```js
+  errorConfirmedHandler = () => {
+    setError(null);
+  };
+
+  render() {
+    return (
+      <div>
+        <Modal modalClosed={this.errorConfirmedHandler} />
+      </div>
+    );
+  }
+```
+
+1. Make function a `const`, rather than a method.
+1. Call the function without using `this`
+
+```js
+  const errorConfirmedHandler = () => {
+    setError(null);
+  };
+    
+  return (
+    <div>
+      <Modal modalClosed={errorConfirmedHandler} />
+    </div>
+  )
+```
+
+&nbsp;
+
+**Replace `shouldComponentUpdate()` with `React.memo()`**
+
+```js
+class Modal extends Component {
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
+  }
+
+}
+
+export default Modal;
+```
+
+1. Wrap the exported component in `React.memo()`
+1. Take the test from `shouldComponentUpdate` and add it to `React.memo()` as a function. 
+1. Invert the test (`React.memo()` expects the inverse of `shouldComponentUpdate()`)
+
+```js
+const Modal = (props) => {
+
+export default React.memo(
+  Modal,
+  (prevProps, nextProps) =>
+    nextProps.show === prevProps.show && nextProps.children === props.children
+);
+```
+
+</div>
+</div>
+
+-------------------------------------------------------------------------------------------------------
+
 <div id="code-examples">
 <button type="button" class="collapsible">+ Code Examples</button>   
 <div class="content" style="display: none;" markdown="1">
@@ -11164,10 +11524,6 @@ export default SideDrawer;
 * Preact
 * [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
 * [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
-* [React Hooks](https://reactjs.org/docs/hooks-overview.html)
-   * [Basic Hooks](https://reactjs.org/docs/hooks-reference.html#basic-hooks)
-   * [Additional Hooks](https://reactjs.org/docs/hooks-reference.html#additional-hooks)
-   * [Building Your Own Hooks](https://reactjs.org/docs/hooks-custom.html)
 * [React Top Level API](https://reactjs.org/docs/react-api.html)
 * [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
 * [componentDidCatch](https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html)
@@ -11177,366 +11533,6 @@ export default SideDrawer;
 
 </div>
 </div>
-
-<div id="hooks-convert">
-<button type="button" class="collapsible">+ Converting An App To Use Hooks</button>   
-<div class="content" style="display: none;" markdown="1">
-
-**Convert class components to functional components**
-
-```js
-import React, { Component } from 'react';
-
-class App extends Component { 
-  ...etc...
-
-  render() {
-
-    ...etc...
-    
-    if (this.props.isAuthenticated) {
-    }
-    
-    return (
-      <div>
-        ...etc...
-      </div>
-    );
-  }
-}
-```
-
-1. Remove `Component` and convert to arrow function
-1. Extract `return()` from `render()`
-1. Remove `render()`
-1. Replace `this.props` with `props`
-
-```js
-import React from 'react';
-
-const App = (props) => {
-  ...etc...
-  
-  if (props.isAuthenticated) {
-  }
-  
-  return (
-    <div>
-      ...etc...
-    </div>
-  );
-};
-```
-
-&nbsp;
-
-**Replace `componentDidMount()` with `useEffect()`**
-
-```js
-import React from 'react';
-
-const App = (props) => {
-
-  componentDidMount() {
-    this.props.doSomething();
-  }
-  
-  ...etc...
-}
-```
-
-1. Import `useEffect`
-1. Replace `componentDidMount()` from `useEffect()`
-1. Replace `this.props` with `props`
-1. Avoid using `props` as a dependency for `useEffect()`
-
-```js
-import React, { useEffect } from 'react';
-
-const App = (props) => {
-
-  const doSomething = props.doSomething;
-  
-  useEffect(() => {
-    doSomething();
-  }, [doSomething]);
-  
-  ...etc...
-};
-```
-
-&nbsp;
-
-**Replace `asyncComponent()` with `React.lazy()`**
-
-```js
-import React from 'react';
-
-const asyncCheckout = asyncComponent(() => {
-  return import('./containers/Checkout/Checkout');
-});
-
-const App = (props) => {  
-
-  let routes = (
-    <Switch>
-      <Route path="/checkout" component={asyncCheckout} />
-      <Redirect to="/" />
-    </Switch>
-  );
-  
-  return (
-    <div>
-      {routes}
-    </div>
-  );
-};
-```
-
-1. Replace `asyncComponent()` with `React.lazy()`
-1. Rename `asyncCheckout` variable to `Checkout` (so that it can be used as a component)
-1. In `Route`, replace `component` with `render`
-1. Ensure `props` are passed to components
-1. Import `Suspense`
-1. Wrap lazy loading code with `Suspense`
-
-```js
-import React, { Suspense } from 'react';
-
-const Checkout = React.lazy(() => {
-  return import('./containers/Checkout/Checkout');
-});
-
-const App = (props) => {  
-
-  let routes = (
-    <Switch>
-      <Route path="/checkout" render={(props) => <Checkout {...props} />} />
-      <Redirect to="/" />
-    </Switch>
-  );
-
-  return (
-    <div>
-      <Suspense fallback={<p>Loading...</p>}> 
-        {routes}
-      </Suspense>
-    </div>
-  );
-};
-```
-
-&nbsp;
-
-**Replace `state` with `useState()`**
-
-```js
-import React, { Component } from 'react';
-
-class Layout extends Component {
-  state = {
-    showSideDrawer: false,
-  };
-
-  sideDrawerToggleHandler = () => {
-    this.setState((prevState) => {
-      return { showSideDrawer: !prevState.showSideDrawer };
-    });
-  };
-
-  render() {
-    return (
-      <div>
-        <Toolbar toggle={this.sideDrawerToggleHandler} />
-
-        <SideDrawer
-          isAuth={this.props.isAuthenticated}
-          open={this.state.showSideDrawer}
-          closed={this.sideDrawerToggleHandler}
-        />
-      </div>
-    );
-  }
-}
-```
-
-1. Import `useState`
-1. Replace local `state` with `useState`
-   * For large or complex states, use multiple `useState` functions.
-1. Replace `setState()` with `useState` setter
-1. Replace `this.state` with `useState` value
-
-```js
-import React, { useState } from 'react';
-
-const Layout = (props) => {
-  const [sideDrawerIsVisible, setSideDrawerIsVisible] = useState(false);
-
-  const sideDrawerToggleHandler = () => {
-    setSideDrawerIsVisible(!sideDrawerIsVisible);
-  };
-
-  return (
-    <div>
-      <Toolbar toggle={sideDrawerToggleHandler} />
-
-      <SideDrawer
-        isAuth={props.isAuthenticated}
-        open={sideDrawerIsVisible}
-        closed={sideDrawerToggleHandler}
-      />
-    </div>
-  );
-}
-```
-
-&nbsp;
-
-**Refactor `componentWillMount()`**
-
-```js
-  UNSAFE_componentWillMount() {
-    this.reqInterceptor = axios.interceptors.request.use((req) => {
-      this.setState({ error: null });
-      return req;
-    });
-    
-    this.resInterceptor = axios.interceptors.response.use(
-      (res) => {
-        return res;
-      },
-      (error) => {
-        this.setState({ error: error });
-      }
-    );
-  }
-  
-  render() {
-    return (
-      ...etc...
-    );
-  }
-```
-
-Cannot use `useEffect()` because `componentWillMount()` runs before rendering.
-
-The solution is simply to move the contents of `componentWillMount()` out of the function so that it runs inline.  This will then run before the function renders (i.e. the `return` statement), which is effectively the same behaviour as `componentWillMount()`.
-
-**NOTE:** When wrapping a functional app in `StrictMode` (which create-react-app now does by default), you need to ensure that the Axios error handler explicitly returns a rejected `Promise`, otherwise behaviour may be unexpected (this is related to the face that `StrictMode` causes some functions to run multiple times in dev mode - see [https://stackoverflow.com/questions/60305074/react-strictmode-setstate-function-in-useeffect-is-run-multiple-times-when-effe](here) for further details.)
-
-```js
-  const reqInterceptor = axios.interceptors.request.use((req) => {
-    setError(null);
-    return req;
-  });
-  
-  const resInterceptor = axios.interceptors.response.use(
-    (res) => {
-      return res;
-    },
-    (err) => {
-      setError(err);
-      // required by StrictMode
-      return Promise.reject(err);
-    }
-  );
-     
-  return (
-    ...etc...
-  );
-```
-
-&nbsp;
-
-**Replace `componentWillUnmount()` with `useEffect()`**
-
-```js
-  componentWillUnmount() {
-    axios.interceptors.request.eject(this.reqInterceptor);
-    axios.interceptors.response.eject(this.resInterceptor);
-  }
-```
-
-In this case, the purpose of `componentWillUnmount()` is to ensure the code runs when the component exits.  This is effectively the same behaviour as only specifying a clean-up function for `useEffect()`.
-
-```js
-import React, { useEffect } from 'react';
-
-  useEffect(() => {
-    return () => {
-      axios.interceptors.request.eject(reqInterceptor);
-      axios.interceptors.response.eject(resInterceptor);
-    };
-  }, [reqInterceptor, resInterceptor]);
-```
-
-&nbsp;
-
-**Assign functions to constants**
-
-```js
-  errorConfirmedHandler = () => {
-    setError(null);
-  };
-
-  render() {
-    return (
-      <div>
-        <Modal modalClosed={this.errorConfirmedHandler} />
-      </div>
-    );
-  }
-```
-
-1. Make function a `const`, rather than a method.
-1. Call the function without using `this`
-
-```js
-  const errorConfirmedHandler = () => {
-    setError(null);
-  };
-    
-  return (
-    <div>
-      <Modal modalClosed={errorConfirmedHandler} />
-    </div>
-  )
-```
-
-&nbsp;
-
-**Replace `shouldComponentUpdate()` with `React.memo()`**
-
-```js
-class Modal extends Component {
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
-  }
-
-}
-
-export default Modal;
-```
-
-1. Wrap the exported component in `React.memo()`
-1. Take the test from `shouldComponentUpdate` and add it to `React.memo()` as a function. 
-1. Invert the test (`React.memo()` expects the inverse of `shouldComponentUpdate()`)
-
-```js
-const Modal = (props) => {
-
-export default React.memo(
-  Modal,
-  (prevProps, nextProps) =>
-    nextProps.show === prevProps.show && nextProps.children === props.children
-);
-```
-
-</div>
-</div>
-
--------------------------------------------------------------------------------------------------------
 
 &nbsp;
 
