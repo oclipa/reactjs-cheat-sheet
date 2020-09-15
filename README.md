@@ -12197,6 +12197,82 @@ export default SideDrawer;
 </div>
 </div>
 
+-------------------------------------------------------------------------------------------------------
+
+<div id="further-reading">
+<button type="button" class="collapsible">+ Further Reading/Exploration</button>   
+<div class="content" style="display: none;" markdown="1">
+
+<div id="demo-apps">
+<button type="button" class="collapsible">+ Demo Projects</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Lots of React examples apps, typically with source code:
+
+* [https://react.rocks/](https://react.rocks/)
+* [https://madewithreact.com/](https://react.rocks/)
+
+</div>
+</div>
+
+<div id="gatsbyjs">
+<button type="button" class="collapsible">+ Gatsby.js (static websites from React)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Gatsby.js is a library built on top of React that allows you to build static websites with React.  It automatically generates the HTML+CSS+JS for a website based on the given React code.
+
+* [https://www.gatsbyjs.com/](https://www.gatsbyjs.com/)
+
+</div>
+</div>
+
+<div id="react-native">
+<button type="button" class="collapsible">+ React Native (mobile apps from React)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+React Native is React for mobile apps.  Apps are written using a combination of React & React Native, and then compile for either iOS or Android.
+
+* [https://reactnative.dev/](https://reactnative.dev/)
+
+</div>
+</div>
+
+<div id="react-material-ui">
+<button type="button" class="collapsible">+ Material-UI (UI components)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Material-UI is a component library that can be imported into a React project and provides beautifully designed UI components.
+
+* [https://material-ui.com/](https://material-ui.com/)
+
+</div>
+</div>
+
+<div id="react-bootstrap">
+<button type="button" class="collapsible">+ React-Bootstrap (UI components)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+React-Bootstrap is another component library that provides UI components.
+
+* [https://react-bootstrap.github.io/](https://react-bootstrap.github.io/)
+
+</div>
+</div>
+
+<div id="react-preact">
+<button type="button" class="collapsible">+ Preact (lightweight alternative to React)</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Preact is a lightweight alternative to React, with a leaner algorithm for DOM diffing.  Generally speaking, Preact is better if initial page load performance is more important than general performance.  For more intensive and/or complex applications, React is generally better.
+
+* [https://preactjs.com/](https://preactjs.com/)
+
+</div>
+</div>
+
+</div>
+</div>
+
 &nbsp;
 
 -------------------------------------------------------------------------------------------------------
@@ -12205,10 +12281,6 @@ export default SideDrawer;
 <button type="button" class="collapsible">+ Future Updates</button>   
 <div class="content" style="display: none;" markdown="1">
 
-* Gatsby.js
-* React Native
-* Component Libraries
-* Preact
 * [Default Props](https://reactjs.org/docs/react-component.html#defaultprops)
 * [Default State](https://reactjs.org/docs/react-without-es6.html#setting-the-initial-state)
 * [React Top Level API](https://reactjs.org/docs/react-api.html)
