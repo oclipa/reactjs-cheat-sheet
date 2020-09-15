@@ -11688,6 +11688,10 @@ const Favorites = (props) => {
 export default Favorites;
 ```
 
+**Further Information**
+
+* [https://www.npmjs.com/package/use-global-hook](use-global-hook) - an NPM package that behaves in a similar manner to the custom store hook described above.
+
 </div>
 </div>
 
