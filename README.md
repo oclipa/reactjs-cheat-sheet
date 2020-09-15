@@ -11040,6 +11040,653 @@ export default React.memo(
     nextProps.show === prevProps.show && nextProps.children === props.children
 );
 ```
+  
+</div>
+</div>
+
+<div id="hooks-replace-redux">
+<button type="button" class="collapsible">+ Replacing Redux With Hooks</button>   
+<div class="content" style="display: none;" markdown="1">
+
+Reasons for using Hooks rather than Redux:
+
+1. Want to stay in the React world, to avoid learning Redux
+1. Want to avoid including `react-redux` and `redux` in your bundle (to reduce its size)
+
+**Approach 1: Using the Context API**
+
+Downside: the Context API is not optimized for performance; every component that references the context will re-render when the context changes.  This means it should not be used for high frequency updates (e.g. repeated user interactions).  It is fine for low frequency updates, such as setting the theme, or logging in, but otherwise is probably best avoided.
+
+In any event, rather than maintaining the state using a reducer:
+
+*reducers/products.js*
+
+```js
+import { TOGGLE_FAV } from '../actions/products';
+
+const initialState = {
+  products: [
+    {
+      id: 'p1',
+      title: 'Red Scarf',
+      description: 'A pretty red scarf.',
+      isFavorite: false
+    },
+    {
+      id: 'p2',
+      title: 'Blue T-Shirt',
+      description: 'A pretty blue t-shirt.',
+      isFavorite: false
+    },
+    {
+      id: 'p3',
+      title: 'Green Trousers',
+      description: 'A pair of lightly green trousers.',
+      isFavorite: false
+    },
+    {
+      id: 'p4',
+      title: 'Orange Hat',
+      description: 'Street style! An orange hat.',
+      isFavorite: false
+    }
+  ]
+};
+
+const productReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case TOGGLE_FAV:
+      const prodIndex = state.products.findIndex(
+        p => p.id === action.productId
+      );
+      const newFavStatus = !state.products[prodIndex].isFavorite;
+      const updatedProducts = [...state.products];
+      updatedProducts[prodIndex] = {
+        ...state.products[prodIndex],
+        isFavorite: newFavStatus
+      };
+      return {
+        ...state,
+        products: updatedProducts
+      };
+    default:
+      return state;
+  }
+};
+
+export default productReducer;
+```
+
+*index.js*
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { combineReducers, createStore } from 'redux';
+import { BrowserRouter } from 'react-router-dom';
+
+import './index.css';
+import App from './App';
+import productReducer from './store/reducers/products';
+
+const rootReducer = combineReducers({
+  shop: productReducer
+});
+
+const store = createStore(rootReducer);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>,
+  document.getElementById('root')
+);
+```
+
+*containers/Products.js*
+
+```js
+import React from 'react';
+import { useSelector } from 'react-redux';
+
+import ProductItem from '../components/Products/ProductItem';
+import './Products.css';
+
+const Products = props => {
+  const productList = useSelector(state => state.shop.products);
+  return (
+    <ul className="products-list">
+      {productList.map(prod => (
+        <ProductItem
+          key={prod.id}
+          id={prod.id}
+          title={prod.title}
+          description={prod.description}
+          isFav={prod.isFavorite}
+        />
+      ))}
+    </ul>
+  );
+};
+
+export default Products;
+```
+
+*components/Products/ProductItem.js*
+
+```js
+import React from 'react';
+import { useDispatch } from 'react-redux';
+
+import Card from '../UI/Card';
+import './ProductItem.css';
+import { toggleFav } from '../../store/actions/products';
+
+const ProductItem = props => {
+  const dispatch = useDispatch();
+
+  const toggleFavHandler = () => {
+    dispatch(toggleFav(props.id));
+  };
+
+  return (
+    <Card style={{ marginBottom: '1rem' }}>
+      <div className="product-item">
+        <h2 className={props.isFav ? 'is-fav' : ''}>{props.title}</h2>
+        <p>{props.description}</p>
+        <button
+          className={!props.isFav ? 'button-outline' : ''}
+          onClick={toggleFavHandler}
+        >
+          {props.isFav ? 'Un-Favorite' : 'Favorite'}
+        </button>
+      </div>
+    </Card>
+  );
+};
+
+export default ProductItem;
+```
+
+*containers/Favourites.js*
+
+```js
+import React from 'react';
+import { useSelector } from 'react-redux';
+
+import FavoriteItem from '../components/Favorites/FavoriteItem';
+import './Products.css';
+
+const Favorites = props => {
+  const favoriteProducts = useSelector(state =>
+    state.shop.products.filter(p => p.isFavorite)
+  );
+  let content = <p className="placeholder">Got no favorites yet!</p>;
+  if (favoriteProducts.length > 0) {
+    content = (
+      <ul className="products-list">
+        {favoriteProducts.map(prod => (
+          <FavoriteItem
+            key={prod.id}
+            id={prod.id}
+            title={prod.title}
+            description={prod.description}
+          />
+        ))}
+      </ul>
+    );
+  }
+  return content;
+};
+
+export default Favorites;
+```
+
+...the state can be maintained using a context:
+
+*context/products-context.js*
+
+```js
+import React, { useState } from 'react';
+
+export const ProductsContext = React.createContext({
+  products: [],
+  toggleFav: (id) => {},
+});
+
+export default (props) => {
+  const [productsList, setProductsList] = useState([
+    {
+      id: 'p1',
+      title: 'Red Scarf',
+      description: 'A pretty red scarf.',
+      isFavorite: false,
+    },
+    {
+      id: 'p2',
+      title: 'Blue T-Shirt',
+      description: 'A pretty blue t-shirt.',
+      isFavorite: false,
+    },
+    {
+      id: 'p3',
+      title: 'Green Trousers',
+      description: 'A pair of lightly green trousers.',
+      isFavorite: false,
+    },
+    {
+      id: 'p4',
+      title: 'Orange Hat',
+      description: 'Street style! An orange hat.',
+      isFavorite: false,
+    },
+  ]);
+
+  const toggleFavorite = (productId) => {
+    setProductsList((currentProductList) => {
+      const prodIndex = currentProductList.findIndex((p) => p.id === productId);
+      const newFavStatus = !currentProductList[prodIndex].isFavorite;
+      const updatedProducts = [...currentProductList];
+      updatedProducts[prodIndex] = {
+        ...currentProductList[prodIndex],
+        isFavorite: newFavStatus,
+      };
+      return updatedProducts;
+    });
+  };
+
+  return (
+    <ProductsContext.Provider
+      value={{ products: productsList, toggleFav: toggleFavorite }}
+    >
+      {props.children}
+    </ProductsContext.Provider>
+  );
+};
+```
+
+*index.js*
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+
+import './index.css';
+import App from './App';
+import ProductsProvider from './context/products-context';
+
+ReactDOM.render(
+  <ProductsProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </ProductsProvider>,
+  document.getElementById('root')
+);
+```
+
+*containers/Products.js*
+
+```js
+import React, { useContext } from 'react';
+
+import ProductItem from '../components/Products/ProductItem';
+import { ProductsContext } from '../context/products-context';
+import './Products.css';
+
+const Products = (props) => {
+  const productList = useContext(ProductsContext).products;
+  return (
+    <ul className="products-list">
+      {productList.map((prod) => (
+        <ProductItem
+          key={prod.id}
+          id={prod.id}
+          title={prod.title}
+          description={prod.description}
+          isFav={prod.isFavorite}
+        />
+      ))}
+    </ul>
+  );
+};
+
+export default Products;
+```
+
+*components/Products/ProductItem.js*
+
+```js
+import React, { useContext } from 'react';
+
+import Card from '../UI/Card';
+import './ProductItem.css';
+import { ProductsContext } from '../../context/products-context';
+
+const ProductItem = (props) => {
+  const toggleFav = useContext(ProductsContext).toggleFav;
+
+  const toggleFavHandler = () => {
+    toggleFav(props.id);
+  };
+
+  return (
+    <Card style={{ marginBottom: '1rem' }}>
+      <div className="product-item">
+        <h2 className={props.isFav ? 'is-fav' : ''}>{props.title}</h2>
+        <p>{props.description}</p>
+        <button
+          className={!props.isFav ? 'button-outline' : ''}
+          onClick={toggleFavHandler}
+        >
+          {props.isFav ? 'Un-Favorite' : 'Favorite'}
+        </button>
+      </div>
+    </Card>
+  );
+};
+
+export default ProductItem;
+```
+
+*containers/Favorites.js*
+
+```js
+import React, { useContext } from 'react';
+
+import FavoriteItem from '../components/Favorites/FavoriteItem';
+import { ProductsContext } from '../context/products-context';
+import './Products.css';
+
+const Favorites = (props) => {
+  const favoriteProducts = useContext(ProductsContext).products.filter(
+    (p) => p.isFavorite
+  );
+  let content = <p className="placeholder">Got no favorites yet!</p>;
+  if (favoriteProducts.length > 0) {
+    content = (
+      <ul className="products-list">
+        {favoriteProducts.map((prod) => (
+          <FavoriteItem
+            key={prod.id}
+            id={prod.id}
+            title={prod.title}
+            description={prod.description}
+          />
+        ))}
+      </ul>
+    );
+  }
+  return content;
+};
+
+export default Favorites;
+```
+
+**Approach 2: Using a Custom Hook**
+
+Here, a custom hook is created that manages a generic state object.  
+
+The state object (`globalState`) is a global variable, which means that it will only be created the first time this hook is imported into a component.  For all subsequent imports, the existing `globalState` will be used.
+
+Within the hook, a local instance of the `setState` function is stored through use of a closure.  This will be specific to the component into which the hook is imported (since it will be re-created everytime the hook is imported).
+
+The `listeners` array is essentially a list of `setState` instances; one for each component into which the hook is imported.
+
+*hooks-store/store.js*
+ 
+```js
+import { useState, useEffect } from 'react';
+
+// data is managed outside of hook
+let globalState = {};
+// all components that are interested in state
+let listeners = [];
+// actions that can update the state
+let actions = {};
+
+// in some instances, a component may only want to update the store, without
+// then reacting to the change in state, so a shouldListen props is passed in
+// to indicate this (to avoid unnecessary re-renders)
+export const useStore = (shouldListen = true) => {
+  // use global state
+  // this will not be recreated when this file is imported anywhere
+  // only interested in update function (since current state is global)
+  const setState = useState(globalState)[1];
+
+  // pass an identifier for the action, and any payload the
+  // action requires
+  const dispatch = (actionIdentifier, payload) => {
+    // this is essentially the same concept as a reducer, where
+    // an action results in a new state being returned
+    const newState = actions[actionIdentifier](globalState, payload);
+
+    // merge updated state with current state
+    globalState = { ...globalState, ...newState };
+
+    // update all listeners with updated state
+    for (const listener of listeners) {
+      // listener = setState
+      listener(globalState);
+    }
+  };
+
+  useEffect(() => {
+    if (shouldListen) {
+      // this is closure, so value of setState will be captured here
+      listeners.push(setState);
+    }
+
+    // clean-up function
+    // remove captured setState (keep all that are not this setState)
+    return () => {
+      if (shouldListen) {
+        listeners = listeners.filter((li) => li !== setState);
+      }
+    };
+  }, [setState, shouldListen]); // setState and shouldListen should never change, so this will only run when component is first mounted
+
+  // this is the same pattern as useReducer
+  return [globalState, dispatch];
+};
+
+// need a function to initialise the store with all of the actions, and an initial state
+export const initStore = (userActions, initialState) => {
+  if (initialState) {
+    globalState = { ...globalState, ...initialState };
+  }
+
+  actions = { ...actions, ...userActions };
+};
+```
+
+Once we have the generic store, this can be used to manage specific state:
+
+*hooks-store/products-store.js*
+
+```js
+import { initStore } from './store';
+
+const configureStore = () => {
+  const actions = {
+    TOGGLE_FAV: (curState, productId) => {
+      const prodIndex = curState.products.findIndex((p) => p.id === productId);
+      const newFavStatus = !curState.products[prodIndex].isFavorite;
+      const updatedProducts = [...curState.products];
+      updatedProducts[prodIndex] = {
+        ...curState.products[prodIndex],
+        isFavorite: newFavStatus,
+      };
+
+      return { products: updatedProducts };
+    },
+  };
+
+  initStore(actions, {
+    products: [
+      {
+        id: 'p1',
+        title: 'Red Scarf',
+        description: 'A pretty red scarf.',
+        isFavorite: false,
+      },
+      {
+        id: 'p2',
+        title: 'Blue T-Shirt',
+        description: 'A pretty blue t-shirt.',
+        isFavorite: false,
+      },
+      {
+        id: 'p3',
+        title: 'Green Trousers',
+        description: 'A pair of lightly green trousers.',
+        isFavorite: false,
+      },
+      {
+        id: 'p4',
+        title: 'Orange Hat',
+        description: 'Street style! An orange hat.',
+        isFavorite: false,
+      },
+    ],
+  });
+};
+
+export default configureStore;
+```
+
+Then, to use the specific store:
+
+*index.js*
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+
+import './index.css';
+import App from './App';
+import configureProductStore from './hooks-store/products-store';
+
+configureProductStore();
+
+ReactDOM.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+  document.getElementById('root')
+);
+```
+
+*containers/Products.js*
+
+```js
+import React from 'react';
+
+import ProductItem from '../components/Products/ProductItem';
+import { useStore } from '../hooks-store/store';
+import './Products.css';
+
+const Products = (props) => {
+  // useStore returns [state, dispatch] but in this case we only care about state
+  const state = useStore()[0];
+
+  return (
+    <ul className="products-list">
+      {state.products.map((prod) => (
+        <ProductItem
+          key={prod.id}
+          id={prod.id}
+          title={prod.title}
+          description={prod.description}
+          isFav={prod.isFavorite}
+        />
+      ))}
+    </ul>
+  );
+};
+
+export default Products;
+```
+
+*components/ProductItem.js*
+
+```js
+import React from 'react';
+
+import Card from '../UI/Card';
+import './ProductItem.css';
+import { useStore } from '../../hooks-store/store';
+
+// use React.memo to ensure the component does not get re-rendered
+// unless the props change
+const ProductItem = React.memo((props) => {
+  console.log('RENDERING');
+  // useStore returns [state, dispatch] but in this case we only care about dispatch function
+  const dispatch = useStore(false)[1];
+
+  const toggleFavHandler = () => {
+    dispatch('TOGGLE_FAV', props.id);
+  };
+
+  return (
+    <Card style={{ marginBottom: '1rem' }}>
+      <div className="product-item">
+        <h2 className={props.isFav ? 'is-fav' : ''}>{props.title}</h2>
+        <p>{props.description}</p>
+        <button
+          className={!props.isFav ? 'button-outline' : ''}
+          onClick={toggleFavHandler}
+        >
+          {props.isFav ? 'Un-Favorite' : 'Favorite'}
+        </button>
+      </div>
+    </Card>
+  );
+});
+
+export default ProductItem;
+```
+
+*containers/Favorites.js*
+
+```js
+import React from 'react';
+
+import FavoriteItem from '../components/Favorites/FavoriteItem';
+import { useStore } from '../hooks-store/store';
+import './Products.css';
+
+const Favorites = (props) => {
+  // useStore returns [state, dispatch] but in this case we only care about state
+  const state = useStore()[0];
+
+  const favoriteProducts = state.products.filter((p) => p.isFavorite);
+
+  let content = <p className="placeholder">Got no favorites yet!</p>;
+  if (favoriteProducts.length > 0) {
+    content = (
+      <ul className="products-list">
+        {favoriteProducts.map((prod) => (
+          <FavoriteItem
+            key={prod.id}
+            id={prod.id}
+            title={prod.title}
+            description={prod.description}
+          />
+        ))}
+      </ul>
+    );
+  }
+  return content;
+};
+
+export default Favorites;
+```
 
 </div>
 </div>
