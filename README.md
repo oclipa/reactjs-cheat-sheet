@@ -27,7 +27,7 @@
 1. Break data model into components that (ideally) only do one thing.
    * [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle)
 1. Break down UI into components, where each component matches one piece of the data model.
-1. Arranage UI components into a hierarchy.
+1. Arrange UI components into a hierarchy.
 1. Build a static version of the hierarchy in React.
    * At this stage, use `props` rather than `state` (see "[What is the difference between state and props](https://reactjs.org/docs/faq-state.html#what-is-the-difference-between-state-and-props)").
    * Each component should only have a render() method (since it is static).
@@ -70,7 +70,7 @@
    * [Minimal API Surface Area](https://www.youtube.com/watch?v=4anAwXYqLG8)
    * Only add out-of-scope features if it will avoid clients producing multiple solutions to the same problem.
 1. Before deprecating a feature, always consider all use cases and communicate reasons and alternatives to clients.
-1. If some pattern is hard to express in a declarative way, provide an imperative API.
+1. If some pattern is hard to express in a declarative way ("I want a table for two"), provide an imperative API ("Go to restaurant, speak to waiter, etc.)").
 1. If you can't identify a perfect API, provide a temporary subpar API (but it must be temporary).
 1. Value API stability.
    * When something changes, there should be a clear (and preferably automated) migration path.
