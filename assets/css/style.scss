@@ -11,3 +11,19 @@
   margin: 0 auto; 
 }
 
+.ex
+{ 
+  color: #222;
+  background-color: #fff;
+  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  font-size: 14px;
+  white-space: pre-wrap;
+  display: block;
+  width: 100%;
+  box-shadow: -10px 10px 10px rgba(0,0,0,0.1);
+  margin: 0px 3px 0px 3px;
+  padding: 0px 0px 10px 10px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
